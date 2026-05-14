@@ -9,7 +9,6 @@ import profilesRoutes from './profiles/presentation/profiles-routes.js';
 import communicationRoutes from './communication/presentation/communication-routes.js';
 import analyticsRoutes from './analytics-budgeting/presentation/analytics-routes.js';
 
-// Importamos el store del IAM para saber si el usuario está logueado
 import { useIamStore } from './iam/application/iam.store.js';
 
 const about = () => import('../shared/presentation/views/about.vue');
@@ -28,6 +27,7 @@ const routes = [
     { path: '/profiles', name: 'profiles', children: profilesRoutes },
     { path: '/communication', name: 'communication', children: communicationRoutes },
     { path: '/budget', name: 'budget', children: analyticsRoutes },
+    { path: '/settings', name: 'settings', component: () => import('../shared/presentation/views/settings.vue'), meta: { title: 'Settings' } },
 ];
 
 const router = createRouter({
@@ -35,26 +35,20 @@ const router = createRouter({
     routes: routes
 });
 
-// EL GUARDIA DE SEGURIDAD (Route Guard)
 router.beforeEach((to, from, next) => {
     let baseTitle = 'Buildline';
     document.title = `${baseTitle} - ${to.meta['title'] || 'App'}`;
 
-    // Revisamos si el usuario ya inició sesión
     const store = useIamStore();
 
-    // Todas las rutas que empiezan con /iam son públicas (login, registro)
     const isPublicRoute = to.path.startsWith('/iam');
 
-    // Regla 1: Si no es ruta pública y NO estás logueado -> Al Login
     if (!isPublicRoute && !store.isAuthenticated) {
         next('/iam/sign-in');
     }
-    // Regla 2: Si estás logueado y tratas de entrar al Login -> Al Dashboard
     else if (isPublicRoute && store.isAuthenticated) {
         next('/home');
     }
-    // Regla 3: Si todo está en orden, pasa nomás
     else {
         next();
     }

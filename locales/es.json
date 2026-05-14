@@ -142,6 +142,22 @@
   "status": "Estado",
   "date": "Fecha de Reporte"
 },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Gestiona tus preferencias de cuenta y configuración del sistema.",
+    "notifications": "Notificaciones",
+    "notif_desc": "Configura cómo quieres recibir las alertas.",
+    "email_alerts": "Alertas por Correo",
+    "stock_alerts": "Aviso de Stock Bajo",
+    "preferences": "Preferencias del Sistema",
+    "pref_desc": "Personaliza la experiencia visual y regional.",
+    "theme": "Tema",
+    "currency": "Moneda por Defecto",
+    "security": "Seguridad",
+    "sec_desc": "Mantén tu cuenta protegida.",
+    "change_pass": "Cambiar Contraseña",
+    "save_changes": "Guardar Cambios"
+  },
   "page-not-found": {
     "title": "Página no encontrada",
     "content": "La ruta {unavailable-route} no está disponible.",

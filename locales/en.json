@@ -142,6 +142,22 @@
     "status": "Status",
     "date": "Reported Date"
   },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account preferences and system configuration.",
+    "notifications": "Notifications",
+    "notif_desc": "Configure how you want to receive alerts.",
+    "email_alerts": "Email Alerts",
+    "stock_alerts": "Low Stock Notifications",
+    "preferences": "System Preferences",
+    "pref_desc": "Customize the visual and regional experience.",
+    "theme": "Theme",
+    "currency": "Default Currency",
+    "security": "Security",
+    "sec_desc": "Keep your account protected.",
+    "change_pass": "Change Password",
+    "save_changes": "Save Changes"
+  },
   "page-not-found": {
     "title": "Page Not Found",
     "content": "The path {unavailable-route} is not available.",
