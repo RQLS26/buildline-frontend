@@ -121,6 +121,27 @@
     "material": "Material",
     "date": "Date"
   },
+  "iam": {
+    "welcome": "Welcome Back",
+    "subtitle": "Please enter your details to sign in.",
+    "email": "Email Address",
+    "password": "Password",
+    "remember": "Remember me",
+    "forgot": "Forgot Password?",
+    "sign_in": "Sign In",
+    "no_account": "Don't have an account?",
+    "sign_up": "Sign Up"
+  },
+  "incidents": {
+    "title": "Incidents",
+    "subtitle": "Manage and track supplier-related issues and claims.",
+    "report_new": "Report Incident",
+    "issue": "Issue / Description",
+    "supplier": "Related Supplier",
+    "severity": "Severity",
+    "status": "Status",
+    "date": "Reported Date"
+  },
   "page-not-found": {
     "title": "Page Not Found",
     "content": "The path {unavailable-route} is not available.",

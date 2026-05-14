@@ -57,16 +57,48 @@
     }
   ],
   "requisitions": [
-    { "id": "1", "reqId": "MR-2026-00024", "material": "Steel Rebar 1/2\"", "project": "Skyline Tower", "priority": "High", "status": "Pending", "requestedOn": "May 19, 2026" },
-    { "id": "2", "reqId": "MR-2026-00023", "material": "Concrete 3000 PSI", "project": "Skyline Tower", "priority": "Medium", "status": "Approved", "requestedOn": "May 18, 2026" },
-    { "id": "3", "reqId": "MR-2026-00022", "material": "Sand Fine", "project": "Alpha Wing", "priority": "Low", "status": "Approved", "requestedOn": "May 17, 2026" }
+    {
+      "id": "1",
+      "reqId": "MR-2026-00024",
+      "material": "Steel Rebar 1/2\"",
+      "project": "Skyline Tower",
+      "priority": "High",
+      "status": "Pending",
+      "requestedOn": "May 19, 2026"
+    },
+    {
+      "id": "2",
+      "reqId": "MR-2026-00023",
+      "material": "Concrete 3000 PSI",
+      "project": "Skyline Tower",
+      "priority": "Medium",
+      "status": "Approved",
+      "requestedOn": "May 18, 2026"
+    },
+    {
+      "id": "3",
+      "reqId": "MR-2026-00022",
+      "material": "Sand Fine",
+      "project": "Alpha Wing",
+      "priority": "Low",
+      "status": "Approved",
+      "requestedOn": "May 17, 2026"
+    }
   ],
   "users": [
     {
       "id": "1",
-      "username": "admin",
+      "name": "Equipo Buildline",
+      "email": "admin@buildline.com",
       "password": "123",
-      "role": "gerente"
+      "role": "admin"
+    },
+    {
+      "name": "Mauricio Castillo",
+      "email": "mauscasyat@upc.edu.pe",
+      "password": "12345",
+      "role": "user",
+      "id": "15it5bB"
     }
   ],
   "purchaseOrders": [
@@ -93,16 +125,106 @@
     }
   ],
   "inventory": [
-    { "id": "1", "sku": "MR-2026-00024", "name": "Steel Rebar 1/2\"", "project": "Skyline Tower", "category": "Steel", "currentStock": 10, "minStock": 20, "lastUpdated": "2026-05-19" },
-    { "id": "2", "sku": "MR-2026-00023", "name": "Concrete 3000 PSI", "project": "Skyline Tower", "category": "Concrete", "currentStock": 50, "minStock": 20, "lastUpdated": "2026-05-18" },
-    { "id": "3", "sku": "MR-2026-00022", "name": "Cement Type I", "project": "Skyline Tower", "category": "Steel", "currentStock": 5, "minStock": 20, "lastUpdated": "2026-05-17" },
-    { "id": "4", "sku": "MR-2026-00021", "name": "Sand Fine", "project": "Skyline Tower", "category": "Aggregate", "currentStock": 100, "minStock": 20, "lastUpdated": "2026-05-17" },
-    { "id": "5", "sku": "MR-2026-00025", "name": "Electric Wire #12", "project": "Alpha Wing", "category": "Electrical", "currentStock": 0, "minStock": 50, "lastUpdated": "2026-05-16" },
-    { "id": "6", "sku": "MR-2026-00026", "name": "PVC Pipe 2\"", "project": "Alpha Wing", "category": "Plumbing", "currentStock": 0, "minStock": 30, "lastUpdated": "2026-05-16" },
-    { "id": "7", "sku": "MR-2026-00027", "name": "Safety Helmets", "project": "Beta Foundation", "category": "Equipment", "currentStock": 15, "minStock": 25, "lastUpdated": "2026-05-15" },
-    { "id": "8", "sku": "MR-2026-00028", "name": "Steel Nails (Box)", "project": "Beta Foundation", "category": "Steel", "currentStock": 80, "minStock": 10, "lastUpdated": "2026-05-14" },
-    { "id": "9", "sku": "MR-2026-00029", "name": "Gravel (Ton)", "project": "Skyline Tower", "category": "Aggregate", "currentStock": 0, "minStock": 5, "lastUpdated": "2026-05-14" },
-    { "id": "10", "sku": "MR-2026-00030", "name": "Wood Planks", "project": "Alpha Wing", "category": "Wood", "currentStock": 12, "minStock": 40, "lastUpdated": "2026-05-13" }
+    {
+      "id": "1",
+      "sku": "MR-2026-00024",
+      "name": "Steel Rebar 1/2\"",
+      "project": "Skyline Tower",
+      "category": "Steel",
+      "currentStock": 10,
+      "minStock": 20,
+      "lastUpdated": "2026-05-19"
+    },
+    {
+      "id": "2",
+      "sku": "MR-2026-00023",
+      "name": "Concrete 3000 PSI",
+      "project": "Skyline Tower",
+      "category": "Concrete",
+      "currentStock": 50,
+      "minStock": 20,
+      "lastUpdated": "2026-05-18"
+    },
+    {
+      "id": "3",
+      "sku": "MR-2026-00022",
+      "name": "Cement Type I",
+      "project": "Skyline Tower",
+      "category": "Steel",
+      "currentStock": 5,
+      "minStock": 20,
+      "lastUpdated": "2026-05-17"
+    },
+    {
+      "id": "4",
+      "sku": "MR-2026-00021",
+      "name": "Sand Fine",
+      "project": "Skyline Tower",
+      "category": "Aggregate",
+      "currentStock": 100,
+      "minStock": 20,
+      "lastUpdated": "2026-05-17"
+    },
+    {
+      "id": "5",
+      "sku": "MR-2026-00025",
+      "name": "Electric Wire #12",
+      "project": "Alpha Wing",
+      "category": "Electrical",
+      "currentStock": 0,
+      "minStock": 50,
+      "lastUpdated": "2026-05-16"
+    },
+    {
+      "id": "6",
+      "sku": "MR-2026-00026",
+      "name": "PVC Pipe 2\"",
+      "project": "Alpha Wing",
+      "category": "Plumbing",
+      "currentStock": 0,
+      "minStock": 30,
+      "lastUpdated": "2026-05-16"
+    },
+    {
+      "id": "7",
+      "sku": "MR-2026-00027",
+      "name": "Safety Helmets",
+      "project": "Beta Foundation",
+      "category": "Equipment",
+      "currentStock": 15,
+      "minStock": 25,
+      "lastUpdated": "2026-05-15"
+    },
+    {
+      "id": "8",
+      "sku": "MR-2026-00028",
+      "name": "Steel Nails (Box)",
+      "project": "Beta Foundation",
+      "category": "Steel",
+      "currentStock": 80,
+      "minStock": 10,
+      "lastUpdated": "2026-05-14"
+    },
+    {
+      "id": "9",
+      "sku": "MR-2026-00029",
+      "name": "Gravel (Ton)",
+      "project": "Skyline Tower",
+      "category": "Aggregate",
+      "currentStock": 0,
+      "minStock": 5,
+      "lastUpdated": "2026-05-14"
+    },
+    {
+      "id": "10",
+      "sku": "MR-2026-00030",
+      "name": "Wood Planks",
+      "project": "Alpha Wing",
+      "category": "Wood",
+      "currentStock": 12,
+      "minStock": 40,
+      "lastUpdated": "2026-05-13"
+    }
   ],
   "profiles": [
     {
@@ -115,13 +237,50 @@
     }
   ],
   "messages": [
-    { "id": "1", "sender": "Aceros Arequipa S.A.", "subject": "Cotización Lista", "body": "Adjuntamos la cotización solicitada.", "date": "2026-05-14", "isRead": false },
-    { "id": "2", "sender": "Juan Pérez (Residente)", "subject": "Retraso por lluvia", "body": "No pudimos hacer el vaciado hoy.", "date": "2026-05-13", "isRead": true }
+    {
+      "id": "1",
+      "sender": "Aceros Arequipa S.A.",
+      "subject": "Cotización Lista",
+      "body": "Adjuntamos la cotización solicitada.",
+      "date": "2026-05-14",
+      "isRead": false
+    },
+    {
+      "id": "2",
+      "sender": "Juan Pérez (Residente)",
+      "subject": "Retraso por lluvia",
+      "body": "No pudimos hacer el vaciado hoy.",
+      "date": "2026-05-13",
+      "isRead": true
+    }
   ],
   "budgets": [
-    { "id": "1", "project": "Skyline Tower", "totalAmount": 500000, "spentAmount": 120000, "status": "On Track" },
-    { "id": "2", "project": "Alpha Wing", "totalAmount": 250000, "spentAmount": 210000, "status": "At Risk" },
-    { "id": "3", "project": "Beta Foundation", "totalAmount": 100000, "spentAmount": 105000, "status": "Over Budget" }
+    {
+      "id": "1",
+      "project": "Skyline Tower",
+      "totalAmount": 500000,
+      "spentAmount": 120000,
+      "status": "On Track"
+    },
+    {
+      "id": "2",
+      "project": "Alpha Wing",
+      "totalAmount": 250000,
+      "spentAmount": 210000,
+      "status": "At Risk"
+    },
+    {
+      "id": "3",
+      "project": "Beta Foundation",
+      "totalAmount": 100000,
+      "spentAmount": 105000,
+      "status": "Over Budget"
+    }
+  ],
+  "incidents": [
+    { "id": "1", "title": "Late Delivery - Steel Rebar", "supplier": "Aceros Arequipa", "severity": "High", "status": "Open", "date": "2026-05-14" },
+    { "id": "2", "title": "Damaged Cement Bags", "supplier": "Cementos Sol", "severity": "Medium", "status": "Resolved", "date": "2026-05-10" },
+    { "id": "3", "title": "Incorrect Invoice Amount", "supplier": "Sodimac Constructor", "severity": "Low", "status": "In Progress", "date": "2026-05-12" }
   ],
   "quotations": []
 }

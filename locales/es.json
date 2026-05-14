@@ -121,6 +121,27 @@
     "material": "Material",
     "date": "Fecha"
   },
+  "iam": {
+    "welcome": "Bienvenido de nuevo",
+    "subtitle": "Ingresa tus credenciales para acceder.",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "remember": "Recordarme",
+    "forgot": "¿Olvidaste tu contraseña?",
+    "sign_in": "Ingresar",
+    "no_account": "¿No tienes una cuenta?",
+    "sign_up": "Regístrate"
+  },
+  "incidents": {
+  "title": "Incidentes",
+  "subtitle": "Gestiona y rastrea problemas y reclamos relacionados con proveedores.",
+  "report_new": "Reportar Incidente",
+  "issue": "Problema / Descripción",
+  "supplier": "Proveedor Relacionado",
+  "severity": "Gravedad",
+  "status": "Estado",
+  "date": "Fecha de Reporte"
+},
   "page-not-found": {
     "title": "Página no encontrada",
     "content": "La ruta {unavailable-route} no está disponible.",

@@ -2,7 +2,7 @@
   <div class="max-w-7xl mx-auto">
 
     <div class="mb-5">
-      <h1 class="text-4xl text-gray-800 font-bold m-0 mb-2">{{ $t('home.greeting') }}</h1>
+      <h1 class="text-4xl text-gray-800 font-bold m-0 mb-2">Hello, {{ iamStore.currentUser?.name || 'Team' }}</h1>
       <p class="text-gray-500 m-0">{{ $t('home.subtitle') }}</p>
     </div>
 
@@ -78,6 +78,9 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useIamStore} from "@/iam/application/iam.store.js";
+
+const iamStore = useIamStore();
 
 const modules = ref([
   { key: 'requisition', icon: 'pi-box', color: 'blue', route: '/requisition/new' },
