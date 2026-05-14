@@ -1,0 +1,143 @@
+{
+  "suppliers": [
+    {
+      "id": "1",
+      "ruc": "20100055237",
+      "companyName": "Aceros Arequipa S.A.",
+      "rating": 5,
+      "isActive": true
+    },
+    {
+      "id": "2",
+      "ruc": "20419381272",
+      "companyName": "Cementos Pacasmayo S.A.A.",
+      "rating": 4,
+      "isActive": true
+    },
+    {
+      "id": "3",
+      "ruc": "20555555555",
+      "companyName": "Distribuidora El Maestro",
+      "rating": 3,
+      "isActive": true
+    },
+    {
+      "id": "4",
+      "ruc": "10777777777",
+      "companyName": "Ferretería San Juan",
+      "rating": 2,
+      "isActive": false
+    }
+  ],
+  "materials": [
+    {
+      "id": "1",
+      "name": "Cemento Sol Tipo I",
+      "unit": "Bolsas"
+    },
+    {
+      "id": "2",
+      "name": "Fierro Corrugado 1/2\"",
+      "unit": "Varillas"
+    },
+    {
+      "id": "3",
+      "name": "Ladrillo King Kong 18 Huecos",
+      "unit": "Millares"
+    },
+    {
+      "id": "4",
+      "name": "Arena Fina",
+      "unit": "m3"
+    },
+    {
+      "id": "5",
+      "name": "Alambre Negro #16",
+      "unit": "Kg"
+    }
+  ],
+  "requisitions": [
+    { "id": "1", "reqId": "MR-2026-00024", "material": "Steel Rebar 1/2\"", "project": "Skyline Tower", "priority": "High", "status": "Pending", "requestedOn": "May 19, 2026" },
+    { "id": "2", "reqId": "MR-2026-00023", "material": "Concrete 3000 PSI", "project": "Skyline Tower", "priority": "Medium", "status": "Approved", "requestedOn": "May 18, 2026" },
+    { "id": "3", "reqId": "MR-2026-00022", "material": "Sand Fine", "project": "Alpha Wing", "priority": "Low", "status": "Approved", "requestedOn": "May 17, 2026" }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "username": "admin",
+      "password": "123",
+      "role": "gerente"
+    }
+  ],
+  "purchaseOrders": [
+    {
+      "id": "OC-1001",
+      "date": "2026-05-14",
+      "supplierName": "Aceros Arequipa S.A.",
+      "totalAmount": 14500.5,
+      "status": "Aprobada"
+    },
+    {
+      "id": "OC-1002",
+      "date": "2026-05-13",
+      "supplierName": "Cementos Pacasmayo",
+      "totalAmount": 8200,
+      "status": "Aprobada"
+    },
+    {
+      "id": "OC-1003",
+      "date": "2026-05-14",
+      "supplierName": "Distribuidora El Maestro",
+      "totalAmount": 3150.25,
+      "status": "Rechazada"
+    }
+  ],
+  "inventory": [
+    {
+      "id": "INV-001",
+      "materialName": "Cemento Sol Tipo I",
+      "category": "Aglomerantes",
+      "stock": 150,
+      "unit": "Bolsas",
+      "minStock": 50
+    },
+    {
+      "id": "INV-002",
+      "materialName": "Fierro Corrugado 1/2\"",
+      "category": "Metales",
+      "stock": 420,
+      "unit": "Varillas",
+      "minStock": 100
+    },
+    {
+      "id": "INV-003",
+      "materialName": "Ladrillo King Kong 18 Huecos",
+      "category": "Mampostería",
+      "stock": 25,
+      "unit": "Millares",
+      "minStock": 50
+    },
+    {
+      "id": "INV-004",
+      "materialName": "Arena Fina",
+      "category": "Áridos",
+      "stock": 15,
+      "unit": "m3",
+      "minStock": 10
+    }
+  ],
+  "profiles": [
+    {
+      "id": "1",
+      "companyName": "Constructora RQLS S.A.C.",
+      "ruc": "20555444333",
+      "address": "Av. Primavera 123, Surco, Lima",
+      "phone": "+51 987 654 321",
+      "email": "contacto@rqls.com"
+    }
+  ],
+  "messages": [
+    { "id": "1", "sender": "Aceros Arequipa S.A.", "subject": "Cotización Lista", "body": "Adjuntamos la cotización solicitada.", "date": "2026-05-14", "isRead": false },
+    { "id": "2", "sender": "Juan Pérez (Residente)", "subject": "Retraso por lluvia", "body": "No pudimos hacer el vaciado hoy.", "date": "2026-05-13", "isRead": true }
+  ]
+}

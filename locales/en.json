@@ -1,0 +1,79 @@
+{
+  "option": {
+    "home": "Overview",
+    "quotations": "Quotations",
+    "purchase_orders": "Purchase Orders",
+    "delivery": "Delivery & Tracking",
+    "inventory": "Inventory",
+    "suppliers": "Suppliers",
+    "incidents": "Incidents",
+    "budget": "Budget & Costs",
+    "reports": "Reports",
+    "users": "Users & Roles",
+    "settings": "Settings",
+    "logout": "Logout",
+    "view_profile": "View profile"
+  },
+  "authoring-phrase": {
+    "intro": "Made with",
+    "use": "using",
+    "author": "by RQLS Team"
+  },
+  "about": {
+    "title": "About Us",
+    "content": "Buildline is a Logistics and APU control platform for construction MYPES."
+  },
+  "home": {
+    "greeting": "Hello, RQLS Team",
+    "subtitle": "Manage your company profile and view your assigned projects.",
+    "project_name": "Project Los Pinos",
+    "location": "Location",
+    "budget": "Budget",
+    "start_date": "Start Date",
+    "status": "Status",
+    "in_progress": "In Progress",
+    "progress": "Progress",
+    "question": "What would you like to do today?"
+  },
+  "company-profile": {
+    "title": "Company Profile",
+    "subtitle": "Update your company's legal and contact information.",
+    "company_name": "Company Name",
+    "ruc": "RUC",
+    "ruc_hint": "RUC cannot be modified.",
+    "address": "Fiscal Address",
+    "phone": "Contact Phone",
+    "email": "Email Address",
+    "save": "Save Changes"
+  },
+  "communication": {
+    "title": "Messages Inbox",
+    "subtitle": "Communicate with your team and suppliers.",
+    "new": "New Message",
+    "sender": "Sender",
+    "subject": "Subject",
+    "date": "Date",
+    "actions": "Actions",
+    "send": "Send Message",
+    "cancel": "Cancel",
+    "body": "Message content"
+  },
+  "requisition": {
+    "title": "Material Requests",
+    "subtitle": "Manage and track site inventory requisitions.",
+    "new": "New Request",
+    "req_id": "Request ID",
+    "material": "Material",
+    "project": "Project",
+    "priority": "Priority",
+    "status": "Status",
+    "requested_on": "Requested On",
+    "cancel": "Cancel",
+    "submit": "Submit Request"
+  },
+  "page-not-found": {
+    "title": "Page Not Found",
+    "content": "The path {unavailable-route} is not available.",
+    "go-home": "Go Home"
+  }
+}

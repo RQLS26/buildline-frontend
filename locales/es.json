@@ -1,0 +1,79 @@
+{
+  "option": {
+    "home": "Resumen",
+    "quotations": "Cotizaciones",
+    "purchase_orders": "Órdenes de Compra",
+    "delivery": "Envíos y Rastreo",
+    "inventory": "Inventario",
+    "suppliers": "Proveedores",
+    "incidents": "Incidentes",
+    "budget": "Presupuesto y Costos",
+    "reports": "Reportes",
+    "users": "Usuarios y Roles",
+    "settings": "Configuración",
+    "logout": "Cerrar Sesión",
+    "view_profile": "Ver perfil"
+  },
+  "authoring-phrase": {
+    "intro": "Hecho con",
+    "use": "usando",
+    "author": "por el Equipo RQLS"
+  },
+  "about": {
+    "title": "Sobre Nosotros",
+    "content": "Buildline es una plataforma de control logístico y APU para MYPES constructoras."
+  },
+  "home": {
+    "greeting": "Hola, Equipo RQLS",
+    "subtitle": "Gestiona el perfil de tu empresa y revisa tus proyectos asignados.",
+    "project_name": "Proyecto Los Pinos",
+    "location": "Ubicación",
+    "budget": "Presupuesto",
+    "start_date": "Fecha de Inicio",
+    "status": "Estado",
+    "in_progress": "En Progreso",
+    "progress": "Progreso",
+    "question": "¿Qué te gustaría hacer hoy?"
+  },
+  "company-profile": {
+    "title": "Perfil de la Constructora",
+    "subtitle": "Actualiza la información legal y de contacto de tu empresa.",
+    "company_name": "Razón Social",
+    "ruc": "RUC",
+    "ruc_hint": "El RUC no puede modificarse.",
+    "address": "Dirección Fiscal",
+    "phone": "Teléfono de Contacto",
+    "email": "Correo Electrónico",
+    "save": "Guardar Cambios"
+  },
+  "communication": {
+    "title": "Bandeja de Mensajes",
+    "subtitle": "Comunícate con tu equipo de obra y proveedores.",
+    "new": "Nuevo Mensaje",
+    "sender": "Remitente",
+    "subject": "Asunto",
+    "date": "Fecha",
+    "actions": "Acciones",
+    "send": "Enviar Mensaje",
+    "cancel": "Cancelar",
+    "body": "Contenido del mensaje"
+  },
+  "requisition": {
+    "title": "Pedidos de Materiales",
+    "subtitle": "Gestiona y rastrea las solicitudes de inventario de la obra.",
+    "new": "Nuevo Pedido",
+    "req_id": "ID Pedido",
+    "material": "Material",
+    "project": "Proyecto",
+    "priority": "Prioridad",
+    "status": "Estado",
+    "requested_on": "Fecha Solicitud",
+    "cancel": "Cancelar",
+    "submit": "Enviar Pedido"
+  },
+  "page-not-found": {
+    "title": "Página no encontrada",
+    "content": "La ruta {unavailable-route} no está disponible.",
+    "go-home": "Volver al Inicio"
+  }
+}
