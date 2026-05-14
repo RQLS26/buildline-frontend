@@ -158,6 +158,15 @@
     "change_pass": "Cambiar Contraseña",
     "save_changes": "Guardar Cambios"
   },
+  "reports": {
+    "title": "Reportes del Sistema",
+    "subtitle": "Genera y exporta resúmenes de documentos en PDF.",
+    "inventory_report": "Reporte de Inventario",
+    "generate_pdf": "Descargar PDF",
+    "preview": "Vista Previa del Reporte",
+    "items": "Ítems Totales",
+    "value": "Valor de Inventario"
+  },
   "page-not-found": {
     "title": "Página no encontrada",
     "content": "La ruta {unavailable-route} no está disponible.",

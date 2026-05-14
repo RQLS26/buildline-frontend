@@ -1,17 +1,20 @@
 {
   "name": "tb1",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "author": "buildline",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "vite-dev": "vite",
+    "server": "json-server --watch server/db.json --port 3000",
+    "dev": "concurrently \"npm run server\" \"npm run vite-dev\"",
     "build": "vite build",
-    "preview": "vite preview",
-    "server": "json-server --watch server/db.json --port 3000 --routes server/routes.json"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@primeuix/themes": "^2.0.3",
     "axios": "^1.16.1",
+    "html2pdf.js": "^0.14.0",
     "pinia": "^3.0.4",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",

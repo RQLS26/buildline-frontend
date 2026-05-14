@@ -25,7 +25,9 @@
             <pv-checkbox id="remember" v-model="rememberMe" :binary="true" />
             <label for="remember" class="text-gray-600 text-sm font-medium cursor-pointer">{{ $t('iam.remember') }}</label>
           </div>
-          <a class="font-bold no-underline text-primary text-sm cursor-pointer hover:underline">{{ $t('iam.forgot') }}</a>
+          <a class="font-bold no-underline text-primary text-sm cursor-pointer hover:underline" @click="$router.push('/iam/forgot-password')">
+            {{ $t('iam.forgot') }}
+          </a>
         </div>
 
         <div v-if="store.error" class="text-red-500 text-sm font-bold text-center mb-3">

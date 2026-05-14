@@ -12,61 +12,67 @@
           <li>
             <router-link to="/home" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-th-large text-base"></i>
-              <span class="text-sm">{{ $t('option.home') }}</span>
+              <span class="text-sm">Overview</span>
             </router-link>
           </li>
           <li>
             <router-link to="/procurement/quotations" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-file text-base"></i>
-              <span class="text-sm">{{ $t('option.quotations') }}</span>
+              <span class="text-sm">Quotations</span>
             </router-link>
           </li>
           <li>
             <router-link to="/procurement/inbox" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-dollar text-base"></i>
-              <span class="text-sm">{{ $t('option.purchase_orders') }}</span>
+              <span class="text-sm">Purchase Orders</span>
             </router-link>
           </li>
           <li>
             <router-link to="/inventory/list" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-box text-base"></i>
-              <span class="text-sm">{{ $t('option.inventory') }}</span>
+              <span class="text-sm">Inventory</span>
             </router-link>
           </li>
           <li>
             <router-link to="/suppliers/directory" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-users text-base"></i>
-              <span class="text-sm">{{ $t('option.suppliers') }}</span>
+              <span class="text-sm">Suppliers</span>
             </router-link>
           </li>
           <li>
             <router-link to="/suppliers/incidents" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-exclamation-triangle text-base"></i>
-              <span class="text-sm">{{ $t('option.incidents') }}</span>
+              <span class="text-sm">Incidents</span>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/communication/messages" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
+              <i class="pi pi-comments text-base"></i>
+              <span class="text-sm">Communication</span>
             </router-link>
           </li>
           <li>
             <router-link to="/budget" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-chart-line text-base"></i>
-              <span class="text-sm">{{ $t('option.budget') }}</span>
+              <span class="text-sm">Budget & Costs</span>
             </router-link>
           </li>
           <li>
             <router-link to="/reports" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-file-excel text-base"></i>
-              <span class="text-sm">{{ $t('option.reports') }}</span>
+              <span class="text-sm">Reports</span>
             </router-link>
           </li>
           <li>
             <router-link to="/profiles/company" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-id-card text-base"></i>
-              <span class="text-sm">{{ $t('option.users') }}</span>
+              <span class="text-sm">Users & Roles</span>
             </router-link>
           </li>
           <li>
             <router-link to="/settings" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-cog text-base"></i>
-              <span class="text-sm">{{ $t('option.settings') }}</span>
+              <span class="text-sm">Settings</span>
             </router-link>
           </li>
         </ul>
@@ -113,7 +119,7 @@
           <div class="w-18rem mr-2">
             <pv-icon-field iconPosition="left">
               <pv-input-icon class="pi pi-search text-gray-400" />
-              <pv-input-text placeholder="Search here..." class="w-full bg-gray-50 border-1 border-gray-200 border-round-3xl py-2 text-sm" />
+              <pv-input-text v-model="globalSearch" @keyup.enter="executeSearch" placeholder="Search inventory..." class="w-full bg-gray-50 border-1 border-gray-200 border-round-3xl py-2 text-sm" />
             </pv-icon-field>
           </div>
           <i class="pi pi-bell text-gray-500 text-xl cursor-pointer hover:text-primary transition-colors"></i>
@@ -192,10 +198,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import LanguageSwitcher from './language-switcher.vue';
-import { useIamStore} from "@/iam/application/iam.store.js";
+import { useIamStore } from "@/iam/application/iam.store.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -206,6 +212,15 @@ const isIamRoute = computed(() => route.path.startsWith('/iam'));
 const currentDate = computed(() => {
   return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 });
+
+const globalSearch = ref('');
+
+const executeSearch = () => {
+  if (globalSearch.value.trim() !== '') {
+    router.push('/inventory/list');
+    globalSearch.value = '';
+  }
+};
 
 const handleLogout = () => {
   iamStore.logout();

@@ -28,6 +28,12 @@ const routes = [
     { path: '/communication', name: 'communication', children: communicationRoutes },
     { path: '/budget', name: 'budget', children: analyticsRoutes },
     { path: '/settings', name: 'settings', component: () => import('../shared/presentation/views/settings.vue'), meta: { title: 'Settings' } },
+    {
+        path: '/reports',
+        name: 'reports',
+        component: () => import('./analytics-budgeting/presentation/views/reports.vue'),
+        meta: { title: 'Reports' }
+    },
 ];
 
 const router = createRouter({

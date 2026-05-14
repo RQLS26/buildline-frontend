@@ -158,6 +158,15 @@
     "change_pass": "Change Password",
     "save_changes": "Save Changes"
   },
+  "reports": {
+    "title": "System Reports",
+    "subtitle": "Generate and export document summaries in PDF.",
+    "inventory_report": "Inventory Report",
+    "generate_pdf": "Download PDF",
+    "preview": "Report Preview",
+    "items": "Total Items",
+    "value": "Inventory Value"
+  },
   "page-not-found": {
     "title": "Page Not Found",
     "content": "The path {unavailable-route} is not available.",
