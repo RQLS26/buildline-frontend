@@ -71,6 +71,56 @@
     "cancel": "Cancelar",
     "submit": "Enviar Pedido"
   },
+  "quotations": {
+    "title": "Cotizaciones",
+    "subtitle": "Pedidos de Materiales",
+    "generate_title": "Generar Solicitud de Cotización",
+    "request_id": "ID del Pedido",
+    "select_suppliers": "Seleccionar Proveedores *",
+    "message": "Mensaje",
+    "message_placeholder": "Por favor, provea su mejor cotización para el siguiente material...",
+    "attach_details": "Adjuntar Detalles",
+    "include_specs": "Incluir especificaciones técnicas",
+    "send": "Enviar Solicitud"
+  },
+  "suppliers": {
+    "title": "Directorio de Proveedores",
+    "subtitle": "Gestiona tu red de proveedores de materiales de confianza.",
+    "add_new": "Agregar Proveedor",
+    "company": "Razón Social",
+    "contact": "Nombre del Contacto",
+    "email": "Correo",
+    "phone": "Teléfono",
+    "rating": "Calificación",
+    "save": "Guardar Proveedor",
+    "cancel": "Cancelar"
+  },
+  "budget": {
+    "title": "Presupuesto y Costos",
+    "subtitle": "Rastrea los gastos y la salud financiera de tus proyectos.",
+    "total": "Presupuesto Total",
+    "spent": "Total Gastado",
+    "remaining": "Restante",
+    "project": "Proyecto",
+    "status": "Estado Financiero",
+    "actions": "Acciones"
+  },
+  "inventory": {
+    "title": "Inventario",
+    "project": "Proyecto",
+    "status": "Estado",
+    "category": "Categoría",
+    "date_from": "Fecha desde",
+    "date_to": "Fecha hasta",
+    "clear_filters": "Limpiar filtros",
+    "all": "Todos",
+    "in_stock": "En Stock",
+    "low_stock": "Stock Bajo",
+    "out_of_stock": "Sin Stock",
+    "item_id": "ID Artículo",
+    "material": "Material",
+    "date": "Fecha"
+  },
   "page-not-found": {
     "title": "Página no encontrada",
     "content": "La ruta {unavailable-route} no está disponible.",

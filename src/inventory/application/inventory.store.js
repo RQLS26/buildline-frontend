@@ -1,29 +1,24 @@
 import { defineStore } from 'pinia';
-import { InventoryApi } from '../infrastructure/inventory-api.js';
+import axios from 'axios';
+
+const api = axios.create({ baseURL: 'http://localhost:3000/api/v1' });
 
 export const useInventoryStore = defineStore('inventory', {
     state: () => ({
-        items: [],
+        inventoryList: [],
         isLoading: false
     }),
     actions: {
         async fetchInventory() {
             this.isLoading = true;
             try {
-                const api = new InventoryApi();
-                const response = await api.getInventoryItems();
-                this.items = response.data;
+                const response = await api.get('/inventory');
+                this.inventoryList = response.data;
             } catch (error) {
-                console.error('Error cargando el inventario:', error);
+                console.error("Error cargando inventario:", error);
             } finally {
                 this.isLoading = false;
             }
-        }
-    },
-    getters: {
-        // Getter para calcular si un material está con stock bajo (crítico para la constructora)
-        lowStockItems: (state) => {
-            return state.items.filter(item => item.stock <= item.minStock);
         }
     }
 });

@@ -15,12 +15,20 @@ import DialogService from 'primevue/dialogservice'
 import {
     Button, Card, Checkbox, Column, ConfirmDialog, DataTable, Dialog, Drawer,
     FileUpload, FloatLabel, IconField, InputIcon, InputNumber, InputText,
-    Menu, Rating, Row, Select, SelectButton, Tag, Toast, Textarea, Toolbar, Tooltip
+    Menu, Rating, Row, Select, SelectButton, Tag, Toast, Textarea, Toolbar, Tooltip, MultiSelect
 } from "primevue"
 
 createApp(App)
     .use(i18n)
-    .use(PrimeVue, {theme: {preset: Material}, ripple:true})
+    .use(PrimeVue, {
+        theme: {
+            preset: Material,
+            options: {
+                darkModeSelector: '.app-dark-mode'
+            }
+        },
+        ripple: true
+    })
     .use(ConfirmationService)
     .use(DialogService)
     .use(ToastService)
@@ -48,6 +56,7 @@ createApp(App)
     .component('pv-textarea', Textarea)
     .component('pv-toolbar', Toolbar)
     .component('pv-tooltip', Tooltip)
+    .component('pv-multi-select', MultiSelect)
     .use(router)
     .use(pinia)
     .mount('#app')

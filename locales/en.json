@@ -71,6 +71,56 @@
     "cancel": "Cancel",
     "submit": "Submit Request"
   },
+  "quotations": {
+    "title": "Quotations",
+    "subtitle": "Material Requests",
+    "generate_title": "Generate Quotation Request",
+    "request_id": "Request ID",
+    "select_suppliers": "Select Suppliers *",
+    "message": "Message",
+    "message_placeholder": "Please provide your best quotation for the following material...",
+    "attach_details": "Attach Request Details",
+    "include_specs": "Include technical specifications",
+    "send": "Send Request"
+  },
+  "suppliers": {
+    "title": "Suppliers Directory",
+    "subtitle": "Manage your trusted network of material providers.",
+    "add_new": "Add Supplier",
+    "company": "Company Name",
+    "contact": "Contact Name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "rating": "Rating",
+    "save": "Save Supplier",
+    "cancel": "Cancel"
+  },
+  "budget": {
+    "title": "Budget & Costs",
+    "subtitle": "Track your project expenses and financial health.",
+    "total": "Total Budget",
+    "spent": "Total Spent",
+    "remaining": "Remaining",
+    "project": "Project",
+    "status": "Financial Status",
+    "actions": "Actions"
+  },
+  "inventory": {
+    "title": "Inventory",
+    "project": "Project",
+    "status": "Status",
+    "category": "Category",
+    "date_from": "Date from",
+    "date_to": "Date to",
+    "clear_filters": "Clear filters",
+    "all": "All",
+    "in_stock": "In Stock",
+    "low_stock": "Low Stock",
+    "out_of_stock": "Out of Stock",
+    "item_id": "Item ID",
+    "material": "Material",
+    "date": "Date"
+  },
   "page-not-found": {
     "title": "Page Not Found",
     "content": "The path {unavailable-route} is not available.",
