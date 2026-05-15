@@ -57,13 +57,13 @@
     <div>
       <h3 class="text-xl text-gray-800 font-bold mt-0 mb-3">Quick Access Modules</h3>
       <div class="grid">
-        <div class="col-12 sm:col-6 md:col-4 lg:col-2" v-for="module in modules" :key="module.name">
+        <div class="col-12 sm:col-6 md:col-4 lg:col-2" v-for="module in modules" :key="module.key">
           <div class="bg-white p-4 border-round-2xl shadow-1 hover:shadow-3 transition-all cursor-pointer flex flex-column align-items-center justify-content-center gap-3 h-full border-1 border-transparent hover:border-primary"
                @click="$router.push(module.route)">
             <div :class="`bg-${module.color}-100 text-${module.color}-600 border-circle flex align-items-center justify-content-center`" style="width: 60px; height: 60px;">
               <i :class="['pi', module.icon, 'text-3xl']"></i>
             </div>
-            <span class="font-bold text-gray-800 text-sm text-center">{{ module.name }}</span>
+            <span class="font-bold text-gray-800 text-sm text-center">{{ $t(`option.${module.key}`) }}</span>
           </div>
         </div>
       </div>
@@ -90,11 +90,11 @@ onMounted(async () => {
 });
 
 const modules = ref([
-  { name: 'Purchase Orders', icon: 'pi-shopping-cart', color: 'teal', route: '/procurement/inbox' },
-  { name: 'Inventory', icon: 'pi-clone', color: 'orange', route: '/inventory/list' },
-  { name: 'Suppliers', icon: 'pi-users', color: 'indigo', route: '/suppliers/directory' },
-  { name: 'Incidents', icon: 'pi-exclamation-triangle', color: 'red', route: '/suppliers/incidents' },
-  { name: 'Reports', icon: 'pi-chart-bar', color: 'purple', route: '/reports' },
-  { name: 'Communication', icon: 'pi-comments', color: 'green', route: '/communication/messages' }
+  { key: 'purchase_orders', icon: 'pi-shopping-cart', color: 'teal', route: '/procurement/inbox' },
+  { key: 'inventory', icon: 'pi-clone', color: 'orange', route: '/inventory/list' },
+  { key: 'suppliers', icon: 'pi-users', color: 'indigo', route: '/suppliers/directory' },
+  { key: 'incidents', icon: 'pi-exclamation-triangle', color: 'red', route: '/suppliers/incidents' },
+  { key: 'reports', icon: 'pi-chart-bar', color: 'purple', route: '/reports' },
+  { key: 'communication', icon: 'pi-comments', color: 'green', route: '/communication/messages' }
 ]);
 </script>

@@ -3,107 +3,64 @@
     "home": "Overview",
     "quotations": "Quotations",
     "purchase_orders": "Purchase Orders",
-    "delivery": "Delivery & Tracking",
     "inventory": "Inventory",
     "suppliers": "Suppliers",
     "incidents": "Incidents",
+    "communication": "Communication",
     "budget": "Budget & Costs",
     "reports": "Reports",
     "users": "Users & Roles",
     "settings": "Settings",
-    "logout": "Logout",
-    "view_profile": "View profile"
+    "analytics": "Analytics"
   },
-  "authoring-phrase": {
-    "intro": "Made with",
-    "use": "using",
-    "author": "by RQLS Team"
-  },
-  "about": {
-    "title": "About Us",
-    "content": "Buildline is a Logistics and APU control platform for construction MYPES."
+  "footer": {
+    "product": "Product",
+    "support": "Support",
+    "resources": "Resources",
+    "rights": "All rights reserved.",
+    "authors": "Authors"
   },
   "home": {
-    "greeting": "Hello, RQLS Team",
+    "greeting": "Hello",
     "subtitle": "Manage your company profile and view your assigned projects.",
-    "project_name": "Project Los Pinos",
+    "project_name": "Assigned Project",
     "location": "Location",
     "budget": "Budget",
     "start_date": "Start Date",
     "status": "Status",
     "in_progress": "In Progress",
     "progress": "Progress",
-    "question": "What would you like to do today?"
-  },
-  "company-profile": {
-    "title": "Company Profile",
-    "subtitle": "Update your company's legal and contact information.",
-    "company_name": "Company Name",
-    "ruc": "RUC",
-    "ruc_hint": "RUC cannot be modified.",
-    "address": "Fiscal Address",
-    "phone": "Contact Phone",
-    "email": "Email Address",
-    "save": "Save Changes"
-  },
-  "communication": {
-    "title": "Messages Inbox",
-    "subtitle": "Communicate with your team and suppliers.",
-    "new": "New Message",
-    "sender": "Sender",
-    "subject": "Subject",
-    "date": "Date",
-    "actions": "Actions",
-    "send": "Send Message",
-    "cancel": "Cancel",
-    "body": "Message content"
-  },
-  "requisition": {
-    "title": "Material Requests",
-    "subtitle": "Manage and track site inventory requisitions.",
-    "new": "New Request",
-    "req_id": "Request ID",
-    "material": "Material",
-    "project": "Project",
-    "priority": "Priority",
-    "status": "Status",
-    "requested_on": "Requested On",
-    "cancel": "Cancel",
-    "submit": "Submit Request"
-  },
-  "quotations": {
-    "title": "Quotations",
-    "subtitle": "Material Requests",
-    "generate_title": "Generate Quotation Request",
-    "request_id": "Request ID",
-    "select_suppliers": "Select Suppliers *",
-    "message": "Message",
-    "message_placeholder": "Please provide your best quotation for the following material...",
-    "attach_details": "Attach Request Details",
-    "include_specs": "Include technical specifications",
-    "send": "Send Request"
+    "question": "What would you like to do today?",
+    "your_projects": "Your Projects",
+    "quick_access": "Quick Access Modules"
   },
   "suppliers": {
     "title": "Suppliers Directory",
     "subtitle": "Manage your trusted network of material providers.",
     "add_new": "Add Supplier",
-    "company": "Company Name",
-    "contact": "Contact Name",
-    "email": "Email",
-    "phone": "Phone Number",
+    "ruc": "RUC",
+    "business_name": "Business Name",
     "rating": "Rating",
-    "save": "Save Supplier",
-    "cancel": "Cancel"
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "inactive": "Inactive"
   },
-  "budget": {
-    "title": "Budget & Costs",
-    "subtitle": "Track your project expenses and financial health.",
-    "total": "Total Budget",
-    "spent": "Total Spent",
-    "remaining": "Remaining",
-    "project": "Project",
-    "status": "Financial Status",
-    "actions": "Actions"
+  "incidents": {
+    "title": "Incidents",
+    "subtitle": "Manage and track supplier-related issues and claims.",
+    "report_new": "Report Incident",
+    "issue": "Issue / Description",
+    "supplier": "Related Supplier",
+    "severity": "Severity",
+    "status": "Status",
+    "date": "Reported Date",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "resolved": "Resolved",
+    "in_progress": "In Progress",
+    "open": "Open"
   },
   "inventory": {
     "title": "Inventory",
@@ -121,27 +78,6 @@
     "material": "Material",
     "date": "Date"
   },
-  "iam": {
-    "welcome": "Welcome Back",
-    "subtitle": "Please enter your details to sign in.",
-    "email": "Email Address",
-    "password": "Password",
-    "remember": "Remember me",
-    "forgot": "Forgot Password?",
-    "sign_in": "Sign In",
-    "no_account": "Don't have an account?",
-    "sign_up": "Sign Up"
-  },
-  "incidents": {
-    "title": "Incidents",
-    "subtitle": "Manage and track supplier-related issues and claims.",
-    "report_new": "Report Incident",
-    "issue": "Issue / Description",
-    "supplier": "Related Supplier",
-    "severity": "Severity",
-    "status": "Status",
-    "date": "Reported Date"
-  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your account preferences and system configuration.",
@@ -158,6 +94,31 @@
     "change_pass": "Change Password",
     "save_changes": "Save Changes"
   },
+  "iam": {
+    "welcome": "Welcome Back",
+    "subtitle": "Please enter your details to sign in.",
+    "email": "Email Address",
+    "password": "Password",
+    "remember": "Remember me",
+    "forgot": "Forgot Password?",
+    "sign_in": "Sign In",
+    "no_account": "Don't have an account?",
+    "sign_up": "Sign Up",
+    "back": "Back to login",
+    "reset_title": "Forgot Password?",
+    "reset_subtitle": "Enter your email address to reset your password."
+  },
+  "company-profile": {
+    "title": "Company Profile",
+    "subtitle": "Update your company's legal and contact information.",
+    "company_name": "Company Name",
+    "ruc": "RUC",
+    "ruc_hint": "RUC cannot be modified.",
+    "address": "Fiscal Address",
+    "phone": "Contact Phone",
+    "email": "Email Address",
+    "save": "Save Changes"
+  },
   "reports": {
     "title": "System Reports",
     "subtitle": "Generate and export document summaries in PDF.",
@@ -169,7 +130,7 @@
   },
   "page-not-found": {
     "title": "Page Not Found",
-    "content": "The path {unavailable-route} is not available.",
+    "content": "The path is not available.",
     "go-home": "Go Home"
   }
 }

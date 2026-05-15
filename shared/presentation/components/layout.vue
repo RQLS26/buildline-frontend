@@ -12,67 +12,67 @@
           <li>
             <router-link to="/home" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-th-large text-base"></i>
-              <span class="text-sm">Overview</span>
+              <span class="text-sm">{{ $t('option.home') }}</span>
             </router-link>
           </li>
           <li>
             <router-link to="/procurement/quotations" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-file text-base"></i>
-              <span class="text-sm">Quotations</span>
+              <span class="text-sm">{{ $t('option.quotations') }}</span>
             </router-link>
           </li>
           <li>
             <router-link to="/procurement/inbox" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-dollar text-base"></i>
-              <span class="text-sm">Purchase Orders</span>
+              <span class="text-sm">{{ $t('option.purchase_orders') }}</span>
             </router-link>
           </li>
           <li>
             <router-link to="/inventory/list" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-box text-base"></i>
-              <span class="text-sm">Inventory</span>
+              <span class="text-sm">{{ $t('option.inventory') }}</span>
             </router-link>
           </li>
           <li>
             <router-link to="/suppliers/directory" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-users text-base"></i>
-              <span class="text-sm">Suppliers</span>
+              <span class="text-sm">{{ $t('option.suppliers') }}</span>
             </router-link>
           </li>
           <li>
             <router-link to="/suppliers/incidents" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-exclamation-triangle text-base"></i>
-              <span class="text-sm">Incidents</span>
+              <span class="text-sm">{{ $t('option.incidents') }}</span>
             </router-link>
           </li>
           <li>
             <router-link to="/communication/messages" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-comments text-base"></i>
-              <span class="text-sm">Communication</span>
+              <span class="text-sm">{{ $t('option.communication') }}</span>
             </router-link>
           </li>
           <li>
             <router-link to="/budget" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-chart-line text-base"></i>
-              <span class="text-sm">Budget & Costs</span>
+              <span class="text-sm">{{ $t('option.budget') }}</span>
             </router-link>
           </li>
           <li>
             <router-link to="/reports" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-file-excel text-base"></i>
-              <span class="text-sm">Reports</span>
+              <span class="text-sm">{{ $t('option.reports') }}</span>
             </router-link>
           </li>
           <li>
             <router-link to="/profiles/company" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-id-card text-base"></i>
-              <span class="text-sm">Users & Roles</span>
+              <span class="text-sm">{{ $t('option.users') }}</span>
             </router-link>
           </li>
           <li>
             <router-link to="/settings" class="flex align-items-center gap-3 px-3 py-2 border-round-md text-gray-400 text-decoration-none transition-colors hover:text-white" active-class="active-menu-item font-medium">
               <i class="pi pi-cog text-base"></i>
-              <span class="text-sm">Settings</span>
+              <span class="text-sm">{{ $t('option.settings') }}</span>
             </router-link>
           </li>
         </ul>
