@@ -1,39 +1,52 @@
-# tb1
+# Buildline Digital Construction Logistics - Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Welcome to the frontend repository for **Buildline v1.0.0**. This project is a comprehensive enterprise dashboard built to manage digital construction logistics, procurement, material requisitions, deliveries, and analytics.
 
-## Recommended IDE Setup
+It is built adhering to **Domain-Driven Design (DDD)** principles.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## 🚀 Tech Stack
+- **Framework:** Vue 3
+- **Build Tool:** Vite
+- **State Management:** Pinia
+- **HTTP Client:** Axios
+- **Mock Backend:** JSON Server (REST API)
 
-## Recommended Browser Setup
+## 📁 Project Structure (DDD)
+The project is strictly separated into Bounded Contexts to maintain scalability and clean architecture:
+- `/iam` - Identity and Access Management
+- `/procurement` - Purchase Orders and Procurement logic
+- `/requisition` - Material Requests and Inventory needs
+- `/inventory` - Stock Control
+- `/analytics-budgeting` - Project Budgets and Reports
+- `/suppliers` - Suppliers Directory and Incident Management
+- `/delivery` - Delivery and Tracking
+- `/communication` - Internal Messaging and Notifications
+- `/shared` - Core Infrastructure, Layouts, and Common UI Components
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## ⚙️ Local Development Setup
 
-## Customize configuration
+1. **Install Dependencies**
+   ```sh
+   npm install
+   ```
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+2. **Run the Development Server**
+   To run both the Vite frontend and the mock JSON server simultaneously:
+   ```sh
+   npm run dev
+   ```
 
-## Project Setup
+   *Note: By default, the application connects to the local JSON Server (`localhost:3000`). If you wish to connect your local environment to the production backend, create an `.env` file at the root with `VITE_API_BASE_URL=https://<your-render-url>/`.*
 
-```sh
-npm install
-```
+3. **Build for Production**
+   ```sh
+   npm run build
+   ```
 
-### Compile and Hot-Reload for Development
+## ☁️ Deployment
 
-```sh
-npm run dev
-```
+- **Frontend:** Deployed as a Single Page Application (SPA) on **Vercel**.
+- **Backend (Mock):** The `server/db.json` is deployed separately as a Node.js web service on **Render**. See `server/README.md` for more details.
 
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-# Frontend
+## 🏷️ Release v1.0.0
+This marks the first stable production release integrating all core operational modules, responsive dashboards, and cloud deployment ready for final presentation.
