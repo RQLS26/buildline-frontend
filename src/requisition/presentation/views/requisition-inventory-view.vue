@@ -108,7 +108,7 @@ const tabs = [
 
 const fetchRequests = async () => {
   try {
-    const response = await fetch(((import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000') + '/requests'));
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:3000'}/requisitions`);
     requests.value = await response.json();
   } catch (error) {
     // Fallback data if server is not running
