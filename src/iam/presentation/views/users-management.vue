@@ -198,7 +198,7 @@ const createUser = async () => {
   };
   try {
     const axios = (await import('axios')).default;
-    await axios.post('http://localhost:3000/users', userData);
+    await axios.post(((import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000') + '/users'), userData);
     await iamStore.fetchAllUsers();
     showDialog.value = false;
     newUser.value = { name: '', email: '', password: '', department: null };
