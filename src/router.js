@@ -18,6 +18,7 @@ import deliveryRoutes from './delivery/presentation/delivery-routes.js';
 
 import { useIamStore } from './iam/application/iam.store.js';
 
+const pageNotFound = () => import('./shared/presentation/views/page-not-found.vue');
 const accessDenied = () => import('./shared/presentation/views/access-denied.vue');
 
 const routes = [
@@ -27,6 +28,7 @@ const routes = [
     { path: '/iam', name: 'iam', children: iamRoutes },
     { path: '/', redirect: '/iam/sign-in' },
     { path: '/access-denied', name: 'access-denied', component: accessDenied, meta: { title: 'Access Denied' } },
+    { path: '/:pathMatch(.*)*', name: 'not-found', component: pageNotFound, meta: { title: 'Page Not Found' } },
     { path: '/requisition', name: 'requisition', children: requisitionRoutes },
     { path: '/suppliers', name: 'suppliers', children: suppliersRoutes },
     { path: '/procurement', name: 'procurement', children: procurementRoutes },
