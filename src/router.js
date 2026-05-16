@@ -1,5 +1,11 @@
+/**
+ * Application Router
+ * @description Central route configuration for the Buildline platform.
+ *              Aggregates routes from all bounded contexts.
+ * @author RQLS TEAM
+ */
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from "../shared/presentation/views/home.vue";
+import DashboardShell from "./shared/presentation/views/dashboard-shell.vue";
 import iamRoutes from './iam/presentation/iam-routes.js';
 import requisitionRoutes from './requisition/presentation/requisition-routes.js';
 import suppliersRoutes from './suppliers/presentation/suppliers-routes.js';
@@ -8,17 +14,22 @@ import inventoryRoutes from './inventory/presentation/inventory-routes.js';
 import profilesRoutes from './profiles/presentation/profiles-routes.js';
 import communicationRoutes from './communication/presentation/communication-routes.js';
 import analyticsRoutes from './analytics-budgeting/presentation/analytics-routes.js';
+import deliveryRoutes from './delivery/presentation/delivery-routes.js';
 
 import { useIamStore } from './iam/application/iam.store.js';
 
-const about = () => import('../shared/presentation/views/about.vue');
-const pageNotFound = () => import('../shared/presentation/views/page-not-found.vue');
+const about = () => import('./shared/presentation/views/about.vue');
+const pageNotFound = () => import('./shared/presentation/views/page-not-found.vue');
+const accessDenied = () => import('./shared/presentation/views/access-denied.vue');
 
 const routes = [
-    { path: '/home', name: 'home', component: Home, meta: { title: 'Home' } },
+    { path: '/home', name: 'home', component: DashboardShell, meta: { title: 'Overview' } },
     { path: '/about', name: 'about', component: about, meta: { title: 'About' } },
+    { path: '/delivery', name: 'delivery', component: () => import('./delivery/presentation/views/delivery-tracking.vue'), meta: { title: 'Delivery & Tracking' } },
+    { path: '/users', name: 'users', component: () => import('./iam/presentation/views/users-management.vue'), meta: { title: 'Users & Roles', requiresAdmin: true } },
     { path: '/iam', name: 'iam', children: iamRoutes },
-    { path: '/', redirect: '/iam/sign-in' }, // Si entras a la raíz, te manda al login
+    { path: '/', redirect: '/iam/sign-in' },
+    { path: '/access-denied', name: 'access-denied', component: accessDenied, meta: { title: 'Access Denied' } },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: pageNotFound, meta: { title: 'Page Not Found' } },
     { path: '/requisition', name: 'requisition', children: requisitionRoutes },
     { path: '/suppliers', name: 'suppliers', children: suppliersRoutes },
@@ -27,7 +38,7 @@ const routes = [
     { path: '/profiles', name: 'profiles', children: profilesRoutes },
     { path: '/communication', name: 'communication', children: communicationRoutes },
     { path: '/budget', name: 'budget', children: analyticsRoutes },
-    { path: '/settings', name: 'settings', component: () => import('../shared/presentation/views/settings.vue'), meta: { title: 'Settings' } },
+    { path: '/settings', name: 'settings', component: () => import('./shared/presentation/views/settings.vue'), meta: { title: 'Settings' } },
     {
         path: '/reports',
         name: 'reports',
@@ -36,12 +47,20 @@ const routes = [
     },
 ];
 
+/**
+ * @summary Creates the Vue Router instance with HTML5 history mode.
+ */
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: routes
 });
 
-router.beforeEach((to, from, next) => {
+/**
+ * @summary Global navigation guard for authentication and role-based access control.
+ * @description Redirects unauthenticated users to sign-in, authenticated users away from
+ *              public routes, and non-admin users away from admin-only routes.
+ */
+router.beforeEach((to) => {
     let baseTitle = 'Buildline';
     document.title = `${baseTitle} - ${to.meta['title'] || 'App'}`;
 
@@ -50,14 +69,16 @@ router.beforeEach((to, from, next) => {
     const isPublicRoute = to.path.startsWith('/iam');
 
     if (!isPublicRoute && !store.isAuthenticated) {
-        next('/iam/sign-in');
+        return '/iam/sign-in';
     }
-    else if (isPublicRoute && store.isAuthenticated) {
-        next('/home');
+    if (isPublicRoute && store.isAuthenticated) {
+        return '/home';
     }
-    else {
-        next();
+    if (to.meta.requiresAdmin && !store.isAdmin) {
+        return '/access-denied';
     }
+    // Allow navigation
+    return true;
 });
 
 export default router;

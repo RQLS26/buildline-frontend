@@ -1,3 +1,8 @@
+/**
+ * Requisition Store
+ * @description Pinia store for material requisition requests and inventory operations.
+ * @author RQLS TEAM
+ */
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
@@ -8,15 +13,20 @@ export const useRequisitionStore = defineStore('requisition', {
         requests: [],
         isLoading: false
     }),
+    getters: {
+        pendingRequests: (state) => state.requests.filter(r => r.status === 'Pending'),
+        approvedRequests: (state) => state.requests.filter(r => r.status === 'Approved'),
+        rejectedRequests: (state) => state.requests.filter(r => r.status === 'Rejected'),
+        highPriorityPending: (state) => state.requests.filter(r => r.status === 'Pending' && r.priority === 'High'),
+    },
     actions: {
         async fetchRequests() {
             this.isLoading = true;
             try {
                 const response = await api.get('/requisitions');
-                // Ordenamos para que los más recientes salgan primero
                 this.requests = response.data.sort((a, b) => b.id - a.id);
             } catch (error) {
-                console.error("Error cargando pedidos:", error);
+                console.error("Error loading requests:", error);
             } finally {
                 this.isLoading = false;
             }
@@ -27,7 +37,7 @@ export const useRequisitionStore = defineStore('requisition', {
                 await this.fetchRequests();
                 return true;
             } catch (error) {
-                console.error("Error creando pedido:", error);
+                console.error("Error creating request:", error);
                 return false;
             }
         }

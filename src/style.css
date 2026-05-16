@@ -1,9 +1,124 @@
 @import "primeflex/primeflex.css";
 @import "primeicons/primeicons.css";
 
+:root {
+    --primary-color: #4338CA;
+    --secondary-color: #F29124;
+    --surface-ground: #F8FAFC;
+    --font-family: 'Inter', 'Outfit', sans-serif;
+    --card-border-radius: 36px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     padding: 0;
-    font-family: var(--font-family);
+    font-family: var(--font-family) !important;
     background-color: var(--surface-ground);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Global DataTable Styles for Buildline */
+.buildline-datatable .p-datatable-thead > tr > th {
+    background: transparent !important;
+    color: #64748B !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    border: none !important;
+    border-bottom: 1px solid #F1F5F9 !important;
+    padding: 14px 24px !important;
+}
+
+.buildline-datatable .p-datatable-tbody > tr > td {
+    color: #374151 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    border: none !important;
+    border-bottom: 1px solid #F8FAFC !important;
+    padding: 14px 24px !important;
+}
+
+.buildline-datatable .p-datatable-tbody > tr:last-child > td {
+    border-bottom: none !important;
+}
+
+.buildline-datatable .p-datatable-tbody > tr:hover > td {
+    background: #FAFBFC !important;
+}
+
+.buildline-datatable {
+    border: none !important;
+}
+
+.buildline-datatable .p-datatable-wrapper {
+    border: none !important;
+    border-radius: var(--border-radius-md);
+}
+
+.clear-btn {
+    color: #4F679B !important;
+    border-color: #E2E8F0 !important;
+}
+
+.priority-badge,
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px !important;
+    border-radius: 4px !important;
+    text-align: center;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+}
+
+.priority-high {
+    background-color: #FEECEB !important;
+    color: #E02424 !important;
+    border: none !important;
+}
+
+.priority-medium {
+    background-color: #F3F4F6 !important;
+    color: #64748B !important;
+    border: none !important;
+}
+
+.priority-low {
+    background-color: #F3F4F6 !important;
+    color: #64748B !important;
+    border: none !important;
+}
+
+.status-pending {
+    background-color: #F3F4F6 !important;
+    color: #64748B !important;
+}
+
+.status-approved {
+    background-color: #EAF8F0 !important;
+    color: #3D9F7D !important;
+}
+
+.status-rejected {
+    background-color: #FEECEB !important;
+    color: #E02424 !important;
+}
+
+.status-delivered {
+    background-color: #EAF8F0 !important;
+    color: #3D9F7D !important;
+}
+
+.status-intransit {
+    background-color: #F3F4F6 !important;
+    color: #64748B !important;
+}
+
+.status-shipped {
+    background-color: #F3F4F6 !important;
+    color: #64748B !important;
 }

@@ -1,3 +1,8 @@
+/**
+ * IAM Routes
+ * @description Route definitions for the Identity & Access Management bounded context.
+ * @author RQLS TEAM
+ */
 import SignIn from './views/sign-in.vue';
 import SignUp from './views/sign-up.vue';
 import ForgotPassword from './views/forgot-password.vue';

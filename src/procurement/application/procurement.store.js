@@ -1,72 +1,80 @@
+/**
+ * Procurement Store
+ * @description Pinia store for purchase order management and approval workflows.
+ * @author RQLS TEAM
+ */
 import { defineStore } from 'pinia';
-import { ProcurementApi } from '../infrastructure/procurement-api.js';
 import axios from 'axios';
 
 const api = axios.create({ baseURL: 'http://localhost:3000/api/v1' });
 
 export const useProcurementStore = defineStore('procurement', {
     state: () => ({
-        // Para Bandeja de Aprobaciones (Órdenes de Compra)
         purchaseOrders: [],
-
-        // Para Cotizaciones (Quotations)
-        requests: [],
-        suppliers: [],
-
+        quotations: [],
         isLoading: false
     }),
+    getters: {
+        totalSpent: (state) => state.purchaseOrders
+            .filter(o => o.status === 'Approved')
+            .reduce((sum, o) => sum + (o.totalAmount || 0), 0),
+        pendingOrders: (state) => state.purchaseOrders.filter(o => o.status === 'Pending'),
+        approvedOrders: (state) => state.purchaseOrders.filter(o => o.status === 'Approved'),
+        rejectedOrders: (state) => state.purchaseOrders.filter(o => o.status === 'Rejected'),
+        pendingQuotations: (state) => state.quotations.filter(q => q.status === 'Pending'),
+        acceptedQuotations: (state) => state.quotations.filter(q => q.status === 'Accepted'),
+    },
     actions: {
         async fetchOrders() {
             this.isLoading = true;
             try {
-                const procurementApi = new ProcurementApi();
-                const response = await procurementApi.getPurchaseOrders();
-                this.purchaseOrders = response.data.sort((a, b) => {
-                    if (a.status === 'Pendiente' && b.status !== 'Pendiente') return -1;
-                    if (a.status !== 'Pendiente' && b.status === 'Pendiente') return 1;
-                    return 0;
-                });
+                const response = await api.get('/purchaseOrders');
+                this.purchaseOrders = response.data.sort((a, b) => b.id - a.id);
             } catch (error) {
-                console.error('Error cargando órdenes de compra:', error);
+                console.error('Error loading purchase orders:', error);
             } finally {
                 this.isLoading = false;
             }
         },
-        async updateStatus(orderId, newStatus) {
+        async createOrder(order) {
             try {
-                const procurementApi = new ProcurementApi();
-                const order = this.purchaseOrders.find(o => o.id === orderId);
+                await api.post('/purchaseOrders', order);
+                await this.fetchOrders();
+                return true;
+            } catch (error) {
+                console.error('Error creating order:', error);
+                return false;
+            }
+        },
+        async updateOrderStatus(id, newStatus) {
+            try {
+                const order = this.purchaseOrders.find(o => o.id === id);
                 if (order) {
-                    const updatedOrder = { ...order, status: newStatus };
-                    await procurementApi.updateOrderStatus(orderId, updatedOrder);
+                    await api.patch(`/purchaseOrders/${id}`, { status: newStatus });
                     await this.fetchOrders();
                 }
             } catch (error) {
-                console.error('Error actualizando estado:', error);
+                console.error('Error updating order status:', error);
             }
         },
-
-        async fetchQuotationData() {
+        async fetchQuotations() {
             this.isLoading = true;
             try {
-                const [reqRes, supRes] = await Promise.all([
-                    api.get('/requisitions'),
-                    api.get('/suppliers')
-                ]);
-                this.requests = reqRes.data;
-                this.suppliers = supRes.data;
+                const response = await api.get('/quotations');
+                this.quotations = response.data.sort((a, b) => b.id - a.id);
             } catch (error) {
-                console.error("Error cargando datos para cotizaciones:", error);
+                console.error('Error loading quotations:', error);
             } finally {
                 this.isLoading = false;
             }
         },
-        async createQuotation(newQuotation) {
+        async createQuotation(quotation) {
             try {
-                await api.post('/quotations', newQuotation);
+                await api.post('/quotations', quotation);
+                await this.fetchQuotations();
                 return true;
             } catch (error) {
-                console.error("Error enviando solicitud de cotización:", error);
+                console.error('Error creating quotation:', error);
                 return false;
             }
         }

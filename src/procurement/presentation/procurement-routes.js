@@ -1,8 +1,14 @@
+/**
+ * Procurement Routes
+ * @description Route definitions for the Procurement bounded context.
+ * @author RQLS TEAM
+ */
 import ApprovalInbox from './views/approval-inbox.vue';
 import QuotationsManagement from './views/quotations-management.vue';
 
 const procurementRoutes = [
     { path: 'inbox', name: 'approval-inbox', component: ApprovalInbox, meta: { title: 'Purchase Orders' } },
+    { path: 'purchase-orders', name: 'purchase-orders', component: ApprovalInbox, meta: { title: 'Purchase Orders' } },
     { path: 'quotations', name: 'quotations-management', component: QuotationsManagement, meta: { title: 'Quotations' } }
 ];
 

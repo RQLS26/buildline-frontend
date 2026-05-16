@@ -1,5 +1,10 @@
-import { BaseApi } from "../../../shared/infrastructure/base-api.js";
-import { BaseEndpoint } from "../../../shared/infrastructure/base-endpoint.js";
+/**
+ * Profiles API Service
+ * @description Infrastructure layer for company profile HTTP operations.
+ * @author RQLS TEAM
+ */
+import { BaseApi } from "../../shared/infrastructure/base-api.js";
+import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
 const profilesEndpoint = "/profiles";
 

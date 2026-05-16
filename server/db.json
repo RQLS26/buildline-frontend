@@ -1,88 +1,182 @@
 {
+  "users": [
+    {
+      "id": "1",
+      "name": "Nombre admin",
+      "email": "admin@buildline.com",
+      "password": "admin123",
+      "role": "owner",
+      "department": "Management",
+      "phone": "+51 987 654 321",
+      "avatarColor": "#3d63a1",
+      "isActive": true,
+      "lastLogin": "May 19, 2026"
+    },
+    {
+      "id": "2",
+      "name": "Carlos Mendoza",
+      "email": "carlos@buildline.com",
+      "password": "viewer123",
+      "role": "viewer",
+      "department": "Engineering",
+      "phone": "+51 912 345 678",
+      "avatarColor": "#F96116",
+      "isActive": true,
+      "lastLogin": "May 18, 2026"
+    },
+    {
+      "id": "3",
+      "name": "Ana García",
+      "email": "ana@buildline.com",
+      "password": "viewer123",
+      "role": "viewer",
+      "department": "Logistics",
+      "phone": "+51 923 456 789",
+      "avatarColor": "#3D9F7D",
+      "isActive": true,
+      "lastLogin": "May 17, 2026"
+    },
+    {
+      "id": "4",
+      "name": "James Wilson",
+      "email": "james@buildline.com",
+      "password": "viewer123",
+      "role": "viewer",
+      "department": "Procurement",
+      "phone": "+51 934 567 890",
+      "avatarColor": "#EA5434",
+      "isActive": true,
+      "lastLogin": "May 16, 2026"
+    },
+    {
+      "id": "5",
+      "name": "Laura Torres",
+      "email": "laura@buildline.com",
+      "password": "viewer123",
+      "role": "viewer",
+      "department": "Finance",
+      "phone": "+51 945 678 901",
+      "avatarColor": "#2573CC",
+      "isActive": false,
+      "lastLogin": "May 10, 2026"
+    },
+    {
+      "name": "test",
+      "email": "test@gmail.com",
+      "password": "test321",
+      "role": "admin",
+      "department": "Logistics",
+      "isActive": true,
+      "avatarColor": "#acd024",
+      "lastLogin": "Never",
+      "id": "P1ioxAm",
+      "phone": ""
+    }
+  ],
   "projects": [
     {
       "id": "1",
       "name": "Skyline Tower",
       "location": "Lima, Peru",
       "budget": 500000,
-      "date": "12/05/2026",
+      "spent": 120000,
+      "date": "2026-01-15",
       "status": "In Progress",
       "progress": 35
     },
     {
       "id": "2",
-      "name": "Alpha Wing",
+      "name": "Coastal Bridge",
       "location": "Arequipa, Peru",
       "budget": 250000,
-      "date": "01/08/2026",
-      "status": "Planning",
-      "progress": 10
+      "spent": 210000,
+      "date": "2026-03-01",
+      "status": "In Progress",
+      "progress": 72
     },
     {
       "id": "3",
-      "name": "Beta Foundation",
+      "name": "Grand Park",
       "location": "Cusco, Peru",
-      "budget": 120000,
-      "date": "15/03/2026",
-      "status": "Completed",
-      "progress": 100
+      "budget": 100000,
+      "spent": 105000,
+      "date": "2026-02-10",
+      "status": "At Risk",
+      "progress": 90
     }
   ],
   "suppliers": [
     {
       "id": "1",
       "ruc": "20100055237",
-      "companyName": "Aceros Arequipa S.A.",
+      "companyName": "ABC Supplies Inc.",
+      "contactName": "Roberto Sánchez",
+      "email": "ventas@abcsupplies.com",
+      "phone": "+51 987 111 222",
       "rating": 5,
-      "isActive": true
+      "isActive": true,
+      "category": "Steel",
+      "deliveryRate": 95
     },
     {
       "id": "2",
       "ruc": "20419381272",
-      "companyName": "Cementos Pacasmayo S.A.A.",
+      "companyName": "BuildMore Materials",
+      "contactName": "María López",
+      "email": "contacto@buildmore.com",
+      "phone": "+51 987 333 444",
       "rating": 4,
-      "isActive": true
+      "isActive": true,
+      "category": "Concrete",
+      "deliveryRate": 88
     },
     {
       "id": "3",
       "ruc": "20555555555",
-      "companyName": "Distribuidora El Maestro",
-      "rating": 3,
-      "isActive": true
+      "companyName": "Steel House Ltd.",
+      "contactName": "Pedro Rojas",
+      "email": "info@steelhouse.com",
+      "phone": "+51 987 555 666",
+      "rating": 4,
+      "isActive": true,
+      "category": "Steel",
+      "deliveryRate": 78
     },
     {
       "id": "4",
       "ruc": "10777777777",
-      "companyName": "Ferretería San Juan",
-      "rating": 2,
-      "isActive": false
-    }
-  ],
-  "materials": [
-    {
-      "id": "1",
-      "name": "Cemento Sol Tipo I",
-      "unit": "Bolsas"
-    },
-    {
-      "id": "2",
-      "name": "Fierro Corrugado 1/2\"",
-      "unit": "Varillas"
-    },
-    {
-      "id": "3",
-      "name": "Ladrillo King Kong 18 Huecos",
-      "unit": "Millares"
-    },
-    {
-      "id": "4",
-      "name": "Arena Fina",
-      "unit": "m3"
+      "companyName": "Global Construction",
+      "contactName": "Lucía Vargas",
+      "email": "global@construction.com",
+      "phone": "+51 987 777 888",
+      "rating": 3,
+      "isActive": true,
+      "category": "General",
+      "deliveryRate": 82
     },
     {
       "id": "5",
-      "name": "Alambre Negro #16",
-      "unit": "Kg"
+      "ruc": "20888888888",
+      "companyName": "Cement Plus",
+      "contactName": "Jorge Díaz",
+      "email": "ventas@cementplus.com",
+      "phone": "+51 987 999 000",
+      "rating": 3,
+      "isActive": false,
+      "category": "Concrete",
+      "deliveryRate": 70
+    },
+    {
+      "companyName": "Companytest",
+      "ruc": "1222122133",
+      "category": "General",
+      "email": "testcompany@company.com",
+      "contactName": "",
+      "phone": "",
+      "rating": 3,
+      "isActive": true,
+      "deliveryRate": 80,
+      "id": "UQQww0v"
     }
   ],
   "requisitions": [
@@ -91,262 +185,708 @@
       "reqId": "MR-2026-00024",
       "material": "Steel Rebar 1/2\"",
       "project": "Skyline Tower",
+      "quantity": 500,
+      "unit": "PCS",
       "priority": "High",
       "status": "Pending",
-      "requestedOn": "May 19, 2026"
+      "requestedOn": "May 19, 2026",
+      "deliveryDate": "2026-05-25",
+      "requestedBy": "Carlos Mendoza"
     },
     {
       "id": "2",
       "reqId": "MR-2026-00023",
       "material": "Concrete 3000 PSI",
       "project": "Skyline Tower",
+      "quantity": 200,
+      "unit": "Bags",
       "priority": "Medium",
       "status": "Approved",
-      "requestedOn": "May 18, 2026"
+      "requestedOn": "May 18, 2026",
+      "deliveryDate": "2026-05-24",
+      "requestedBy": "Ana García"
     },
     {
       "id": "3",
       "reqId": "MR-2026-00022",
       "material": "Sand Fine",
-      "project": "Alpha Wing",
+      "project": "Coastal Bridge",
+      "quantity": 50,
+      "unit": "m3",
       "priority": "Low",
       "status": "Approved",
-      "requestedOn": "May 17, 2026"
-    }
-  ],
-  "users": [
-    {
-      "id": "1",
-      "name": "Equipo Buildline",
-      "email": "admin@buildline.com",
-      "password": "123",
-      "role": "admin"
+      "requestedOn": "May 17, 2026",
+      "deliveryDate": "2026-05-23",
+      "requestedBy": "James Wilson"
     },
     {
-      "name": "Mauricio Castillo",
-      "email": "mauscasyat@upc.edu.pe",
-      "password": "12345",
-      "role": "user",
-      "id": "15it5bB"
+      "id": "4",
+      "reqId": "MR-2026-00021",
+      "material": "Cement Type I",
+      "project": "Skyline Tower",
+      "quantity": 300,
+      "unit": "Bags",
+      "priority": "High",
+      "status": "Pending",
+      "requestedOn": "May 17, 2026",
+      "deliveryDate": "2026-05-22",
+      "requestedBy": "Carlos Mendoza"
     },
     {
-      "name": "Armando Mendoza",
-      "email": "Armen@hotmail.com",
-      "password": "11111",
-      "role": "user",
-      "id": "6hFt7jN"
+      "id": "5",
+      "reqId": "MR-2026-00020",
+      "material": "PVC Pipes 4\"",
+      "project": "Grand Park",
+      "quantity": 100,
+      "unit": "PCS",
+      "priority": "Medium",
+      "status": "Approved",
+      "requestedOn": "May 16, 2026",
+      "deliveryDate": "2026-05-21",
+      "requestedBy": "Laura Torres"
+    },
+    {
+      "id": "6",
+      "reqId": "MR-2026-00019",
+      "material": "Gravel 3/4\"",
+      "project": "Coastal Bridge",
+      "quantity": 80,
+      "unit": "Tons",
+      "priority": "Low",
+      "status": "Rejected",
+      "requestedOn": "May 15, 2026",
+      "deliveryDate": "2026-05-20",
+      "requestedBy": "Ana García"
     }
   ],
   "purchaseOrders": [
     {
-      "id": "OC-1001",
-      "date": "2026-05-14",
-      "supplierName": "Aceros Arequipa S.A.",
-      "totalAmount": 14500.5,
-      "status": "Aprobada"
+      "id": "1",
+      "orderId": "PO-2026-0015",
+      "date": "May 19, 2026",
+      "supplierName": "ABC Supplies Inc.",
+      "material": "Steel Rebar 1/2\"",
+      "project": "Skyline Tower",
+      "totalAmount": 125000,
+      "status": "Approved"
     },
     {
-      "id": "OC-1002",
-      "date": "2026-05-13",
-      "supplierName": "Cementos Pacasmayo",
-      "totalAmount": 8200,
-      "status": "Aprobada"
+      "id": "2",
+      "orderId": "PO-2026-0014",
+      "date": "May 18, 2026",
+      "supplierName": "BuildMore Materials",
+      "material": "Cement Type I",
+      "project": "Skyline Tower",
+      "totalAmount": 85200,
+      "status": "Pending"
     },
     {
-      "id": "OC-1003",
-      "date": "2026-05-14",
-      "supplierName": "Distribuidora El Maestro",
-      "totalAmount": 3150.25,
-      "status": "Rechazada"
+      "id": "3",
+      "orderId": "PO-2026-0013",
+      "date": "May 18, 2026",
+      "supplierName": "BuildMore Materials",
+      "material": "Concrete 3000 PSI",
+      "project": "Coastal Bridge",
+      "totalAmount": 42500,
+      "status": "Approved"
+    },
+    {
+      "id": "4",
+      "orderId": "PO-2026-0012",
+      "date": "May 17, 2026",
+      "supplierName": "Steel House Ltd.",
+      "material": "Steel Beams W8",
+      "project": "Grand Park",
+      "totalAmount": 67800,
+      "status": "Pending"
+    },
+    {
+      "id": "5",
+      "orderId": "PO-2026-0011",
+      "date": "May 17, 2026",
+      "supplierName": "Global Construction",
+      "material": "Gravel 3/4\"",
+      "project": "Skyline Tower",
+      "totalAmount": 22600,
+      "status": "Approved"
+    },
+    {
+      "id": "6",
+      "orderId": "PO-2026-0010",
+      "date": "May 16, 2026",
+      "supplierName": "ABC Supplies Inc.",
+      "material": "PVC Pipes 4\"",
+      "project": "Coastal Bridge",
+      "totalAmount": 35400,
+      "status": "Rejected"
+    },
+    {
+      "id": "7",
+      "orderId": "PO-2026-0009",
+      "date": "May 16, 2026",
+      "supplierName": "Steel House Ltd.",
+      "material": "Sand Fine",
+      "project": "Skyline Tower",
+      "totalAmount": 18900,
+      "status": "Approved"
+    },
+    {
+      "id": "8",
+      "orderId": "PO-2026-0008",
+      "date": "May 15, 2026",
+      "supplierName": "Global Construction",
+      "material": "Safety Equipment",
+      "project": "Grand Park",
+      "totalAmount": 54200,
+      "status": "Pending"
+    },
+    {
+      "id": "9",
+      "orderId": "PO-2026-0007",
+      "date": "May 15, 2026",
+      "supplierName": "BuildMore Materials",
+      "material": "Plywood Sheets",
+      "project": "Skyline Tower",
+      "totalAmount": 31700,
+      "status": "Approved"
+    },
+    {
+      "id": "10",
+      "orderId": "PO-2026-0006",
+      "date": "May 14, 2026",
+      "supplierName": "ABC Supplies Inc.",
+      "material": "Copper Wire 12 AWG",
+      "project": "Grand Park",
+      "totalAmount": 9800,
+      "status": "Approved"
+    },
+    {
+      "orderId": "PO-2026-0085",
+      "date": "May 15, 2026",
+      "supplierName": "ABC Supplies Inc.",
+      "material": "Plywood Sheets",
+      "project": "Skyline Tower",
+      "totalAmount": 1200,
+      "status": "Approved",
+      "id": "oTSK_r6"
+    }
+  ],
+  "quotations": [
+    {
+      "id": "1",
+      "quotationId": "QT-2026-0018",
+      "supplier": "ABC Supplies Inc.",
+      "material": "Steel Rebar 1/2\"",
+      "project": "Skyline Tower",
+      "amount": 12500,
+      "status": "Pending",
+      "date": "May 19, 2026"
+    },
+    {
+      "id": "2",
+      "quotationId": "QT-2026-0017",
+      "supplier": "Cement Plus",
+      "material": "Concrete 3000 PSI",
+      "project": "Skyline Tower",
+      "amount": 8300,
+      "status": "Accepted",
+      "date": "May 18, 2026"
+    },
+    {
+      "id": "3",
+      "quotationId": "QT-2026-0016",
+      "supplier": "Global Construction",
+      "material": "Power Drill Set",
+      "project": "Coastal Bridge",
+      "amount": 3450,
+      "status": "Accepted",
+      "date": "May 17, 2026"
+    },
+    {
+      "id": "4",
+      "quotationId": "QT-2026-0015",
+      "supplier": "BuildMore Materials",
+      "material": "Cement Type I",
+      "project": "Skyline Tower",
+      "amount": 15800,
+      "status": "Pending",
+      "date": "May 17, 2026"
+    },
+    {
+      "id": "5",
+      "quotationId": "QT-2026-0014",
+      "supplier": "ABC Supplies Inc.",
+      "material": "Sand Fine",
+      "project": "Grand Park",
+      "amount": 6200,
+      "status": "Rejected",
+      "date": "May 16, 2026"
+    },
+    {
+      "id": "6",
+      "quotationId": "QT-2026-0013",
+      "supplier": "Steel House Ltd.",
+      "material": "Steel Beams W8",
+      "project": "Coastal Bridge",
+      "amount": 22100,
+      "status": "Accepted",
+      "date": "May 16, 2026"
+    },
+    {
+      "id": "7",
+      "quotationId": "QT-2026-0012",
+      "supplier": "Cement Plus",
+      "material": "Gravel 3/4\"",
+      "project": "Skyline Tower",
+      "amount": 4750,
+      "status": "Pending",
+      "date": "May 15, 2026"
+    },
+    {
+      "id": "8",
+      "quotationId": "QT-2026-0011",
+      "supplier": "Global Construction",
+      "material": "Safety Helmets",
+      "project": "Grand Park",
+      "amount": 1200,
+      "status": "Accepted",
+      "date": "May 15, 2026"
     }
   ],
   "inventory": [
     {
       "id": "1",
-      "sku": "MR-2026-00024",
+      "sku": "INV-001",
       "name": "Steel Rebar 1/2\"",
       "project": "Skyline Tower",
       "category": "Steel",
-      "currentStock": 10,
-      "minStock": 20,
-      "lastUpdated": "2026-05-19"
+      "currentStock": 99,
+      "maxStock": 800,
+      "minStock": 100,
+      "lastUpdated": "2026-05-16"
     },
     {
       "id": "2",
-      "sku": "MR-2026-00023",
+      "sku": "INV-002",
       "name": "Concrete 3000 PSI",
       "project": "Skyline Tower",
       "category": "Concrete",
-      "currentStock": 50,
-      "minStock": 20,
-      "lastUpdated": "2026-05-18"
+      "currentStock": 0,
+      "maxStock": 500,
+      "minStock": 100,
+      "lastUpdated": "2026-05-16"
     },
     {
       "id": "3",
-      "sku": "MR-2026-00022",
+      "sku": "INV-003",
       "name": "Cement Type I",
-      "project": "Skyline Tower",
-      "category": "Steel",
-      "currentStock": 5,
-      "minStock": 20,
+      "project": "Coastal Bridge",
+      "category": "Concrete",
+      "currentStock": 200,
+      "maxStock": 400,
+      "minStock": 50,
       "lastUpdated": "2026-05-17"
     },
     {
       "id": "4",
-      "sku": "MR-2026-00021",
+      "sku": "INV-004",
       "name": "Sand Fine",
-      "project": "Skyline Tower",
+      "project": "Grand Park",
       "category": "Aggregate",
-      "currentStock": 100,
-      "minStock": 20,
+      "currentStock": 0,
+      "maxStock": 300,
+      "minStock": 50,
       "lastUpdated": "2026-05-17"
     },
     {
       "id": "5",
-      "sku": "MR-2026-00025",
-      "name": "Electric Wire #12",
-      "project": "Alpha Wing",
-      "category": "Electrical",
-      "currentStock": 0,
-      "minStock": 50,
+      "sku": "INV-005",
+      "name": "Gravel 3/4\"",
+      "project": "Skyline Tower",
+      "category": "Aggregate",
+      "currentStock": 320,
+      "maxStock": 500,
+      "minStock": 80,
       "lastUpdated": "2026-05-16"
     },
     {
       "id": "6",
-      "sku": "MR-2026-00026",
-      "name": "PVC Pipe 2\"",
-      "project": "Alpha Wing",
+      "sku": "INV-006",
+      "name": "PVC Pipes 4\"",
+      "project": "Coastal Bridge",
       "category": "Plumbing",
-      "currentStock": 0,
-      "minStock": 30,
+      "currentStock": 45,
+      "maxStock": 200,
+      "minStock": 60,
       "lastUpdated": "2026-05-16"
     },
     {
       "id": "7",
-      "sku": "MR-2026-00027",
-      "name": "Safety Helmets",
-      "project": "Beta Foundation",
-      "category": "Equipment",
-      "currentStock": 15,
-      "minStock": 25,
+      "sku": "INV-007",
+      "name": "Copper Wire 12 AWG",
+      "project": "Skyline Tower",
+      "category": "Electrical",
+      "currentStock": 600,
+      "maxStock": 800,
+      "minStock": 100,
       "lastUpdated": "2026-05-15"
     },
     {
       "id": "8",
-      "sku": "MR-2026-00028",
-      "name": "Steel Nails (Box)",
-      "project": "Beta Foundation",
-      "category": "Steel",
-      "currentStock": 80,
-      "minStock": 10,
+      "sku": "INV-008",
+      "name": "Plywood Sheets",
+      "project": "Grand Park",
+      "category": "Wood",
+      "currentStock": 0,
+      "maxStock": 150,
+      "minStock": 30,
       "lastUpdated": "2026-05-14"
     },
     {
       "id": "9",
-      "sku": "MR-2026-00029",
-      "name": "Gravel (Ton)",
-      "project": "Skyline Tower",
-      "category": "Aggregate",
-      "currentStock": 0,
-      "minStock": 5,
-      "lastUpdated": "2026-05-14"
+      "sku": "INV-009",
+      "name": "Safety Helmets",
+      "project": "Coastal Bridge",
+      "category": "Equipment",
+      "currentStock": 15,
+      "maxStock": 100,
+      "minStock": 25,
+      "lastUpdated": "2026-05-16"
     },
     {
       "id": "10",
-      "sku": "MR-2026-00030",
-      "name": "Wood Planks",
-      "project": "Alpha Wing",
-      "category": "Wood",
-      "currentStock": 12,
-      "minStock": 40,
+      "sku": "INV-010",
+      "name": "Steel Beams W8",
+      "project": "Skyline Tower",
+      "category": "Steel",
+      "currentStock": 120,
+      "maxStock": 200,
+      "minStock": 30,
       "lastUpdated": "2026-05-13"
+    },
+    {
+      "sku": "INV-011",
+      "name": "Test Material",
+      "project": "Skyline Tower",
+      "category": "Steel",
+      "currentStock": 50,
+      "maxStock": 200,
+      "minStock": 10,
+      "lastUpdated": "2026-05-16",
+      "id": "o0ylLjR"
     }
   ],
-  "profiles": [
+  "incidents": [
     {
       "id": "1",
-      "companyName": "Constructora RQLS S.A.C.",
-      "ruc": "20555444333",
-      "address": "Av. Primavera 123, Surco, Lima",
-      "phone": "+51 987 654 321",
-      "email": "contacto@rqls.com"
-    }
-  ],
-  "messages": [
-    {
-      "id": "1",
-      "sender": "Aceros Arequipa S.A.",
-      "subject": "Cotización Lista",
-      "body": "Adjuntamos la cotización solicitada.",
-      "date": "2026-05-14",
-      "isRead": false
+      "incidentId": "INC-015",
+      "title": "Delayed delivery of steel rebar",
+      "description": "Steel rebar shipment from Steel House Ltd. is 3 days overdue. This is impacting the Skyline Tower foundation schedule.",
+      "supplier": "Steel House Ltd.",
+      "purchaseOrder": "PO-2026-0012",
+      "reportedBy": "Carlos Mendoza",
+      "severity": "High",
+      "status": "Open",
+      "date": "May 15, 2026",
+      "time": "10:45 AM"
     },
     {
       "id": "2",
-      "sender": "Juan Pérez (Residente)",
-      "subject": "Retraso por lluvia",
-      "body": "No pudimos hacer el vaciado hoy.",
-      "date": "2026-05-13",
-      "isRead": true
+      "incidentId": "INC-014",
+      "title": "Wrong cement type delivered",
+      "description": "Received Type II cement instead of Type I as specified in the PO. Material is not suitable for the coastal bridge foundations.",
+      "supplier": "BuildMore Materials",
+      "purchaseOrder": "PO-2026-0013",
+      "reportedBy": "Ana García",
+      "severity": "High",
+      "status": "In Progress",
+      "date": "May 15, 2026",
+      "time": "08:30 AM"
     },
     {
-      "sender": "Team Buildline",
-      "subject": "Revision",
-      "body": "revisar que mensajeria funciona\n",
-      "date": "2026-05-14",
-      "isRead": false,
-      "apiId": "v1",
-      "id": "pqAtoSE"
+      "id": "3",
+      "incidentId": "INC-013",
+      "title": "Damaged packaging on arrival",
+      "description": "Several bags of aggregate arrived with torn packaging. Approximately 15% loss due to spillage during transport.",
+      "supplier": "ABC Supplies Inc.",
+      "purchaseOrder": "PO-2026-0010",
+      "reportedBy": "James Wilson",
+      "severity": "Medium",
+      "status": "Resolved",
+      "date": "May 16, 2026",
+      "time": "04:15 PM"
+    },
+    {
+      "id": "4",
+      "incidentId": "INC-012",
+      "title": "Quantity mismatch on invoice",
+      "description": "Invoice shows 500 units but only 420 were received and verified at the warehouse.",
+      "supplier": "Global Construction",
+      "purchaseOrder": "PO-2026-0008",
+      "reportedBy": "Laura Torres",
+      "severity": "Medium",
+      "status": "In Progress",
+      "date": "May 16, 2026",
+      "time": "02:00 PM"
+    },
+    {
+      "id": "5",
+      "incidentId": "INC-011",
+      "title": "Late payment notification",
+      "description": "Supplier notified about delayed payment. Payment was processed but bank transfer took longer than expected.",
+      "supplier": "ABC Supplies Inc.",
+      "purchaseOrder": "PO-2026-0006",
+      "reportedBy": "Laura Torres",
+      "severity": "Low",
+      "status": "Resolved",
+      "date": "May 16, 2026",
+      "time": "11:30 AM"
+    },
+    {
+      "incidentId": "INC-006",
+      "title": "hola",
+      "description": "hola",
+      "supplier": "ABC",
+      "purchaseOrder": "PO-2026-002",
+      "severity": "High",
+      "status": "Open",
+      "reportedBy": "David",
+      "date": "May 15, 2026",
+      "time": "11:45 PM",
+      "id": "WazQRo-"
     }
   ],
   "budgets": [
     {
       "id": "1",
       "project": "Skyline Tower",
-      "totalAmount": 500000,
-      "spentAmount": 120000,
+      "totalBudget": 500000,
+      "spent": 120000,
+      "allocated": 350000,
       "status": "On Track"
     },
     {
       "id": "2",
-      "project": "Alpha Wing",
-      "totalAmount": 250000,
-      "spentAmount": 210000,
+      "project": "Coastal Bridge",
+      "totalBudget": 250000,
+      "spent": 210000,
+      "allocated": 240000,
       "status": "At Risk"
     },
     {
       "id": "3",
-      "project": "Beta Foundation",
-      "totalAmount": 100000,
-      "spentAmount": 105000,
+      "project": "Grand Park",
+      "totalBudget": 100000,
+      "spent": 105000,
+      "allocated": 100000,
       "status": "Over Budget"
     }
   ],
-  "incidents": [
+  "messages": [
     {
       "id": "1",
-      "title": "Late Delivery - Steel Rebar",
-      "supplier": "Aceros Arequipa",
-      "severity": "High",
-      "status": "Open",
-      "date": "2026-05-14"
+      "sender": "System",
+      "subject": "PO-2026-0015 Approved",
+      "preview": "The purchase order for ABC Supplies has been approved and is ready for dispatch.",
+      "icon": "pi-check-circle",
+      "iconClass": "icon-success",
+      "label": null,
+      "labelClass": "",
+      "isRead": true,
+      "starred": false,
+      "category": "updates",
+      "time": "2 min",
+      "date": "2026-05-19"
     },
     {
       "id": "2",
-      "title": "Damaged Cement Bags",
-      "supplier": "Cementos Sol",
-      "severity": "Medium",
-      "status": "Resolved",
-      "date": "2026-05-10"
+      "sender": "Inventory System",
+      "subject": "Low Stock: Concrete 3000 PSI",
+      "preview": "Inventory at Skyline Tower dropped below minimum threshold (80 units remaining).",
+      "icon": "pi-exclamation-triangle",
+      "iconClass": "icon-warning",
+      "label": "Critical",
+      "labelClass": "label-critical",
+      "isRead": false,
+      "starred": false,
+      "category": "alerts",
+      "time": "15 min",
+      "date": "2026-05-19"
     },
     {
       "id": "3",
-      "title": "Incorrect Invoice Amount",
-      "supplier": "Sodimac Constructor",
-      "severity": "Low",
-      "status": "In Progress",
-      "date": "2026-05-12"
+      "sender": "Logistics",
+      "subject": "Delivery TRK-0048 In Transit",
+      "preview": "Shipment from ABC Supplies has departed Lima warehouse. ETA: May 21, 2026.",
+      "icon": "pi-truck",
+      "iconClass": "icon-info",
+      "label": null,
+      "labelClass": "",
+      "isRead": false,
+      "starred": false,
+      "category": "updates",
+      "time": "1 hr",
+      "date": "2026-05-19"
+    },
+    {
+      "id": "4",
+      "sender": "Steel Corp",
+      "subject": "Quotation QT-2026-0018 Received",
+      "preview": "New quotation for Steel Rebar 1/2\" — $12,500.00. Awaiting your review.",
+      "icon": "pi-file",
+      "iconClass": "icon-neutral",
+      "label": null,
+      "labelClass": "",
+      "isRead": false,
+      "starred": true,
+      "category": "updates",
+      "time": "2 hr",
+      "date": "2026-05-19"
+    },
+    {
+      "id": "5",
+      "sender": "System",
+      "subject": "Incident INC-015 Escalated",
+      "preview": "The delayed delivery incident with Steel House Ltd. has been escalated to high priority.",
+      "icon": "pi-ban",
+      "iconClass": "icon-danger",
+      "label": "Critical",
+      "labelClass": "label-critical",
+      "isRead": false,
+      "starred": false,
+      "category": "alerts",
+      "time": "3 hr",
+      "date": "2026-05-19"
+    },
+    {
+      "id": "6",
+      "sender": "Analytics",
+      "subject": "Coastal Bridge Budget at 84%",
+      "preview": "Project has spent $210,000 of $250,000 budget. Status changed to At Risk.",
+      "icon": "pi-chart-line",
+      "iconClass": "icon-warning",
+      "label": null,
+      "labelClass": "",
+      "isRead": true,
+      "starred": false,
+      "category": "alerts",
+      "time": "5 hr",
+      "date": "2026-05-19"
+    },
+    {
+      "id": "7",
+      "sender": "Carlos Mendoza",
+      "subject": "Material Request MR-2026-00024",
+      "preview": "A new high-priority request for Steel Rebar has been submitted for Skyline Tower.",
+      "icon": "pi-inbox",
+      "iconClass": "icon-neutral",
+      "label": null,
+      "labelClass": "",
+      "isRead": true,
+      "starred": false,
+      "category": "updates",
+      "time": "Yesterday",
+      "date": "2026-05-18"
+    },
+    {
+      "id": "8",
+      "sender": "System",
+      "subject": "Supplier Rating Updated",
+      "preview": "BuildMore Materials rating updated to 4/5 stars based on recent delivery performance.",
+      "icon": "pi-star",
+      "iconClass": "icon-neutral",
+      "label": null,
+      "labelClass": "",
+      "isRead": true,
+      "starred": true,
+      "category": "updates",
+      "time": "Yesterday",
+      "date": "2026-05-18"
     }
   ],
-  "quotations": []
+  "deliveries": [
+    {
+      "id": "1",
+      "trackingId": "TRK-0048",
+      "purchaseOrder": "PO-2026-0015",
+      "supplier": "ABC Supplies Inc.",
+      "origin": "Lima Warehouse",
+      "destination": "Skyline Tower Site",
+      "status": "In Transit",
+      "eta": "May 21, 2026",
+      "dispatchDate": "May 19, 2026",
+      "items": "Steel Rebar 1/2\" (500 PCS)"
+    },
+    {
+      "id": "2",
+      "trackingId": "TRK-0047",
+      "purchaseOrder": "PO-2026-0013",
+      "supplier": "BuildMore Materials",
+      "origin": "Arequipa Plant",
+      "destination": "Coastal Bridge Site",
+      "status": "Delivered",
+      "eta": "May 18, 2026",
+      "dispatchDate": "May 16, 2026",
+      "items": "Concrete 3000 PSI (200 Bags)"
+    },
+    {
+      "id": "3",
+      "trackingId": "TRK-0046",
+      "purchaseOrder": "PO-2026-0012",
+      "supplier": "Steel House Ltd.",
+      "origin": "Callao Port",
+      "destination": "Grand Park Site",
+      "status": "Delayed",
+      "eta": "May 17, 2026",
+      "dispatchDate": "May 14, 2026",
+      "items": "Steel Beams W8 (120 PCS)"
+    },
+    {
+      "id": "4",
+      "trackingId": "TRK-0045",
+      "purchaseOrder": "PO-2026-0011",
+      "supplier": "Global Construction",
+      "origin": "Lima Central",
+      "destination": "Skyline Tower Site",
+      "status": "Shipped",
+      "eta": "May 20, 2026",
+      "dispatchDate": "May 17, 2026",
+      "items": "Gravel 3/4\" (80 Tons)"
+    },
+    {
+      "id": "5",
+      "trackingId": "TRK-0044",
+      "purchaseOrder": "PO-2026-0009",
+      "supplier": "Steel House Ltd.",
+      "origin": "Lima Warehouse",
+      "destination": "Skyline Tower Site",
+      "status": "Delivered",
+      "eta": "May 16, 2026",
+      "dispatchDate": "May 14, 2026",
+      "items": "Sand Fine (50 m3)"
+    },
+    {
+      "trackingId": "TRK-0043",
+      "purchaseOrder": "PO-2026-24",
+      "supplier": "ABC Supplies Inc",
+      "material": "Steel",
+      "origin": "Lima Central",
+      "destination": "Skyline Tower Site",
+      "eta": "May 22, 2026",
+      "dispatchDate": "May 22, 2026",
+      "status": "Shipped",
+      "quantity": "1 lot",
+      "id": "k1y9h9D"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "1",
+      "companyName": "Buildline S.A.C.",
+      "ruc": "20555444333",
+      "address": "Av. Primavera 123, Surco, Lima",
+      "phone": "+51 987 654 321",
+      "email": "contacto@buildline.com"
+    }
+  ]
 }

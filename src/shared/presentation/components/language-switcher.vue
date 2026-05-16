@@ -1,19 +1,20 @@
 <template>
   <pv-select-button
-      v-model="$i18n.locale"
+      v-model="locale"
       :options="languages"
       optionLabel="label"
       optionValue="value"
-      aria-labelledby="basic"
       class="p-button-sm"
   />
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-const languages = ref([
+const { locale } = useI18n();
+
+const languages = [
   { label: 'EN', value: 'en' },
   { label: 'ES', value: 'es' }
-]);
+];
 </script>

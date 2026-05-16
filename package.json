@@ -1,5 +1,5 @@
 {
-  "name": "tb1",
+  "name": "buildline",
   "version": "1.0.0",
   "author": "buildline",
   "private": true,
@@ -14,6 +14,7 @@
   "dependencies": {
     "@primeuix/themes": "^2.0.3",
     "axios": "^1.16.1",
+    "chart.js": "^4.5.1",
     "html2pdf.js": "^0.14.0",
     "pinia": "^3.0.4",
     "primeflex": "^4.0.0",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.6",
+    "concurrently": "^9.2.1",
     "json-server": "^0.17.4",
     "vite": "^8.0.8",
     "vite-plugin-vue-devtools": "^8.1.1"

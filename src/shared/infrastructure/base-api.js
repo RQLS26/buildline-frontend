@@ -1,6 +1,12 @@
+/**
+ * Base API
+ * @description Provides a centralized Axios HTTP client instance for all API services.
+ *              All bounded context APIs extend this class.
+ * @author RQLS TEAM
+ */
 import axios from "axios";
 
-const platformApi = "http://localhost:3000/api/v1/";
+const platformApi = "http://localhost:3000/";
 
 export class BaseApi {
     #http;
@@ -15,6 +21,7 @@ export class BaseApi {
         });
     }
 
+    /** @summary Returns the configured Axios HTTP client instance. */
     get http() {
         return this.#http;
     }

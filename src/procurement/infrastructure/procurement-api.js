@@ -1,5 +1,10 @@
-import { BaseApi } from "../../../shared/infrastructure/base-api.js";
-import { BaseEndpoint } from "../../../shared/infrastructure/base-endpoint.js";
+/**
+ * Procurement API Service
+ * @description Infrastructure layer for purchase order HTTP operations.
+ * @author RQLS TEAM
+ */
+import { BaseApi } from "../../shared/infrastructure/base-api.js";
+import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
 const purchaseOrdersEndpoint = "/purchaseOrders";
 

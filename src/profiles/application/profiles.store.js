@@ -1,3 +1,8 @@
+/**
+ * Profiles Store
+ * @description Pinia store for company profile management and settings.
+ * @author RQLS TEAM
+ */
 import { defineStore } from 'pinia';
 import { ProfilesApi } from '../infrastructure/profiles-api.js';
 

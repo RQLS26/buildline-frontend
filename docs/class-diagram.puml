@@ -1,0 +1,625 @@
+@startuml Buildline_Class_Diagram
+
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+skinparam packageFontSize 14
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 40
+
+' ===================================================================
+' SHARED BOUNDED CONTEXT
+' ===================================================================
+package "Shared" <<Rectangle>> #F0F4FF {
+
+    package "Infrastructure" {
+        class BaseApi {
+            - http: AxiosInstance
+            + {method} get http(): AxiosInstance
+        }
+
+        class BaseEndpoint {
+            - resourceEndpoint: String
+            - baseApi: BaseApi
+            + {method} getAll(): Promise
+            + {method} getById(id): Promise
+            + {method} create(resource): Promise
+            + {method} update(id, resource): Promise
+            + {method} delete(id): Promise
+        }
+
+        BaseEndpoint --> BaseApi : uses
+    }
+
+    package "Presentation" {
+        class LayoutComponent <<Vue Component>> {
+            + sidebar: Object
+            + currentRoute: String
+            + {method} toggleSidebar(): void
+        }
+
+        class LanguageSwitcher <<Vue Component>> {
+            + locale: String
+            + {method} switchLocale(lang): void
+        }
+
+        class DashboardShellView <<Vue View>> {
+            + {method} mounted(): void
+        }
+
+        class SettingsView <<Vue View>> {
+            + preferences: Object
+            + security: Object
+        }
+
+        class AccessDeniedView <<Vue View>>
+        class PageNotFoundView <<Vue View>>
+        class AboutView <<Vue View>>
+    }
+}
+
+' ===================================================================
+' IAM BOUNDED CONTEXT
+' ===================================================================
+package "IAM (Identity & Access Management)" <<Rectangle>> #FFF3E0 {
+
+    package "Domain" {
+        class User <<Entity>> {
+            + id: Number
+            + name: String
+            + email: String
+            + password: String
+            + role: String
+            + department: String
+            + isActive: Boolean
+            + avatarColor: String
+            + lastLogin: String
+        }
+    }
+
+    package "Infrastructure" {
+        class IamApi {
+            + {method} getUsers(): Promise
+            + {method} registerUser(userData): Promise
+        }
+
+        class UserAssembler {
+            + {static} toEntityFromResource(resource): User
+            + {static} toEntitiesFromResponse(response): User[]
+        }
+
+        UserAssembler ..> User : creates
+    }
+
+    package "Application" {
+        class IamStore <<Pinia Store>> {
+            + currentUser: User
+            + allUsers: User[]
+            + isAuthenticated: Boolean
+            + {method} login(email, password): Promise
+            + {method} register(userData): Promise
+            + {method} logout(): void
+            + {method} fetchAllUsers(): Promise
+            + {method} updateUserRole(id, role): Promise
+            + isAdmin: Boolean
+            + userRole: String
+        }
+    }
+
+    package "Presentation" {
+        class SignInView <<Vue View>> {
+            + email: String
+            + password: String
+            + {method} handleLogin(): void
+        }
+
+        class SignUpView <<Vue View>> {
+            + form: Object
+            + {method} handleRegister(): void
+        }
+
+        class ForgotPasswordView <<Vue View>> {
+            + email: String
+            + {method} handleReset(): void
+        }
+
+        class UsersManagementView <<Vue View>> {
+            + filters: Object
+            + activeTab: String
+            + {method} changeRole(user, role): void
+            + {method} createUser(): void
+        }
+    }
+
+    IamStore --> IamApi : uses
+}
+
+' ===================================================================
+' PROCUREMENT BOUNDED CONTEXT
+' ===================================================================
+package "Procurement" <<Rectangle>> #E8F5E9 {
+
+    package "Domain" {
+        class PurchaseOrder <<Entity>> {
+            + id: Number
+            + orderId: String
+            + date: String
+            + supplier: String
+            + material: String
+            + project: String
+            + totalAmount: Number
+            + status: String
+            + quantity: Number
+            + unit: String
+            + unitPrice: Number
+        }
+    }
+
+    package "Infrastructure" {
+        class ProcurementApi extends BaseApi {
+            - purchaseOrdersEndpoint: BaseEndpoint
+            + {method} getPurchaseOrders(): Promise
+            + {method} updateOrderStatus(id, data): Promise
+        }
+
+        class PurchaseOrderAssembler {
+            + {static} toEntityFromResource(resource): PurchaseOrder
+            + {static} toEntitiesFromResponse(response): PurchaseOrder[]
+        }
+
+        PurchaseOrderAssembler ..> PurchaseOrder : creates
+    }
+
+    package "Application" {
+        class ProcurementStore <<Pinia Store>> {
+            + purchaseOrders: PurchaseOrder[]
+            + quotations: Object[]
+            + isLoading: Boolean
+            + {method} fetchPurchaseOrders(): Promise
+            + {method} approvePO(id): Promise
+            + {method} rejectPO(id): Promise
+            + pendingOrders: PurchaseOrder[]
+            + approvedOrders: PurchaseOrder[]
+        }
+    }
+
+    package "Presentation" {
+        class ApprovalInboxView <<Vue View>> {
+            + activeTab: String
+            + {method} approve(order): void
+            + {method} reject(order): void
+        }
+
+        class QuotationsManagementView <<Vue View>> {
+            + quotations: Object[]
+            + {method} createQuotation(): void
+        }
+    }
+
+    ProcurementStore --> ProcurementApi : uses
+}
+
+' ===================================================================
+' REQUISITION BOUNDED CONTEXT
+' ===================================================================
+package "Requisition" <<Rectangle>> #E3F2FD {
+
+    package "Domain" {
+        class MaterialItem <<Entity>> {
+            + id: Number
+            + name: String
+            + quantity: Number
+            + unit: String
+        }
+
+        class Requisition <<Entity>> {
+            + id: Number
+            + projectId: Number
+            + residentName: String
+            + date: String
+            + status: String
+            + items: MaterialItem[]
+        }
+
+        Requisition "1" *-- "*" MaterialItem : contains
+    }
+
+    package "Infrastructure" {
+        class RequisitionApi extends BaseApi {
+            - materialsEndpoint: BaseEndpoint
+            - requisitionsEndpoint: BaseEndpoint
+            + {method} getMaterials(): Promise
+            + {method} createRequisition(resource): Promise
+        }
+
+        class RequisitionAssembler {
+            + {static} toEntityFromResource(resource): Requisition
+            + {static} toEntitiesFromResponse(response): Requisition[]
+        }
+
+        RequisitionAssembler ..> Requisition : creates
+    }
+
+    package "Application" {
+        class RequisitionStore <<Pinia Store>> {
+            + materials: Object[]
+            + requisitions: Requisition[]
+            + {method} fetchMaterials(): Promise
+            + {method} submitRequisition(data): Promise
+        }
+    }
+
+    package "Presentation" {
+        class MaterialRequestView <<Vue View>> {
+            + form: Object
+            + {method} handleSubmit(): void
+        }
+
+        class RequisitionInventoryView <<Vue View>> {
+            + items: Object[]
+            + filters: Object
+        }
+    }
+
+    RequisitionStore --> RequisitionApi : uses
+}
+
+' ===================================================================
+' INVENTORY BOUNDED CONTEXT
+' ===================================================================
+package "Inventory" <<Rectangle>> #FFF9C4 {
+
+    package "Domain" {
+        class InventoryItem <<Entity>> {
+            + id: Number
+            + sku: String
+            + name: String
+            + category: String
+            + project: String
+            + currentStock: Number
+            + minStock: Number
+            + maxStock: Number
+            + date: String
+        }
+    }
+
+    package "Infrastructure" {
+        class InventoryApi extends BaseApi {
+            - inventoryEndpoint: BaseEndpoint
+            + {method} getInventoryItems(): Promise
+            + {method} updateStock(id, data): Promise
+        }
+
+        class InventoryItemAssembler {
+            + {static} toEntityFromResource(resource): InventoryItem
+            + {static} toEntitiesFromResponse(response): InventoryItem[]
+        }
+
+        InventoryItemAssembler ..> InventoryItem : creates
+    }
+
+    package "Application" {
+        class InventoryStore <<Pinia Store>> {
+            + items: InventoryItem[]
+            + isLoading: Boolean
+            + {method} fetchInventory(): Promise
+            + {method} addItem(data): Promise
+            + {method} updateItem(id, data): Promise
+            + {method} deleteItem(id): Promise
+        }
+    }
+
+    package "Presentation" {
+        class InventoryListView <<Vue View>> {
+            + filters: Object
+            + showAddDialog: Boolean
+            + showEditDialog: Boolean
+            + {method} openAddDialog(): void
+            + {method} handleAddItem(): void
+            + {method} handleEditItem(): void
+        }
+    }
+
+    InventoryStore --> InventoryApi : uses
+}
+
+' ===================================================================
+' SUPPLIERS BOUNDED CONTEXT
+' ===================================================================
+package "Suppliers" <<Rectangle>> #FCE4EC {
+
+    package "Domain" {
+        class Supplier <<Entity>> {
+            + id: Number
+            + ruc: String
+            + companyName: String
+            + contactEmail: String
+            + category: String
+            + rating: Number
+            + isActive: Boolean
+            + deliveryRate: Number
+        }
+    }
+
+    package "Infrastructure" {
+        class SuppliersApi extends BaseApi {
+            - suppliersEndpoint: BaseEndpoint
+            + {method} getSuppliers(): Promise
+            + {method} validateRuc(ruc): Promise
+        }
+
+        class SupplierAssembler {
+            + {static} toEntityFromResource(resource): Supplier
+            + {static} toEntitiesFromResponse(response): Supplier[]
+        }
+
+        SupplierAssembler ..> Supplier : creates
+    }
+
+    package "Application" {
+        class SuppliersStore <<Pinia Store>> {
+            + suppliers: Supplier[]
+            + {method} fetchSuppliers(): Promise
+            + {method} createSupplier(data): Promise
+            + {method} validateRuc(ruc): Promise
+        }
+
+        class IncidentsStore <<Pinia Store>> {
+            + incidentsList: Object[]
+            + {method} fetchIncidents(): Promise
+            + {method} createIncident(data): Promise
+            + {method} updateIncidentStatus(id, status): Promise
+            + openIncidents: Object[]
+            + resolvedIncidents: Object[]
+        }
+    }
+
+    package "Presentation" {
+        class SupplierDirectoryView <<Vue View>> {
+            + filters: Object
+            + showDialog: Boolean
+            + {method} handleAddSupplier(): void
+        }
+
+        class IncidentsListView <<Vue View>> {
+            + activeTab: String
+            + showReportDialog: Boolean
+            + {method} handleReportIncident(): void
+        }
+    }
+
+    SuppliersStore --> SuppliersApi : uses
+}
+
+' ===================================================================
+' DELIVERY BOUNDED CONTEXT
+' ===================================================================
+package "Delivery" <<Rectangle>> #E0F7FA {
+
+    package "Domain" {
+        class Delivery <<Entity>> {
+            + id: Number
+            + trackingId: String
+            + purchaseOrder: String
+            + supplier: String
+            + origin: String
+            + destination: String
+            + status: String
+            + eta: String
+            + dispatchDate: String
+            + material: String
+        }
+    }
+
+    package "Infrastructure" {
+        class DeliveryApi extends BaseApi {
+            - deliveriesEndpoint: BaseEndpoint
+            + {method} getDeliveries(): Promise
+            + {method} getDeliveryById(id): Promise
+            + {method} createDelivery(resource): Promise
+            + {method} updateDelivery(resource): Promise
+        }
+
+        class DeliveryAssembler {
+            + {static} toEntityFromResource(resource): Delivery
+            + {static} toEntitiesFromResponse(response): Delivery[]
+        }
+
+        DeliveryAssembler ..> Delivery : creates
+    }
+
+    package "Application" {
+        class DeliveryStore <<Pinia Store>> {
+            + deliveries: Delivery[]
+            + isLoading: Boolean
+            + {method} fetchDeliveries(): Promise
+            + {method} updateDeliveryStatus(id, status): Promise
+            + {method} createDelivery(data): Promise
+            + inTransit: Delivery[]
+            + delayed: Delivery[]
+            + delivered: Delivery[]
+            + nextArrival: Delivery
+            + onTimeRate: Number
+        }
+    }
+
+    package "Presentation" {
+        class DeliveryTrackingView <<Vue View>> {
+            + showRegisterDialog: Boolean
+            + {method} openRegisterDialog(): void
+            + {method} handleRegisterDelivery(): void
+            + {method} updateStatus(id, status): void
+        }
+    }
+
+    DeliveryStore --> DeliveryApi : uses
+}
+
+' ===================================================================
+' ANALYTICS & BUDGETING BOUNDED CONTEXT
+' ===================================================================
+package "Analytics & Budgeting" <<Rectangle>> #F3E5F5 {
+
+    package "Domain" {
+        class Budget <<Entity>> {
+            + id: Number
+            + project: String
+            + totalAmount: Number
+            + spentAmount: Number
+            + status: String
+        }
+    }
+
+    package "Infrastructure" {
+        class AnalyticsApi {
+            + {method} getBudgets(): Promise
+        }
+
+        class BudgetAssembler {
+            + {static} toEntityFromResource(resource): Budget
+            + {static} toEntitiesFromResponse(response): Budget[]
+        }
+
+        BudgetAssembler ..> Budget : creates
+    }
+
+    package "Application" {
+        class AnalyticsStore <<Pinia Store>> {
+            + budgets: Budget[]
+            + transactions: Object[]
+            + {method} fetchBudgets(): Promise
+        }
+    }
+
+    package "Presentation" {
+        class FinancialDashboardView <<Vue View>> {
+            + totalBudget: Number
+            + totalSpent: Number
+            + spentPercent: Number
+        }
+
+        class ReportsView <<Vue View>> {
+            + reportData: Object[]
+            + {method} exportPdf(): void
+        }
+    }
+
+    AnalyticsStore --> AnalyticsApi : uses
+}
+
+' ===================================================================
+' COMMUNICATION BOUNDED CONTEXT
+' ===================================================================
+package "Communication" <<Rectangle>> #E8EAF6 {
+
+    package "Domain" {
+        class Notification <<Entity>> {
+            + id: Number
+            + sender: String
+            + subject: String
+            + body: String
+            + date: String
+            + isRead: Boolean
+            + type: String
+        }
+    }
+
+    package "Infrastructure" {
+        class CommunicationApi extends BaseApi {
+            - messagesEndpoint: BaseEndpoint
+            + {method} getMessages(): Promise
+            + {method} sendMessage(data): Promise
+            + {method} deleteMessage(id): Promise
+        }
+
+        class NotificationAssembler {
+            + {static} toEntityFromResource(resource): Notification
+            + {static} toEntitiesFromResponse(response): Notification[]
+        }
+
+        NotificationAssembler ..> Notification : creates
+    }
+
+    package "Application" {
+        class CommunicationStore <<Pinia Store>> {
+            + messages: Notification[]
+            + {method} fetchMessages(): Promise
+            + {method} markAsRead(id): Promise
+            + unreadCount: Number
+        }
+    }
+
+    package "Presentation" {
+        class MessagesInboxView <<Vue View>> {
+            + activeTab: String
+            + {method} selectMessage(msg): void
+        }
+    }
+
+    CommunicationStore --> CommunicationApi : uses
+}
+
+' ===================================================================
+' PROFILES BOUNDED CONTEXT
+' ===================================================================
+package "Profiles" <<Rectangle>> #EFEBE9 {
+
+    package "Domain" {
+        class Profile <<Entity>> {
+            + id: Number
+            + companyName: String
+            + ruc: String
+            + address: String
+            + phone: String
+            + email: String
+        }
+    }
+
+    package "Infrastructure" {
+        class ProfilesApi extends BaseApi {
+            - profilesEndpoint: BaseEndpoint
+            + {method} getProfileById(id): Promise
+            + {method} updateProfile(id, resource): Promise
+        }
+
+        class ProfileAssembler {
+            + {static} toEntityFromResource(resource): Profile
+            + {static} toEntitiesFromResponse(response): Profile[]
+        }
+
+        ProfileAssembler ..> Profile : creates
+    }
+
+    package "Application" {
+        class ProfilesStore <<Pinia Store>> {
+            + profile: Profile
+            + {method} fetchProfile(id): Promise
+            + {method} updateProfile(id, data): Promise
+        }
+    }
+
+    package "Presentation" {
+        class CompanyProfileView <<Vue View>> {
+            + isEditing: Boolean
+            + {method} saveProfile(): void
+        }
+    }
+
+    ProfilesStore --> ProfilesApi : uses
+}
+
+' ===================================================================
+' CROSS-CONTEXT RELATIONSHIPS
+' ===================================================================
+DashboardShellView ..> ProcurementStore : reads PO data
+DashboardShellView ..> RequisitionStore : reads requisitions
+DashboardShellView ..> InventoryStore : reads inventory
+DashboardShellView ..> SuppliersStore : reads suppliers
+DashboardShellView ..> AnalyticsStore : reads budgets
+
+DeliveryTrackingView ..> DeliveryStore : manages deliveries
+UsersManagementView ..> IamStore : manages users
+
+LayoutComponent ..> IamStore : reads session
+
+@enduml

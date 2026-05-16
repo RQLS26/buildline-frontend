@@ -1,5 +1,10 @@
+/**
+ * Profile Entity
+ * @description Represents a company profile in the Profiles context.
+ * @author RQLS TEAM
+ */
 export class Profile {
-    constructor(id, companyName, ruc, address, phone, email) {
+    constructor({ id = null, companyName = '', ruc = '', address = '', phone = '', email = '' } = {}) {
         this.id = id;
         this.companyName = companyName;
         this.ruc = ruc;

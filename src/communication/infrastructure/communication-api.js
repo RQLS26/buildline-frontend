@@ -1,5 +1,10 @@
-import { BaseApi } from "../../../shared/infrastructure/base-api.js";
-import { BaseEndpoint } from "../../../shared/infrastructure/base-endpoint.js";
+/**
+ * Communication API Service
+ * @description Infrastructure layer for messaging and notification HTTP operations.
+ * @author RQLS TEAM
+ */
+import { BaseApi } from "../../shared/infrastructure/base-api.js";
+import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
 const messagesEndpoint = "/messages";
 

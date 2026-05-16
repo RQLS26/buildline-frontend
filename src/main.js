@@ -1,3 +1,8 @@
+/**
+ * Main Application Entry Point
+ * @description Bootstraps the Vue 3 application with PrimeVue, Pinia, Router, and i18n.
+ * @author RQLS TEAM
+ */
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue';
@@ -13,10 +18,11 @@ import ToastService from 'primevue/toastservice'
 import DialogService from 'primevue/dialogservice'
 
 import {
-    Button, Card, Checkbox, Column, ConfirmDialog, DataTable, Dialog, Drawer,
+    Button, Card, Checkbox, Column, ConfirmDialog, DataTable, DatePicker, Dialog, Drawer,
     FileUpload, FloatLabel, IconField, InputIcon, InputNumber, InputText,
-    Menu, Rating, Row, Select, SelectButton, Tag, Toast, Textarea, Toolbar, Tooltip, MultiSelect
+    Menu, Rating, Row, Select, SelectButton, Tag, Toast, Textarea, Toolbar, Tooltip, MultiSelect, ToggleSwitch
 } from "primevue"
+import Chart from 'primevue/chart';
 
 createApp(App)
     .use(i18n)
@@ -32,12 +38,14 @@ createApp(App)
     .use(ConfirmationService)
     .use(DialogService)
     .use(ToastService)
+    .component('pv-chart', Chart)
     .component('pv-button', Button)
     .component('pv-card', Card)
     .component('pv-checkbox', Checkbox)
     .component('pv-column', Column)
     .component('pv-confirm-dialog', ConfirmDialog)
     .component('pv-data-table', DataTable)
+    .component('pv-date-picker', DatePicker)
     .component('pv-dialog', Dialog)
     .component('pv-drawer', Drawer)
     .component('pv-file-upload', FileUpload)
@@ -57,6 +65,7 @@ createApp(App)
     .component('pv-toolbar', Toolbar)
     .component('pv-tooltip', Tooltip)
     .component('pv-multi-select', MultiSelect)
-    .use(router)
+    .component('pv-toggle-switch', ToggleSwitch)
     .use(pinia)
+    .use(router)
     .mount('#app')
