@@ -7,9 +7,7 @@ skinparam linetype ortho
 skinparam nodesep 60
 skinparam ranksep 40
 
-' ===================================================================
 ' SHARED BOUNDED CONTEXT
-' ===================================================================
 package "Shared" <<Rectangle>> #F0F4FF {
 
     package "Infrastructure" {
@@ -58,9 +56,7 @@ package "Shared" <<Rectangle>> #F0F4FF {
     }
 }
 
-' ===================================================================
 ' IAM BOUNDED CONTEXT
-' ===================================================================
 package "IAM (Identity & Access Management)" <<Rectangle>> #FFF3E0 {
 
     package "Domain" {
@@ -134,9 +130,7 @@ package "IAM (Identity & Access Management)" <<Rectangle>> #FFF3E0 {
     IamStore --> IamApi : uses
 }
 
-' ===================================================================
 ' PROCUREMENT BOUNDED CONTEXT
-' ===================================================================
 package "Procurement" <<Rectangle>> #E8F5E9 {
 
     package "Domain" {
@@ -199,9 +193,7 @@ package "Procurement" <<Rectangle>> #E8F5E9 {
     ProcurementStore --> ProcurementApi : uses
 }
 
-' ===================================================================
 ' REQUISITION BOUNDED CONTEXT
-' ===================================================================
 package "Requisition" <<Rectangle>> #E3F2FD {
 
     package "Domain" {
@@ -264,9 +256,7 @@ package "Requisition" <<Rectangle>> #E3F2FD {
     RequisitionStore --> RequisitionApi : uses
 }
 
-' ===================================================================
 ' INVENTORY BOUNDED CONTEXT
-' ===================================================================
 package "Inventory" <<Rectangle>> #FFF9C4 {
 
     package "Domain" {
@@ -323,9 +313,7 @@ package "Inventory" <<Rectangle>> #FFF9C4 {
     InventoryStore --> InventoryApi : uses
 }
 
-' ===================================================================
 ' SUPPLIERS BOUNDED CONTEXT
-' ===================================================================
 package "Suppliers" <<Rectangle>> #FCE4EC {
 
     package "Domain" {
@@ -391,9 +379,7 @@ package "Suppliers" <<Rectangle>> #FCE4EC {
     SuppliersStore --> SuppliersApi : uses
 }
 
-' ===================================================================
 ' DELIVERY BOUNDED CONTEXT
-' ===================================================================
 package "Delivery" <<Rectangle>> #E0F7FA {
 
     package "Domain" {
@@ -455,9 +441,7 @@ package "Delivery" <<Rectangle>> #E0F7FA {
     DeliveryStore --> DeliveryApi : uses
 }
 
-' ===================================================================
 ' ANALYTICS & BUDGETING BOUNDED CONTEXT
-' ===================================================================
 package "Analytics & Budgeting" <<Rectangle>> #F3E5F5 {
 
     package "Domain" {
@@ -507,9 +491,7 @@ package "Analytics & Budgeting" <<Rectangle>> #F3E5F5 {
     AnalyticsStore --> AnalyticsApi : uses
 }
 
-' ===================================================================
 ' COMMUNICATION BOUNDED CONTEXT
-' ===================================================================
 package "Communication" <<Rectangle>> #E8EAF6 {
 
     package "Domain" {
@@ -559,9 +541,7 @@ package "Communication" <<Rectangle>> #E8EAF6 {
     CommunicationStore --> CommunicationApi : uses
 }
 
-' ===================================================================
 ' PROFILES BOUNDED CONTEXT
-' ===================================================================
 package "Profiles" <<Rectangle>> #EFEBE9 {
 
     package "Domain" {
@@ -608,9 +588,7 @@ package "Profiles" <<Rectangle>> #EFEBE9 {
     ProfilesStore --> ProfilesApi : uses
 }
 
-' ===================================================================
 ' CROSS-CONTEXT RELATIONSHIPS
-' ===================================================================
 DashboardShellView ..> ProcurementStore : reads PO data
 DashboardShellView ..> RequisitionStore : reads requisitions
 DashboardShellView ..> InventoryStore : reads inventory
