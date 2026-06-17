@@ -5,7 +5,6 @@
  * @author RQLS TEAM
  */
 import axios from "axios";
-import router from "../../router.js";
 
 const platformApi = import.meta.env.VITE_API_BASE_URL || "http://localhost:5163/";
 
@@ -32,7 +31,7 @@ export class BaseApi {
                 if (error.response?.status === 401) {
                     localStorage.removeItem('auth_token');
                     localStorage.removeItem('auth_user');
-                    router.push('/iam/sign-in');
+                    window.location.href = '/iam/sign-in';
                 }
                 return Promise.reject(error);
             }
