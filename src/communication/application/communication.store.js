@@ -24,7 +24,7 @@ export const useCommunicationStore = defineStore('communication', {
         async fetchMessages() {
             this.isLoading = true;
             try {
-                const response = await api.get('/messages');
+                const response = await api.get('/api/v1/messages');
                 this.messages = response.data.sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error('Error loading messages:', error);
@@ -34,7 +34,7 @@ export const useCommunicationStore = defineStore('communication', {
         },
         async markAsRead(id) {
             try {
-                await api.patch(`/messages/${id}`, { isRead: true });
+                await api.patch(`/api/v1/messages/${id}`, { isRead: true });
                 const msg = this.messages.find(m => m.id === id);
                 if (msg) msg.isRead = true;
             } catch (error) {
@@ -45,7 +45,7 @@ export const useCommunicationStore = defineStore('communication', {
             const msg = this.messages.find(m => m.id === id);
             if (!msg) return;
             try {
-                await api.patch(`/messages/${id}`, { starred: !msg.starred });
+                await api.patch(`/api/v1/messages/${id}`, { starred: !msg.starred });
                 msg.starred = !msg.starred;
             } catch (error) {
                 console.error('Error toggling star:', error);

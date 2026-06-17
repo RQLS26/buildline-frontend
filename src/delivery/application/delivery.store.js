@@ -40,7 +40,7 @@ export const useDeliveryStore = defineStore('delivery', {
         async fetchDeliveries() {
             this.isLoading = true;
             try {
-                const response = await api.get('/deliveries');
+                const response = await api.get('/api/v1/deliveries');
                 this.deliveries = response.data;
             } catch (error) {
                 console.error('Error loading deliveries:', error);
@@ -56,7 +56,7 @@ export const useDeliveryStore = defineStore('delivery', {
          */
         async updateDeliveryStatus(id, newStatus) {
             try {
-                await api.patch(`/deliveries/${id}`, { status: newStatus });
+                await api.patch(`/api/v1/deliveries/${id}`, { status: newStatus });
                 await this.fetchDeliveries();
                 return true;
             } catch (error) {
@@ -71,7 +71,7 @@ export const useDeliveryStore = defineStore('delivery', {
          */
         async createDelivery(deliveryData) {
             try {
-                await api.post('/deliveries', deliveryData);
+                await api.post('/api/v1/deliveries', deliveryData);
                 await this.fetchDeliveries();
                 return true;
             } catch (error) {

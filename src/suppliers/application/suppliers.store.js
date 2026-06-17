@@ -44,7 +44,7 @@ export const useSuppliersStore = defineStore('suppliers', {
         },
         async createSupplier(supplierData) {
             try {
-                await api.post('/suppliers', supplierData);
+                await api.post('/api/v1/suppliers', supplierData);
                 await this.fetchSuppliers();
                 return true;
             } catch (error) {
@@ -54,7 +54,7 @@ export const useSuppliersStore = defineStore('suppliers', {
         },
         async updateSupplier(id, supplierData) {
             try {
-                await api.patch(`/suppliers/${id}`, supplierData);
+                await api.patch(`/api/v1/suppliers/${id}`, supplierData);
                 await this.fetchSuppliers();
                 return true;
             } catch (error) {
@@ -64,7 +64,7 @@ export const useSuppliersStore = defineStore('suppliers', {
         },
         async deleteSupplier(id) {
             try {
-                await api.delete(`/suppliers/${id}`);
+                await api.delete(`/api/v1/suppliers/${id}`);
                 await this.fetchSuppliers();
                 return true;
             } catch (error) {
@@ -75,7 +75,7 @@ export const useSuppliersStore = defineStore('suppliers', {
         async fetchIncidents() {
             this.isLoading = true;
             try {
-                const response = await api.get('/incidents');
+                const response = await api.get('/api/v1/incidents');
                 this.incidentsList = response.data.sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error('Error loading incidents:', error);
@@ -85,7 +85,7 @@ export const useSuppliersStore = defineStore('suppliers', {
         },
         async createIncident(incidentData) {
             try {
-                await api.post('/incidents', incidentData);
+                await api.post('/api/v1/incidents', incidentData);
                 await this.fetchIncidents();
                 return true;
             } catch (error) {
@@ -95,7 +95,7 @@ export const useSuppliersStore = defineStore('suppliers', {
         },
         async updateIncidentStatus(id, newStatus) {
             try {
-                await api.patch(`/incidents/${id}`, { status: newStatus });
+                await api.patch(`/api/v1/incidents/${id}`, { status: newStatus });
                 await this.fetchIncidents();
                 return true;
             } catch (error) {

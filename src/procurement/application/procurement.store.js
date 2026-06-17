@@ -28,7 +28,7 @@ export const useProcurementStore = defineStore('procurement', {
         async fetchOrders() {
             this.isLoading = true;
             try {
-                const response = await api.get('/purchaseOrders');
+                const response = await api.get('/api/v1/purchaseOrders');
                 this.purchaseOrders = response.data.sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error('Error loading purchase orders:', error);
@@ -38,7 +38,7 @@ export const useProcurementStore = defineStore('procurement', {
         },
         async createOrder(order) {
             try {
-                await api.post('/purchaseOrders', order);
+                await api.post('/api/v1/purchaseOrders', order);
                 await this.fetchOrders();
                 return true;
             } catch (error) {
@@ -50,7 +50,7 @@ export const useProcurementStore = defineStore('procurement', {
             try {
                 const order = this.purchaseOrders.find(o => o.id === id);
                 if (order) {
-                    await api.patch(`/purchaseOrders/${id}`, { status: newStatus });
+                    await api.patch(`/api/v1/purchaseOrders/${id}`, { status: newStatus });
                     await this.fetchOrders();
                 }
             } catch (error) {
@@ -60,7 +60,7 @@ export const useProcurementStore = defineStore('procurement', {
         async fetchQuotations() {
             this.isLoading = true;
             try {
-                const response = await api.get('/quotations');
+                const response = await api.get('/api/v1/quotations');
                 this.quotations = response.data.sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error('Error loading quotations:', error);
@@ -70,7 +70,7 @@ export const useProcurementStore = defineStore('procurement', {
         },
         async createQuotation(quotation) {
             try {
-                await api.post('/quotations', quotation);
+                await api.post('/api/v1/quotations', quotation);
                 await this.fetchQuotations();
                 return true;
             } catch (error) {

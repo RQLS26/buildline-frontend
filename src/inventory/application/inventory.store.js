@@ -30,7 +30,7 @@ export const useInventoryStore = defineStore('inventory', {
         async fetchInventory() {
             this.isLoading = true;
             try {
-                const response = await api.get('/inventory');
+                const response = await api.get('/api/v1/inventory');
                 this.inventoryList = response.data;
             } catch (error) {
                 console.error("Error loading inventory:", error);
@@ -40,7 +40,7 @@ export const useInventoryStore = defineStore('inventory', {
         },
         async updateStock(id, newStock) {
             try {
-                await api.patch(`/inventory/${id}`, { currentStock: newStock, lastUpdated: new Date().toISOString().split('T')[0] });
+                await api.patch(`/api/v1/inventory/${id}`, { currentStock: newStock, lastUpdated: new Date().toISOString().split('T')[0] });
                 await this.fetchInventory();
                 return true;
             } catch (error) {
@@ -50,7 +50,7 @@ export const useInventoryStore = defineStore('inventory', {
         },
         async addItem(itemData) {
             try {
-                await api.post('/inventory', itemData);
+                await api.post('/api/v1/inventory', itemData);
                 await this.fetchInventory();
                 return true;
             } catch (error) {
@@ -60,7 +60,7 @@ export const useInventoryStore = defineStore('inventory', {
         },
         async updateItem(id, itemData) {
             try {
-                await api.patch(`/inventory/${id}`, itemData);
+                await api.patch(`/api/v1/inventory/${id}`, itemData);
                 await this.fetchInventory();
                 return true;
             } catch (error) {

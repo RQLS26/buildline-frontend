@@ -1,19 +1,40 @@
 /**
  * IAM API Service
- * @description Infrastructure layer for Identity & Access Management HTTP operations.
+ * @description Infrastructure layer for Identity & Access Management HTTP operations
+ *              including authentication (sign-in/sign-up) and user management.
  * @author RQLS TEAM
  */
-import axios from 'axios';
+import { BaseApi } from "../../shared/infrastructure/base-api.js";
+import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000' });
+const usersEndpoint = "api/v1/users";
+const authEndpoint = "api/v1/auth";
 
-export class IamApi {
-    /** @summary Retrieves all registered users. */
-    getUsers() {
-        return api.get('/users');
+export class IamApi extends BaseApi {
+    #usersEndpoint;
+
+    constructor() {
+        super();
+        this.#usersEndpoint = new BaseEndpoint(this, usersEndpoint);
     }
 
-    registerUser(userData) {
-        return api.post('/users', userData);
+    signIn(email, password) {
+        return this.http.post(`${authEndpoint}/sign-in`, { email, password });
+    }
+
+    signUp(userData) {
+        return this.http.post(`${authEndpoint}/sign-up`, userData);
+    }
+
+    getAllUsers() {
+        return this.#usersEndpoint.getAll();
+    }
+
+    createUser(userData) {
+        return this.#usersEndpoint.create(userData);
+    }
+
+    updateUser(id, data) {
+        return this.http.patch(`${usersEndpoint}/${id}`, data);
     }
 }
