@@ -1,17 +1,16 @@
 /**
  * IAM Store
  * @description Pinia store for authentication, user session, and role management.
+ *              Uses real JWT-based authentication against the backend API.
  * @author RQLS TEAM
  */
 import { defineStore } from 'pinia';
-import axios from 'axios';
-
-const api = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000' });
+import { IamApi } from '../infrastructure/iam-api.js';
 
 export const useIamStore = defineStore('iam', {
     state: () => ({
-        currentUser: null,
-        isAuthenticated: false,
+        currentUser: JSON.parse(localStorage.getItem('auth_user') || 'null'),
+        isAuthenticated: !!localStorage.getItem('auth_token'),
         allUsers: [],
         isLoading: false,
         error: null
@@ -31,22 +30,30 @@ export const useIamStore = defineStore('iam', {
             this.isLoading = true;
             this.error = null;
             try {
-                const response = await api.get('/users');
-                if (!response.data) {
-                    this.error = "Database error.";
-                    return false;
-                }
-                const user = response.data.find(u => u.email === email && u.password === password);
-                if (user) {
-                    this.currentUser = user;
-                    this.isAuthenticated = true;
-                    return true;
-                } else {
-                    this.error = "Invalid email or password.";
-                    return false;
-                }
+                const api = new IamApi();
+                const response = await api.signIn(email, password);
+                const data = response.data;
+                this.currentUser = {
+                    id: data.id,
+                    name: data.name,
+                    email: data.email,
+                    role: data.role,
+                    department: data.department,
+                    phone: data.phone,
+                    avatarColor: data.avatarColor,
+                    isActive: data.isActive,
+                    lastLogin: data.lastLogin,
+                };
+                this.isAuthenticated = true;
+                localStorage.setItem('auth_token', data.token);
+                localStorage.setItem('auth_user', JSON.stringify(this.currentUser));
+                return true;
             } catch (error) {
-                this.error = "Error connecting to server.";
+                if (error.response?.status === 401) {
+                    this.error = "Invalid email or password.";
+                } else {
+                    this.error = "Error connecting to server.";
+                }
                 return false;
             } finally {
                 this.isLoading = false;
@@ -56,13 +63,39 @@ export const useIamStore = defineStore('iam', {
             this.isLoading = true;
             this.error = null;
             try {
-                const newUser = { ...userData, role: 'viewer', isActive: true, lastLogin: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) };
-                const response = await api.post('/users', newUser);
-                this.currentUser = response.data;
+                const api = new IamApi();
+                const payload = {
+                    name: userData.name,
+                    email: userData.email,
+                    password: userData.password,
+                    role: userData.role || 'viewer',
+                    department: userData.department || 'General',
+                    phone: userData.phone || '',
+                    avatarColor: userData.avatarColor || '#3d63a1',
+                };
+                const response = await api.signUp(payload);
+                const data = response.data;
+                this.currentUser = {
+                    id: data.id,
+                    name: data.name,
+                    email: data.email,
+                    role: data.role,
+                    department: data.department,
+                    phone: data.phone,
+                    avatarColor: data.avatarColor,
+                    isActive: data.isActive,
+                    lastLogin: data.lastLogin,
+                };
                 this.isAuthenticated = true;
+                localStorage.setItem('auth_token', data.token);
+                localStorage.setItem('auth_user', JSON.stringify(this.currentUser));
                 return true;
             } catch (error) {
-                this.error = "Error creating account.";
+                if (error.response?.status === 409) {
+                    this.error = "This email is already registered.";
+                } else {
+                    this.error = "Error creating account.";
+                }
                 return false;
             } finally {
                 this.isLoading = false;
@@ -71,7 +104,8 @@ export const useIamStore = defineStore('iam', {
         async fetchAllUsers() {
             this.isLoading = true;
             try {
-                const response = await api.get('/users');
+                const api = new IamApi();
+                const response = await api.getAllUsers();
                 this.allUsers = response.data;
             } catch (error) {
                 console.error("Error loading users:", error);
@@ -82,7 +116,8 @@ export const useIamStore = defineStore('iam', {
         async updateUserRole(userId, newRole) {
             if (!this.isAdmin) return false;
             try {
-                await api.patch(`/users/${userId}`, { role: newRole });
+                const api = new IamApi();
+                await api.updateUser(userId, { role: newRole });
                 await this.fetchAllUsers();
                 return true;
             } catch (error) {
@@ -93,8 +128,10 @@ export const useIamStore = defineStore('iam', {
         async updateUserProfile(updatedData) {
             if (!this.currentUser) return false;
             try {
-                await api.patch(`/users/${this.currentUser.id}`, updatedData);
+                const api = new IamApi();
+                await api.updateUser(this.currentUser.id, updatedData);
                 this.currentUser = { ...this.currentUser, ...updatedData };
+                localStorage.setItem('auth_user', JSON.stringify(this.currentUser));
                 return true;
             } catch (error) {
                 console.error("Error updating profile:", error);
@@ -105,11 +142,11 @@ export const useIamStore = defineStore('iam', {
             this.currentUser = null;
             this.isAuthenticated = false;
             this.allUsers = [];
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('auth_user');
         },
-        // Granular permission checks
         canAccess(feature) {
             if (this.isAdmin) return true;
-            // Viewers cannot: create/edit/delete data, manage users, change settings
             const restrictedForViewer = [
                 'manage_users', 'change_roles', 'delete_data',
                 'system_settings', 'create_po', 'create_quotation',
@@ -119,10 +156,8 @@ export const useIamStore = defineStore('iam', {
             ];
             return !restrictedForViewer.includes(feature);
         },
-        // Check if current user can access a route
         canAccessRoute(routeName) {
             if (this.isAdmin) return true;
-            // Routes completely restricted for viewers
             const adminOnlyRoutes = ['users', 'settings'];
             return !adminOnlyRoutes.includes(routeName);
         }

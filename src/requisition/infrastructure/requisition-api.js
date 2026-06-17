@@ -6,8 +6,8 @@
 import { BaseApi } from "../../shared/infrastructure/base-api.js";
 import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
-const materialsEndpoint = "/materials";
-const requisitionsEndpoint = "/requisitions";
+const materialsEndpoint = "api/v1/materials";
+const requisitionsEndpoint = "api/v1/requisitions";
 
 export class RequisitionApi extends BaseApi {
     #materialsEndpoint;

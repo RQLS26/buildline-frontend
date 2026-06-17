@@ -3,13 +3,20 @@
  * @description Infrastructure layer for budget and analytics HTTP operations.
  * @author RQLS TEAM
  */
-import axios from 'axios';
+import { BaseApi } from "../../shared/infrastructure/base-api.js";
+import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000' });
+const budgetsEndpoint = "api/v1/budgets";
 
-export class AnalyticsApi {
-    /** @summary Retrieves all project budgets. */
+export class AnalyticsApi extends BaseApi {
+    #budgetsEndpoint;
+
+    constructor() {
+        super();
+        this.#budgetsEndpoint = new BaseEndpoint(this, budgetsEndpoint);
+    }
+
     getBudgets() {
-        return api.get('/budgets');
+        return this.#budgetsEndpoint.getAll();
     }
 }

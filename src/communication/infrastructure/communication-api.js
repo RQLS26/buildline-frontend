@@ -6,7 +6,7 @@
 import { BaseApi } from "../../shared/infrastructure/base-api.js";
 import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
-const messagesEndpoint = "/messages";
+const messagesEndpoint = "api/v1/messages";
 
 export class CommunicationApi extends BaseApi {
     #messagesEndpoint;

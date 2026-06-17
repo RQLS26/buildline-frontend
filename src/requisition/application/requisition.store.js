@@ -23,7 +23,7 @@ export const useRequisitionStore = defineStore('requisition', {
         async fetchRequests() {
             this.isLoading = true;
             try {
-                const response = await api.get('/requisitions');
+                const response = await api.get('/api/v1/requisitions');
                 this.requests = response.data.sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error("Error loading requests:", error);
@@ -33,7 +33,7 @@ export const useRequisitionStore = defineStore('requisition', {
         },
         async createRequest(newReq) {
             try {
-                await api.post('/requisitions', newReq);
+                await api.post('/api/v1/requisitions', newReq);
                 await this.fetchRequests();
                 return true;
             } catch (error) {

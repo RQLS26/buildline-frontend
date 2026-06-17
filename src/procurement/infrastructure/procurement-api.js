@@ -6,7 +6,7 @@
 import { BaseApi } from "../../shared/infrastructure/base-api.js";
 import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
-const purchaseOrdersEndpoint = "/purchaseOrders";
+const purchaseOrdersEndpoint = "api/v1/purchaseOrders";
 
 export class ProcurementApi extends BaseApi {
     #purchaseOrdersEndpoint;

@@ -89,6 +89,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { RequisitionApi } from '../../infrastructure/requisition-api.js';
 
 const activeTab = ref('All');
 const searchQuery = ref('');
@@ -108,10 +109,10 @@ const tabs = [
 
 const fetchRequests = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:3000'}/requisitions`);
-    requests.value = await response.json();
+    const api = new RequisitionApi();
+    const response = await api.http.get('api/v1/requisitions');
+    requests.value = response.data.sort((a, b) => b.id - a.id);
   } catch (error) {
-    // Fallback data if server is not running
     requests.value = [
       { id: 'MR-2026-00024', material: 'Steel Rebar 1/2"', project: 'Skyline Tower', priority: 'High', status: 'Pending', requestedOn: 'May 19, 2026' },
       { id: 'MR-2026-00023', material: 'Concrete 3000 PSI', project: 'Skyline Tower', priority: 'Medium', status: 'Approved', requestedOn: 'May 18, 2026' },

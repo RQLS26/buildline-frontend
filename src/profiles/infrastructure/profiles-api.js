@@ -6,7 +6,7 @@
 import { BaseApi } from "../../shared/infrastructure/base-api.js";
 import { BaseEndpoint } from "../../shared/infrastructure/base-endpoint.js";
 
-const profilesEndpoint = "/profiles";
+const profilesEndpoint = "api/v1/profiles";
 
 export class ProfilesApi extends BaseApi {
     #profilesEndpoint;
