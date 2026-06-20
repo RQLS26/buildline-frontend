@@ -167,7 +167,7 @@ import { useToast } from 'primevue/usetoast';
 import { useIamStore } from '../../application/iam.store.js';
 
 const toast = useToast();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const iamStore = useIamStore();
 const showDialog = ref(false);
 const activeTab = ref('All');
@@ -253,8 +253,16 @@ const getMembershipLabel = (user) => {
 };
 
 const formatLastLogin = (value) => {
-  if (!value || /^May\s+\d{1,2},\s+2026$/i.test(String(value))) return t('common.no_data');
-  return value;
+  if (!value || String(value).toLowerCase() === 'never') return t('common.no_data');
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return t('common.no_data');
+  return parsed.toLocaleString(locale.value === 'es' ? 'es-PE' : 'en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 };
 
 const reviewMembership = async (user, membershipStatus) => {
