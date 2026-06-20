@@ -4,8 +4,8 @@
  * @module api-endpoints
  * @description
  * Centralizes backend route fragments so endpoint strings are not duplicated across
- * Pinia stores or Vue views. The values are relative to `platformApiBaseUrl`; they keep
- * the `/api/v1` prefix because the ASP.NET Core backend exposes versioned REST routes.
+ * Pinia stores or Vue views. Company-owned operational endpoints are functions because
+ * they must resolve the authenticated company at request time.
  *
  * When a backend route changes, update this catalog and the corresponding context adapter.
  * Application stores should continue calling semantic adapter methods such as
@@ -13,6 +13,8 @@
  *
  * @author RQLS TEAM
  */
+
+import { DEFAULT_COMPANY_ID, getActiveCompanyId } from '../application/company-scope.js';
 
 const productionApiBaseUrl = 'https://buildline-platform.up.railway.app/';
 const legacyMockApiHosts = ['buildline-json-server.onrender.com'];
@@ -54,26 +56,43 @@ export const normalizeApiBaseUrl = (rawBaseUrl) => {
 export const platformApiBaseUrl = normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL);
 
 /**
+ * Builds a company-scoped operational backend route.
+ *
+ * @param {string} resource - Company-owned backend resource segment.
+ * @returns {string} Versioned route scoped to the active company.
+ * @description
+ * The backend owns tenancy through `/api/v1/companies/{companyId}/...`. The default
+ * company id is used only before authentication finishes, matching the seeded Buildline
+ * demo account and preventing adapters from falling back to unscoped endpoints.
+ */
+const companyEndpoint = (resource) => {
+    const companyId = getActiveCompanyId() ?? DEFAULT_COMPANY_ID;
+    return `api/v1/companies/${companyId}/${resource}`;
+};
+
+/**
  * Backend REST endpoint paths grouped by bounded context.
  *
- * @type {Readonly<Record<string, string>>}
- * @description These strings are consumed only by infrastructure adapters. They should
+ * @type {Readonly<Record<string, string|(() => string)>>}
+ * @description These values are consumed only by infrastructure adapters. They should
  * not be imported directly by stores or presentation views.
  */
 export const apiEndpoints = Object.freeze({
-    analyticsBudgets: 'api/v1/budgets',
-    analyticsProjects: 'api/v1/projects',
+    analyticsBudgets: () => companyEndpoint('budgets'),
+    analyticsProjects: () => companyEndpoint('projects'),
     auth: 'api/v1/auth',
     categories: 'api/v1/categories',
-    deliveries: 'api/v1/deliveries',
-    incidents: 'api/v1/incidents',
-    inventory: 'api/v1/inventory',
-    materials: 'api/v1/materials',
-    messages: 'api/v1/messages',
+    deliveries: () => companyEndpoint('deliveries'),
+    incidents: () => companyEndpoint('incidents'),
+    inventory: () => companyEndpoint('inventory'),
+    materials: () => companyEndpoint('materials'),
+    messages: () => companyEndpoint('messages'),
     profiles: 'api/v1/profiles',
-    purchaseOrders: 'api/v1/purchaseOrders',
-    quotations: 'api/v1/quotations',
-    requisitions: 'api/v1/requisitions',
-    suppliers: 'api/v1/suppliers',
-    users: 'api/v1/users',
+    purchaseOrders: () => companyEndpoint('purchaseOrders'),
+    quotations: () => companyEndpoint('quotations'),
+    requisitions: () => companyEndpoint('requisitions'),
+    suppliers: () => companyEndpoint('suppliers'),
+    currentUser: 'api/v1/users/me',
+    userPassword: 'api/v1/users',
+    users: () => companyEndpoint('users'),
 });

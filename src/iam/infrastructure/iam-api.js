@@ -58,7 +58,7 @@ export class IamApi extends BaseApi {
      * @returns {Promise<import('axios').AxiosResponse<Object>>} Response containing the current user resource.
      */
     getCurrentUser() {
-        return this.http.get(`${apiEndpoints.users}/me`);
+        return this.http.get(apiEndpoints.currentUser);
     }
 
     /**
@@ -90,6 +90,6 @@ export class IamApi extends BaseApi {
      * @returns {Promise<import('axios').AxiosResponse<Object>>} Response containing the updated user resource.
      */
     changePassword(id, data) {
-        return this.http.patch(`${apiEndpoints.users}/${id}/password`, data);
+        return this.http.patch(`${apiEndpoints.userPassword}/${id}/password`, data);
     }
 }
