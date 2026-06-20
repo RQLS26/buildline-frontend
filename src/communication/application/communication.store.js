@@ -1,13 +1,16 @@
+import { defineStore } from 'pinia';
+import { CommunicationApi } from '../infrastructure/communication-api.js';
+
+const api = new CommunicationApi();
+
 /**
- * Communication Store
- * @description Pinia store for notifications, messages, and alerts management.
+ * Pinia store for message inbox state.
+ *
+ * @description Loads messages and coordinates read/starred state transitions with the
+ * backend communication API.
+ *
  * @author RQLS TEAM
  */
-import { defineStore } from 'pinia';
-import axios from 'axios';
-
-const api = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000' });
-
 export const useCommunicationStore = defineStore('communication', {
     state: () => ({
         messages: [],
@@ -21,10 +24,15 @@ export const useCommunicationStore = defineStore('communication', {
         unreadCount: (state) => state.messages.filter(m => !m.isRead).length,
     },
     actions: {
+        /**
+         * Loads inbox messages ordered from newest to oldest.
+         *
+         * @returns {Promise<void>} Resolves after `messages` is refreshed.
+         */
         async fetchMessages() {
             this.isLoading = true;
             try {
-                const response = await api.get('/api/v1/messages');
+                const response = await api.getMessages();
                 this.messages = response.data.sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error('Error loading messages:', error);
@@ -32,20 +40,32 @@ export const useCommunicationStore = defineStore('communication', {
                 this.isLoading = false;
             }
         },
+        /**
+         * Marks one message as read and updates local state after backend success.
+         *
+         * @param {number|string} id - Message identifier.
+         * @returns {Promise<void>} Resolves after the update attempt.
+         */
         async markAsRead(id) {
             try {
-                await api.patch(`/api/v1/messages/${id}`, { isRead: true });
+                await api.updateMessage(id, { isRead: true });
                 const msg = this.messages.find(m => m.id === id);
                 if (msg) msg.isRead = true;
             } catch (error) {
                 console.error('Error marking message as read:', error);
             }
         },
+        /**
+         * Toggles the starred flag for a message.
+         *
+         * @param {number|string} id - Message identifier.
+         * @returns {Promise<void>} Resolves after the update attempt.
+         */
         async toggleStar(id) {
             const msg = this.messages.find(m => m.id === id);
             if (!msg) return;
             try {
-                await api.patch(`/api/v1/messages/${id}`, { starred: !msg.starred });
+                await api.updateMessage(id, { starred: !msg.starred });
                 msg.starred = !msg.starred;
             } catch (error) {
                 console.error('Error toggling star:', error);

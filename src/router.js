@@ -15,8 +15,7 @@ import profilesRoutes from './profiles/presentation/profiles-routes.js';
 import communicationRoutes from './communication/presentation/communication-routes.js';
 import analyticsRoutes from './analytics-budgeting/presentation/analytics-routes.js';
 import deliveryRoutes from './delivery/presentation/delivery-routes.js';
-
-import { useIamStore } from './iam/application/iam.store.js';
+import { authenticationGuard } from './iam/infrastructure/authentication.guard.js';
 
 const accessDenied = () => import('./shared/presentation/views/access-denied.vue');
 
@@ -60,21 +59,7 @@ router.beforeEach((to) => {
     let baseTitle = 'Buildline';
     document.title = `${baseTitle} - ${to.meta['title'] || 'App'}`;
 
-    const store = useIamStore();
-
-    const isPublicRoute = to.path.startsWith('/iam');
-
-    if (!isPublicRoute && !store.isAuthenticated) {
-        return '/iam/sign-in';
-    }
-    if (isPublicRoute && store.isAuthenticated) {
-        return '/home';
-    }
-    if (to.meta.requiresAdmin && !store.isAdmin) {
-        return '/access-denied';
-    }
-    // Allow navigation
-    return true;
+    return authenticationGuard(to);
 });
 
 export default router;

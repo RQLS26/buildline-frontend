@@ -77,7 +77,7 @@
       <div class="flex flex-column gap-4 pt-2">
         <div class="flex flex-column gap-2">
           <label class="filter-label">{{ $t('inventory.material_name') }} *</label>
-          <pv-input-text v-model="newItem.name" placeholder="e.g. Steel Rebar 1/2&quot;" class="w-full"/>
+          <pv-select v-model="newItem.name" :options="materialOptions" placeholder="Select material" class="w-full"/>
         </div>
         <div class="flex gap-3">
           <div class="flex flex-column gap-2 flex-1">
@@ -155,21 +155,28 @@
 <script setup>
 import {ref, computed, onMounted} from 'vue';
 import {useInventoryStore} from '../../application/inventory.store.js';
+import {useReferenceDataStore} from '../../../shared/application/reference-data.store.js';
+import {buildNextPlainCode} from '../../../shared/application/business-code.js';
 import {useToast} from 'primevue/usetoast';
 
 const toast = useToast();
 const inventoryStore = useInventoryStore();
+const referenceStore = useReferenceDataStore();
 const showAddDialog = ref(false);
 const showEditDialog = ref(false);
 const activeTab = ref('All');
 const filters = ref({category: null, stock: null, project: null});
 
-const categories = ['Steel', 'Concrete', 'Aggregate', 'Plumbing', 'Electrical', 'Wood'];
-const stockLevels = ['In Stock', 'Low Stock', 'Out of Stock'];
-const projectOptions = ['Skyline Tower', 'Coastal Bridge', 'Grand Park'];
+const categories = computed(() => referenceStore.categoryNames);
+const stockLevels = computed(() => ['In Stock', 'Low Stock', 'Out of Stock']);
+const projectOptions = computed(() => referenceStore.projectNames);
+const materialOptions = computed(() => referenceStore.materialNames);
 
 onMounted(async () => {
-  await inventoryStore.fetchInventory();
+  await Promise.all([
+    inventoryStore.fetchInventory(),
+    referenceStore.fetchAll()
+  ]);
 });
 
 const items = computed(() => inventoryStore.inventoryList);
@@ -209,14 +216,18 @@ const openAddDialog = () => {
 
 const handleAddItem = async () => {
   if (!newItem.value.name) {
-    toast.add({severity: 'warn', summary: 'Warning', detail: 'Enter material name.', life: 3000});
+    toast.add({severity: 'warn', summary: 'Warning', detail: 'Select a material.', life: 3000});
+    return;
+  }
+  if (!newItem.value.category || !newItem.value.project) {
+    toast.add({severity: 'warn', summary: 'Warning', detail: 'Select category and project.', life: 3000});
     return;
   }
   const itemData = {
-    sku: `INV-${String(items.value.length + 1).padStart(3, '0')}`,
+    sku: buildNextPlainCode(items.value, 'sku', 'INV'),
     name: newItem.value.name,
-    project: newItem.value.project || 'Skyline Tower',
-    category: newItem.value.category || 'Steel',
+    project: newItem.value.project,
+    category: newItem.value.category,
     currentStock: newItem.value.currentStock || 0,
     maxStock: newItem.value.maxStock || 100,
     minStock: newItem.value.minStock || 10,

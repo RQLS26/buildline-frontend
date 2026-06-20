@@ -36,19 +36,19 @@
       <div class="settings-row">
         <div class="setting-item">
           <div class="setting-label">{{ $t('settings.language') }}</div>
-          <pv-select v-model="preferences.language" :options="['English', 'Spanish']" class="w-full settings-input" />
+          <pv-select v-model="preferences.language" :options="languageOptions" optionLabel="label" optionValue="value" class="w-full settings-input" />
         </div>
         <div class="setting-item">
           <div class="setting-label">{{ $t('settings.currency') }}</div>
-          <pv-select v-model="preferences.currency" :options="['USD ($)', 'PEN (S/)', 'EUR (€)']" class="w-full settings-input" />
+          <pv-select v-model="preferences.currency" :options="currencyOptions" optionLabel="label" optionValue="value" class="w-full settings-input" />
         </div>
         <div class="setting-item">
           <div class="setting-label">{{ $t('settings.date_format') }}</div>
-          <pv-select v-model="preferences.dateFormat" :options="['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD']" class="w-full settings-input" />
+          <pv-select v-model="preferences.dateFormat" :options="dateFormatOptions" optionLabel="label" optionValue="value" class="w-full settings-input" />
         </div>
         <div class="setting-item">
           <div class="setting-label">{{ $t('settings.theme') }}</div>
-          <pv-select v-model="preferences.theme" :options="['Light', 'Dark', 'System']" class="w-full settings-input" />
+          <pv-select v-model="preferences.theme" :options="themeOptions" optionLabel="label" optionValue="value" class="w-full settings-input" />
         </div>
       </div>
     </div>
@@ -80,11 +80,11 @@
           </div>
           <div class="setting-item">
             <div class="setting-label">{{ $t('settings.new_password') }}</div>
-            <pv-input-text type="password" v-model="security.newPassword" placeholder="Enter new password" class="w-full settings-input" />
+            <pv-input-text type="password" v-model="security.newPassword" :placeholder="$t('settings.enter_new_password')" class="w-full settings-input" />
           </div>
           <div class="setting-item">
             <div class="setting-label">{{ $t('settings.confirm_password') }}</div>
-            <pv-input-text type="password" v-model="security.confirmPassword" placeholder="Confirm new password" class="w-full settings-input" />
+            <pv-input-text type="password" v-model="security.confirmPassword" :placeholder="$t('settings.confirm_new_password')" class="w-full settings-input" />
           </div>
           <div class="toggle-row">
             <div>
@@ -107,107 +107,145 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
 import { useIamStore } from '../../../iam/application/iam.store.js';
 
 const toast = useToast();
+const { locale, t } = useI18n();
 const iamStore = useIamStore();
+const preferencesKey = 'buildline.preferences';
+const notificationsKey = 'buildline.notifications';
 
-// Load from the current logged-in user
-const profile = ref({
-  name: '',
-  email: '',
-  phone: '',
-  role: ''
-});
+const profile = ref({ name: '', email: '', phone: '', role: '' });
+const preferences = ref({ language: 'en', currency: 'USD', dateFormat: 'MM/DD/YYYY', theme: 'light' });
+const notifications = ref({ email: true, lowStock: true, delivery: true, budget: false });
+const security = ref({ currentPassword: '', newPassword: '', confirmPassword: '', twoFactor: Boolean(iamStore.currentUser?.twoFactorEnabled) });
+
+const readStorage = (key, fallback) => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? { ...fallback, ...JSON.parse(raw) } : fallback;
+  } catch (error) {
+    console.error(`Could not read ${key}:`, error);
+    return fallback;
+  }
+};
+
+const writeStorage = (key, value) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.error(`Could not persist ${key}:`, error);
+  }
+};
+
+const languageOptions = computed(() => [
+  { label: t('settings.language_english'), value: 'en' },
+  { label: t('settings.language_spanish'), value: 'es' }
+]);
+const currencyOptions = computed(() => [
+  { label: 'USD ($)', value: 'USD' },
+  { label: 'PEN (S/)', value: 'PEN' },
+  { label: 'EUR (€)', value: 'EUR' }
+]);
+const dateFormatOptions = computed(() => [
+  { label: 'MM/DD/YYYY', value: 'MM/DD/YYYY' },
+  { label: 'DD/MM/YYYY', value: 'DD/MM/YYYY' },
+  { label: 'YYYY-MM-DD', value: 'YYYY-MM-DD' }
+]);
+const themeOptions = computed(() => [
+  { label: t('settings.theme_light'), value: 'light' },
+  { label: t('settings.theme_dark'), value: 'dark' },
+  { label: t('settings.theme_system'), value: 'system' }
+]);
+const toggles = computed(() => [
+  { key: 'email', label: t('settings.email_notifications'), desc: t('settings.email_notifications_desc') },
+  { key: 'lowStock', label: t('settings.low_stock_alerts'), desc: t('settings.low_stock_alerts_desc') },
+  { key: 'delivery', label: t('settings.delivery_updates'), desc: t('settings.delivery_updates_desc') },
+  { key: 'budget', label: t('settings.budget_alerts'), desc: t('settings.budget_alerts_desc') }
+]);
+
+const applyTheme = (theme) => {
+  const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  const resolvedTheme = theme === 'system' ? (prefersDark ? 'dark' : 'light') : theme;
+  document.documentElement.dataset.theme = resolvedTheme;
+};
+
+const syncProfile = (user) => {
+  if (!user) return;
+  profile.value = {
+    name: user.name || '',
+    email: user.email || '',
+    phone: user.phone || '',
+    role: user.role || 'viewer'
+  };
+};
 
 onMounted(() => {
-  if (iamStore.currentUser) {
-    profile.value = {
-      name: iamStore.currentUser.name || '',
-      email: iamStore.currentUser.email || '',
-      phone: iamStore.currentUser.phone || '',
-      role: iamStore.currentUser.role || 'viewer'
-    };
-  }
+  preferences.value = readStorage(preferencesKey, preferences.value);
+  notifications.value = readStorage(notificationsKey, notifications.value);
+  security.value.twoFactor = Boolean(iamStore.currentUser?.twoFactorEnabled);
+  locale.value = preferences.value.language;
+  applyTheme(preferences.value.theme);
+  syncProfile(iamStore.currentUser);
 });
 
-watch(() => iamStore.currentUser, (user) => {
-  if (user) {
-    profile.value = {
-      name: user.name || '',
-      email: user.email || '',
-      phone: user.phone || '',
-      role: user.role || 'viewer'
-    };
-  }
-}, { immediate: true });
-
-const preferences = ref({
-  language: 'English',
-  currency: 'USD ($)',
-  dateFormat: 'MM/DD/YYYY',
-  theme: 'Light'
-});
-
-const notifications = ref({
-  email: true,
-  lowStock: true,
-  delivery: true,
-  budget: false
-});
-
-const toggles = [
-  { key: 'email', label: 'Email Notifications', desc: 'Receive order updates via email' },
-  { key: 'lowStock', label: 'Low Stock Alerts', desc: 'Alert when inventory is below minimum' },
-  { key: 'delivery', label: 'Delivery Updates', desc: 'Notify on shipment status changes' },
-  { key: 'budget', label: 'Budget Alerts', desc: 'Warn when thresholds are exceeded' },
-];
-
-const security = ref({
-  currentPassword: '',
-  newPassword: '',
-  confirmPassword: '',
-  twoFactor: false
+watch(() => iamStore.currentUser, syncProfile, { immediate: true });
+watch(preferences, (value) => {
+  locale.value = value.language;
+  applyTheme(value.theme);
+  writeStorage(preferencesKey, value);
+}, { deep: true });
+watch(notifications, (value) => writeStorage(notificationsKey, value), { deep: true });
+watch(() => iamStore.currentUser?.twoFactorEnabled, (value) => {
+  security.value.twoFactor = Boolean(value);
 });
 
 const saveSettings = async () => {
   if (security.value.newPassword) {
     if (!security.value.currentPassword) {
-      toast.add({ severity: 'warn', summary: 'Warning', detail: 'Enter your current password.', life: 3000 });
-      return;
-    }
-    if (security.value.currentPassword !== iamStore.currentUser?.password) {
-      toast.add({ severity: 'error', summary: 'Error', detail: 'Current password is incorrect.', life: 3000 });
+      toast.add({ severity: 'warn', summary: t('common.warning'), detail: t('settings.current_password_required'), life: 3000 });
       return;
     }
     if (security.value.newPassword !== security.value.confirmPassword) {
-      toast.add({ severity: 'error', summary: 'Error', detail: 'Passwords do not match.', life: 3000 });
+      toast.add({ severity: 'error', summary: t('common.error'), detail: t('settings.passwords_mismatch'), life: 3000 });
       return;
     }
     if (security.value.newPassword.length < 6) {
-      toast.add({ severity: 'warn', summary: 'Warning', detail: 'Password must be at least 6 characters.', life: 3000 });
+      toast.add({ severity: 'warn', summary: t('common.warning'), detail: t('settings.password_min_length'), life: 3000 });
       return;
     }
   }
 
-  const updateData = {
-    name: profile.value.name,
-    email: profile.value.email,
-    phone: profile.value.phone
-  };
+  writeStorage(preferencesKey, preferences.value);
+  writeStorage(notificationsKey, notifications.value);
 
-  if (security.value.newPassword) {
-    updateData.password = security.value.newPassword;
+  let profileSaved = true;
+  if (iamStore.isAdmin) {
+    profileSaved = await iamStore.updateUserProfile({
+      name: profile.value.name,
+      email: profile.value.email,
+      phone: profile.value.phone,
+      twoFactorEnabled: security.value.twoFactor
+    });
+  } else if (iamStore.currentUser) {
+    profileSaved = await iamStore.updateUserProfile({ twoFactorEnabled: security.value.twoFactor });
   }
 
-  const success = await iamStore.updateUserProfile(updateData);
-  if (success) {
-    security.value = { currentPassword: '', newPassword: '', confirmPassword: '', twoFactor: security.value.twoFactor };
-    toast.add({ severity: 'success', summary: 'Saved', detail: 'Settings updated successfully.', life: 3000 });
+  if (profileSaved && security.value.newPassword) {
+    profileSaved = await iamStore.changePassword({
+      currentPassword: security.value.currentPassword,
+      newPassword: security.value.newPassword
+    });
+  }
+
+  if (profileSaved) {
+    security.value = { currentPassword: '', newPassword: '', confirmPassword: '', twoFactor: Boolean(iamStore.currentUser?.twoFactorEnabled) };
+    toast.add({ severity: 'success', summary: t('common.success'), detail: t('settings.saved_message'), life: 3000 });
   } else {
-    toast.add({ severity: 'error', summary: 'Error', detail: 'Could not save settings.', life: 3000 });
+    toast.add({ severity: 'error', summary: t('common.error'), detail: t('settings.save_error'), life: 3000 });
   }
 };
 </script>

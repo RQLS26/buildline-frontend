@@ -17,7 +17,7 @@
       </div>
       <div class="filter-group filter-action">
         <pv-button label="Clear filters" icon="pi pi-times" iconPos="right"
-                   class="p-button-outlined clear-filters-btn" />
+                   class="p-button-outlined clear-filters-btn" @click="clearFilters" />
       </div>
       <pv-button label="New PO" icon="pi pi-plus" class="new-po-btn" @click="showPODialog = true" />
     </div>
@@ -119,7 +119,7 @@
           </div>
           <div class="form-field">
             <label class="form-label">Unit</label>
-            <pv-select v-model="poForm.unit" :options="['PCS', 'Tons', 'Bags', 'm3', 'Hours']" class="w-full form-input" />
+            <pv-select v-model="poForm.unit" :options="unitOptions" class="w-full form-input" />
           </div>
           <div class="form-field">
             <label class="form-label">Unit Price ($) <span class="required">*</span></label>
@@ -158,22 +158,26 @@ import { useToast } from 'primevue/usetoast';
 import { useProcurementStore } from '../../application/procurement.store.js';
 import { useIamStore } from '../../../iam/application/iam.store.js';
 import { useSuppliersStore } from '../../../suppliers/application/suppliers.store.js';
+import { useReferenceDataStore } from '../../../shared/application/reference-data.store.js';
+import { buildNextBusinessCode } from '../../../shared/application/business-code.js';
 
 const toast = useToast();
 const store = useProcurementStore();
 const iamStore = useIamStore();
 const suppliersStore = useSuppliersStore();
+const referenceStore = useReferenceDataStore();
 const activeTab = ref('All');
 const filters = ref({ supplier: null, status: null, amount: null });
 
 const suppliers = computed(() => suppliersStore.suppliersList.map(s => s.companyName));
-const statuses = ['Pending', 'Approved', 'Rejected'];
-const amountRanges = ['< $10,000', '$10,000 - $50,000', '> $50,000'];
+const statuses = computed(() => [...new Set(store.purchaseOrders.map(order => order.status).filter(Boolean))]);
+const amountRanges = computed(() => ['< $10,000', '$10,000 - $50,000', '> $50,000']);
 
 onMounted(async () => {
   await Promise.all([
     store.fetchOrders(),
-    suppliersStore.fetchSuppliers()
+    suppliersStore.fetchSuppliers(),
+    referenceStore.fetchAll()
   ]);
 });
 
@@ -186,15 +190,16 @@ const tabs = computed(() => [
 
 // PO Dialog
 const showPODialog = ref(false);
-const projectOptions = ['Skyline Tower', 'Coastal Bridge', 'Grand Park'];
-const materialOptions = ['Steel Rebar 1/2"', 'Concrete 3000 PSI', 'Cement Type I', 'Sand Fine', 'Gravel 3/4"', 'PVC Pipes 4"', 'Steel Beams W8', 'Safety Equipment', 'Plywood Sheets'];
+const projectOptions = computed(() => referenceStore.projectNames);
+const materialOptions = computed(() => referenceStore.materialNames);
+const unitOptions = computed(() => referenceStore.materialUnits);
 
 const poForm = ref({
   supplier: null,
   project: null,
   material: null,
   quantity: 100,
-  unit: 'PCS',
+  unit: null,
   unitPrice: null,
   deliveryDate: '',
   paymentTerms: 'Net 30',
@@ -202,20 +207,24 @@ const poForm = ref({
 });
 
 const createPurchaseOrder = async () => {
+  if (!poForm.value.supplier || !poForm.value.project || !poForm.value.material || !poForm.value.quantity || !poForm.value.unitPrice) {
+    toast.add({ severity: 'warn', summary: 'Missing data', detail: 'Select supplier, project, material, quantity and unit price.', life: 3000 });
+    return;
+  }
   const totalAmount = (poForm.value.quantity || 0) * (poForm.value.unitPrice || 0);
   const newPO = {
-    orderId: `PO-2026-00${Math.floor(Math.random() * 90) + 16}`,
+    orderId: buildNextBusinessCode(store.purchaseOrders, 'orderId', 'PO', new Date().getFullYear(), 4),
     date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-    supplierName: poForm.value.supplier || 'Unknown',
-    material: poForm.value.material || 'Material',
-    project: poForm.value.project || 'Project',
+    supplierName: poForm.value.supplier,
+    material: poForm.value.material,
+    project: poForm.value.project,
     totalAmount: totalAmount,
     status: 'Pending'
   };
   const success = await store.createOrder(newPO);
   if (success) {
     showPODialog.value = false;
-    poForm.value = { supplier: null, project: null, material: null, quantity: 100, unit: 'PCS', unitPrice: null, deliveryDate: '', paymentTerms: 'Net 30', notes: '' };
+    poForm.value = { supplier: null, project: null, material: null, quantity: 100, unit: null, unitPrice: null, deliveryDate: '', paymentTerms: 'Net 30', notes: '' };
     toast.add({ severity: 'success', summary: 'Created', detail: `Purchase order ${newPO.orderId} created.`, life: 3000 });
   }
 };
@@ -224,9 +233,17 @@ const filteredOrders = computed(() => {
   return store.purchaseOrders.filter(order => {
     if (activeTab.value !== 'All' && order.status !== activeTab.value) return false;
     if (filters.value.supplier && order.supplierName !== filters.value.supplier) return false;
+    if (filters.value.status && order.status !== filters.value.status) return false;
+    if (filters.value.amount === '< $10,000' && order.totalAmount >= 10000) return false;
+    if (filters.value.amount === '$10,000 - $50,000' && (order.totalAmount < 10000 || order.totalAmount > 50000)) return false;
+    if (filters.value.amount === '> $50,000' && order.totalAmount <= 50000) return false;
     return true;
   });
 });
+
+const clearFilters = () => {
+  filters.value = { supplier: null, status: null, amount: null };
+};
 
 const approveOrder = async (order) => {
   await store.updateOrderStatus(order.id, 'Approved');

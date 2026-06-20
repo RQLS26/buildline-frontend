@@ -1,139 +1,216 @@
 <template>
   <div class="view-content font-inter">
-
-    <!-- Action Row -->
     <div class="action-row">
       <div class="filter-group">
-        <label class="filter-label">Report Type</label>
-        <pv-select v-model="selectedReport" :options="reportTypes" placeholder="Select report" class="filter-select" />
+        <label class="filter-label">{{ $t('reports.report_type') }}</label>
+        <pv-select v-model="selectedReport" :options="reportTypes" optionLabel="label" optionValue="value" :placeholder="$t('reports.select_report')" class="filter-select" />
       </div>
       <div class="filter-group">
-        <label class="filter-label">Period</label>
-        <pv-select v-model="selectedPeriod" :options="periods" placeholder="Select period" class="filter-select" />
+        <label class="filter-label">{{ $t('reports.period') }}</label>
+        <pv-select v-model="selectedPeriod" :options="periods" optionLabel="label" optionValue="value" :placeholder="$t('reports.select_period')" class="filter-select" />
       </div>
       <div class="ml-auto flex gap-2">
-        <pv-button label="Export PDF" icon="pi pi-file-pdf" class="export-btn pdf" @click="exportPDF" />
+        <pv-button :label="$t('reports.export_pdf')" icon="pi pi-file-pdf" class="export-btn pdf" @click="exportPDF" />
       </div>
     </div>
 
-    <!-- Report Preview Card -->
     <div class="report-card">
-      <!-- Report Header -->
       <div class="report-header">
         <div class="report-brand">
           <img src="/logo.png" alt="Buildline" class="report-logo" />
           <div>
             <h2 class="report-company">Buildline</h2>
-            <span class="report-subtitle">Digital Construction Logistics</span>
+            <span class="report-subtitle">{{ $t('reports.digital_construction') }}</span>
           </div>
         </div>
         <div class="report-meta">
-          <h3 class="report-type">{{ selectedReport }} Report</h3>
-          <span class="report-date">Generated: {{ currentDate }}</span>
-          <span class="report-period">Period: {{ selectedPeriod }}</span>
+          <h3 class="report-type">{{ selectedReportLabel }} {{ $t('reports.report') }}</h3>
+          <span class="report-date">{{ $t('reports.generated') }}: {{ currentDate }}</span>
+          <span class="report-period">{{ $t('reports.period') }}: {{ selectedPeriodLabel }}</span>
         </div>
       </div>
 
-      <!-- Report KPIs -->
       <div class="report-kpi-row">
         <div class="report-kpi">
           <span class="report-kpi-value">{{ inventoryStore.totalItems }}</span>
-          <span class="report-kpi-label">Total Items</span>
+          <span class="report-kpi-label">{{ $t('reports.items') }}</span>
         </div>
         <div class="report-kpi">
-          <span class="report-kpi-value" style="color: #3D9F7D;">Active</span>
-          <span class="report-kpi-label">System Status</span>
+          <span class="report-kpi-value" style="color: #3D9F7D;">{{ $t('common.active') }}</span>
+          <span class="report-kpi-label">{{ $t('reports.system_status') }}</span>
         </div>
         <div class="report-kpi">
           <span class="report-kpi-value">${{ analyticsStore.totalSpent.toLocaleString() }}</span>
-          <span class="report-kpi-label">Total Spent</span>
+          <span class="report-kpi-label">{{ $t('reports.total_spent') }}</span>
         </div>
         <div class="report-kpi">
           <span class="report-kpi-value">{{ projectCount }}</span>
-          <span class="report-kpi-label">Active Projects</span>
+          <span class="report-kpi-label">{{ $t('reports.active_projects') }}</span>
         </div>
       </div>
 
-      <!-- Report Table -->
       <div class="report-table-section">
-        <h4 class="report-section-title">Material Inventory Details</h4>
+        <h4 class="report-section-title">{{ selectedReportLabel }} {{ $t('reports.details') }}</h4>
         <table class="report-table">
           <thead>
-            <tr>
-              <th>Item ID</th>
-              <th>Material</th>
-              <th>Project</th>
-              <th>Category</th>
-              <th class="text-right">Stock</th>
-              <th class="text-right">Status</th>
+            <tr v-if="selectedReport === 'inventory'">
+              <th>{{ $t('inventory.item_id') }}</th>
+              <th>{{ $t('inventory.material') }}</th>
+              <th>{{ $t('common.project') }}</th>
+              <th>{{ $t('inventory.category') }}</th>
+              <th class="text-right">{{ $t('inventory.current_stock') }}</th>
+              <th class="text-right">{{ $t('common.status') }}</th>
+            </tr>
+            <tr v-else-if="selectedReport === 'purchase'">
+              <th>{{ $t('purchase_orders.order_id') }}</th>
+              <th>{{ $t('common.supplier') }}</th>
+              <th>{{ $t('purchase_orders.material') }}</th>
+              <th>{{ $t('common.project') }}</th>
+              <th class="text-right">{{ $t('common.amount') }}</th>
+              <th class="text-right">{{ $t('common.status') }}</th>
+            </tr>
+            <tr v-else-if="selectedReport === 'budget'">
+              <th>{{ $t('common.project') }}</th>
+              <th>{{ $t('common.status') }}</th>
+              <th class="text-right">{{ $t('budget.budget') }}</th>
+              <th class="text-right">{{ $t('budget.spent') }}</th>
+              <th class="text-right">{{ $t('budget.allocated') }}</th>
+              <th class="text-right">{{ $t('reports.usage') }}</th>
+            </tr>
+            <tr v-else>
+              <th>{{ $t('common.supplier') }}</th>
+              <th>{{ $t('suppliers.category') }}</th>
+              <th>{{ $t('suppliers.contact') }}</th>
+              <th class="text-right">{{ $t('suppliers.rating') }}</th>
+              <th class="text-right">{{ $t('suppliers.on_time') }}</th>
+              <th class="text-right">{{ $t('common.status') }}</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in reportItems" :key="item.id">
+            <tr v-if="selectedReport === 'inventory'" v-for="item in reportItems" :key="item.id">
               <td>{{ item.sku }}</td>
               <td class="font-semibold">{{ item.name }}</td>
               <td>{{ item.project }}</td>
               <td>{{ item.category }}</td>
               <td class="text-right font-bold">{{ item.currentStock }}</td>
-              <td class="text-right">
-                <span :class="['report-status', getStatusClass(item)]">{{ getStatusLabel(item) }}</span>
-              </td>
+              <td class="text-right"><span :class="['report-status', getStatusClass(item)]">{{ getStatusLabel(item) }}</span></td>
+            </tr>
+            <tr v-else-if="selectedReport === 'purchase'" v-for="item in reportItems" :key="item.id">
+              <td>{{ item.orderId }}</td>
+              <td class="font-semibold">{{ item.supplierName }}</td>
+              <td>{{ item.material }}</td>
+              <td>{{ item.project }}</td>
+              <td class="text-right font-bold">${{ Number(item.totalAmount || 0).toLocaleString() }}</td>
+              <td class="text-right">{{ translateStatus(item.status) }}</td>
+            </tr>
+            <tr v-else-if="selectedReport === 'budget'" v-for="item in reportItems" :key="item.id">
+              <td class="font-semibold">{{ item.project }}</td>
+              <td>{{ translateBudgetStatus(item.status) }}</td>
+              <td class="text-right font-bold">${{ Number(item.totalBudget || 0).toLocaleString() }}</td>
+              <td class="text-right">${{ Number(item.spent || 0).toLocaleString() }}</td>
+              <td class="text-right">${{ Number(item.allocated || 0).toLocaleString() }}</td>
+              <td class="text-right">{{ item.totalBudget ? Math.round((item.spent / item.totalBudget) * 100) : 0 }}%</td>
+            </tr>
+            <tr v-else v-for="item in reportItems" :key="item.id">
+              <td class="font-semibold">{{ item.companyName }}</td>
+              <td>{{ item.category }}</td>
+              <td>{{ item.email }}</td>
+              <td class="text-right">{{ item.rating }}</td>
+              <td class="text-right">{{ item.deliveryRate }}%</td>
+              <td class="text-right">{{ item.isActive ? $t('common.active') : $t('common.inactive') }}</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Report Footer -->
       <div class="report-footer">
-        <p>This is an automated document generated by Buildline Logistics Platform.</p>
-        <p>Confidential — For internal use only.</p>
+        <p>{{ $t('reports.automated_doc') }}</p>
+        <p>{{ $t('reports.confidential') }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useInventoryStore } from '../../../inventory/application/inventory.store.js';
 import { useAnalyticsStore } from '../../application/analytics.store.js';
+import { useProcurementStore } from '../../../procurement/application/procurement.store.js';
+import { useSuppliersStore } from '../../../suppliers/application/suppliers.store.js';
 
+const { t, locale } = useI18n();
 const inventoryStore = useInventoryStore();
 const analyticsStore = useAnalyticsStore();
+const procurementStore = useProcurementStore();
+const suppliersStore = useSuppliersStore();
 
-const selectedReport = ref('Inventory Summary');
-const selectedPeriod = ref('May 2026');
-const reportTypes = ['Inventory Summary', 'Purchase History', 'Budget Overview', 'Supplier Performance'];
-const periods = ['May 2026', 'April 2026', 'Q1 2026', 'Q2 2026', 'Full Year 2026'];
+const selectedReport = ref('inventory');
+const selectedPeriod = ref(null);
+const reportTypes = computed(() => [
+  inventoryStore.inventoryList.length ? { label: t('reports.inventory_summary'), value: 'inventory' } : null,
+  procurementStore.purchaseOrders.length ? { label: t('reports.purchase_history'), value: 'purchase' } : null,
+  analyticsStore.budgets.length ? { label: t('reports.budget_overview'), value: 'budget' } : null,
+  suppliersStore.suppliersList.length ? { label: t('reports.supplier_performance'), value: 'suppliers' } : null
+].filter(Boolean));
+const selectedReportLabel = computed(() => reportTypes.value.find(item => item.value === selectedReport.value)?.label || t('reports.inventory_summary'));
+const periods = computed(() => {
+  const monthKeys = new Set([monthKey(new Date())]);
+  procurementStore.purchaseOrders.forEach(order => {
+    const parsed = parseDisplayDate(order.date);
+    if (parsed) monthKeys.add(monthKey(parsed));
+  });
+  return [...monthKeys]
+    .sort((a, b) => b.localeCompare(a))
+    .map(value => ({ value, label: formatPeriod(value) }));
+});
+const selectedPeriodLabel = computed(() => periods.value.find(item => item.value === selectedPeriod.value)?.label || t('reports.current_data'));
 
 onMounted(async () => {
   await Promise.all([
     inventoryStore.fetchInventory(),
-    analyticsStore.fetchBudgets()
+    analyticsStore.fetchBudgets(),
+    procurementStore.fetchOrders(),
+    suppliersStore.fetchSuppliers()
   ]);
+  selectedPeriod.value = periods.value[0]?.value || monthKey(new Date());
 });
 
-const currentDate = computed(() => new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }));
-const reportItems = computed(() => inventoryStore.inventoryList);
-const projectCount = computed(() => {
-  const projects = new Set(inventoryStore.inventoryList.map(i => i.project));
-  return projects.size;
+watch(periods, (options) => {
+  if (!selectedPeriod.value && options.length) selectedPeriod.value = options[0].value;
 });
 
-const getStatusLabel = (item) => {
-  if (item.currentStock === 0) return 'Out of Stock';
-  if (item.currentStock <= item.minStock) return 'Low Stock';
-  return 'In Stock';
+const currentDate = computed(() => new Date().toLocaleDateString(locale.value === 'es' ? 'es-PE' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' }));
+const reportItems = computed(() => {
+  if (selectedReport.value === 'purchase') return procurementStore.purchaseOrders.filter(order => !selectedPeriod.value || monthKey(parseDisplayDate(order.date)) === selectedPeriod.value);
+  if (selectedReport.value === 'budget') return analyticsStore.budgets;
+  if (selectedReport.value === 'suppliers') return suppliersStore.suppliersList;
+  return inventoryStore.inventoryList;
+});
+const projectCount = computed(() => new Set(inventoryStore.inventoryList.map(i => i.project)).size);
+
+const parseDisplayDate = (value) => {
+  const parsed = value ? new Date(value) : null;
+  return parsed && !Number.isNaN(parsed.getTime()) ? parsed : null;
 };
-
+const monthKey = (date) => date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}` : null;
+const formatPeriod = (key) => {
+  const [year, month] = key.split('-').map(Number);
+  return new Date(year, month - 1, 1).toLocaleDateString(locale.value === 'es' ? 'es-PE' : 'en-US', { month: 'long', year: 'numeric' });
+};
+const getStatusLabel = (item) => {
+  if (item.currentStock === 0) return t('inventory.out_of_stock');
+  if (item.currentStock <= item.minStock) return t('inventory.low_stock');
+  return t('inventory.in_stock');
+};
+const translateStatus = (status) => t(`common.${String(status || '').toLowerCase()}`, status);
+const translateBudgetStatus = (status) => t(`budget.${String(status || '').toLowerCase().replaceAll(' ', '_')}`, status);
 const getStatusClass = (item) => {
   if (item.currentStock === 0) return 'report-status-danger';
   if (item.currentStock <= item.minStock) return 'report-status-warn';
   return 'report-status-ok';
 };
-
-const exportPDF = () => {
-  window.print();
-};
+const exportPDF = () => window.print();
 </script>
 
 <style scoped>

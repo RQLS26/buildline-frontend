@@ -89,11 +89,11 @@
         <div class="flex gap-3">
           <div class="flex flex-column gap-2 flex-1">
             <label class="filter-label">Supplier *</label>
-            <pv-input-text v-model="newIncident.supplier" placeholder="Supplier name" class="w-full" />
+            <pv-select v-model="newIncident.supplier" :options="supplierOptions" placeholder="Select supplier" class="w-full" />
           </div>
           <div class="flex flex-column gap-2 flex-1">
             <label class="filter-label">{{ $t('incidents.purchase_order') }}</label>
-            <pv-input-text v-model="newIncident.purchaseOrder" placeholder="PO-2026-XXXX" class="w-full" />
+            <pv-select v-model="newIncident.purchaseOrder" :options="purchaseOrderOptions" placeholder="Select purchase order" class="w-full" />
           </div>
         </div>
         <div class="flex gap-3">
@@ -103,7 +103,7 @@
           </div>
           <div class="flex flex-column gap-2 flex-1">
             <label class="filter-label">{{ $t('incidents.reported_by') }}</label>
-            <pv-input-text v-model="newIncident.reportedBy" placeholder="Your name" class="w-full" />
+            <pv-input-text :model-value="iamStore.userName" disabled class="w-full" />
           </div>
         </div>
       </div>
@@ -120,19 +120,30 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useSuppliersStore } from '../../application/suppliers.store.js';
+import { useProcurementStore } from '../../../procurement/application/procurement.store.js';
+import { useIamStore } from '../../../iam/application/iam.store.js';
+import { buildNextPlainCode } from '../../../shared/application/business-code.js';
 import { useToast } from 'primevue/usetoast';
 
 const suppliersStore = useSuppliersStore();
+const procurementStore = useProcurementStore();
+const iamStore = useIamStore();
 const toast = useToast();
 const activeTab = ref('All');
 const filters = ref({ severity: null, status: null });
 const showReportDialog = ref(false);
 
-const severities = ['High', 'Medium', 'Low'];
-const statuses = ['Open', 'In Progress', 'Resolved'];
+const severities = computed(() => [...new Set(suppliersStore.incidentsList.map(incident => incident.severity).filter(Boolean))]);
+const statuses = computed(() => [...new Set(suppliersStore.incidentsList.map(incident => incident.status).filter(Boolean))]);
+const supplierOptions = computed(() => suppliersStore.suppliersList.map(supplier => supplier.companyName));
+const purchaseOrderOptions = computed(() => procurementStore.purchaseOrders.map(order => order.orderId));
 
 onMounted(async () => {
-  await suppliersStore.fetchIncidents();
+  await Promise.all([
+    suppliersStore.fetchIncidents(),
+    suppliersStore.fetchSuppliers(),
+    procurementStore.fetchOrders()
+  ]);
 });
 
 const tabs = computed(() => {
@@ -172,31 +183,29 @@ const getStatusClass = (status) => {
   return 'tag-resolved';
 };
 
-const newIncident = ref({
-  title: '', description: '', supplier: '', purchaseOrder: '', severity: null, reportedBy: ''
-});
+const newIncident = ref({ title: '', description: '', supplier: null, purchaseOrder: null, severity: null });
 
 const handleReportIncident = async () => {
-  if (!newIncident.value.title || !newIncident.value.supplier || !newIncident.value.severity) {
-    toast.add({ severity: 'warn', summary: 'Warning', detail: 'Fill required fields.', life: 3000 });
+  if (!newIncident.value.title || !newIncident.value.supplier || !newIncident.value.purchaseOrder || !newIncident.value.severity) {
+    toast.add({ severity: 'warn', summary: 'Warning', detail: 'Fill title, supplier, purchase order and severity.', life: 3000 });
     return;
   }
   const incidentData = {
-    incidentId: `INC-${String(suppliersStore.incidentsList.length + 1).padStart(3, '0')}`,
+    incidentId: buildNextPlainCode(suppliersStore.incidentsList, 'incidentId', 'INC', 3),
     title: newIncident.value.title,
     description: newIncident.value.description,
     supplier: newIncident.value.supplier,
-    purchaseOrder: newIncident.value.purchaseOrder || 'N/A',
+    purchaseOrder: newIncident.value.purchaseOrder,
     severity: newIncident.value.severity,
     status: 'Open',
-    reportedBy: newIncident.value.reportedBy || 'System',
+    reportedBy: iamStore.userName,
     date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
     time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
   };
   const success = await suppliersStore.createIncident(incidentData);
   if (success) {
     showReportDialog.value = false;
-    newIncident.value = { title: '', description: '', supplier: '', purchaseOrder: '', severity: null, reportedBy: '' };
+    newIncident.value = { title: '', description: '', supplier: null, purchaseOrder: null, severity: null };
     toast.add({ severity: 'success', summary: 'Reported', detail: `Incident ${incidentData.incidentId} registered.`, life: 3000 });
   }
 };

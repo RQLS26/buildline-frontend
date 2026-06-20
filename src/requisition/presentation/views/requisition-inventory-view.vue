@@ -88,49 +88,43 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { RequisitionApi } from '../../infrastructure/requisition-api.js';
+import { ref, computed, onMounted } from 'vue';
+import { useRequisitionStore } from '../../application/requisition.store.js';
+import { useReferenceDataStore } from '../../../shared/application/reference-data.store.js';
 
+const requisitionStore = useRequisitionStore();
+const referenceStore = useReferenceDataStore();
 const activeTab = ref('All');
 const searchQuery = ref('');
 const filters = ref({ project: null, status: null, priority: null });
-const requests = ref([]);
 
-const projects = ['Skyline Tower', 'Coastal Bridge', 'Grand Park'];
-const statuses = ['Pending', 'Approved', 'Rejected'];
-const priorities = ['High', 'Medium', 'Low'];
+const projects = computed(() => referenceStore.projectNames);
+const statuses = computed(() => [...new Set(requisitionStore.requests.map(request => request.status).filter(Boolean))]);
+const priorities = computed(() => [...new Set(requisitionStore.requests.map(request => request.priority).filter(Boolean))]);
+const requests = computed(() => requisitionStore.requests.filter(request => {
+  if (activeTab.value !== 'All' && request.status !== activeTab.value) return false;
+  if (filters.value.project && request.project !== filters.value.project) return false;
+  if (filters.value.status && request.status !== filters.value.status) return false;
+  if (filters.value.priority && request.priority !== filters.value.priority) return false;
+  return true;
+}));
 
-const tabs = [
-  { name: 'All', label: 'All (17)' },
-  { name: 'Pending', label: 'Pending (9)' },
-  { name: 'Approved', label: 'Approved (8)' },
-  { name: 'Rejected', label: 'Rejected (0)' }
-];
+const tabs = computed(() => {
+  const all = requisitionStore.requests;
+  return [
+    { name: 'All', label: `All (${all.length})` },
+    ...statuses.value.map(status => ({
+      name: status,
+      label: `${status} (${all.filter(request => request.status === status).length})`
+    }))
+  ];
+});
 
 const fetchRequests = async () => {
-  try {
-    const api = new RequisitionApi();
-    const response = await api.http.get('api/v1/requisitions');
-    requests.value = response.data.sort((a, b) => b.id - a.id);
-  } catch (error) {
-    requests.value = [
-      { id: 'MR-2026-00024', material: 'Steel Rebar 1/2"', project: 'Skyline Tower', priority: 'High', status: 'Pending', requestedOn: 'May 19, 2026' },
-      { id: 'MR-2026-00023', material: 'Concrete 3000 PSI', project: 'Skyline Tower', priority: 'Medium', status: 'Approved', requestedOn: 'May 18, 2026' },
-      { id: 'MR-2026-00022', material: 'Cement Type I', project: 'Skyline Tower', priority: 'High', status: 'Pending', requestedOn: 'May 17, 2026' },
-      { id: 'MR-2026-00021', material: 'Sand Fine', project: 'Skyline Tower', priority: 'Low', status: 'Approved', requestedOn: 'May 17, 2026' },
-      { id: 'MR-2026-00020', material: 'Steel Rebar 1/2"', project: 'Skyline Tower', priority: 'High', status: 'Pending', requestedOn: 'May 16, 2026' },
-      { id: 'MR-2026-00019', material: 'Concrete 3000 PSI', project: 'Coastal Bridge', priority: 'Medium', status: 'Approved', requestedOn: 'May 16, 2026' },
-      { id: 'MR-2026-00018', material: 'Cement Type I', project: 'Coastal Bridge', priority: 'High', status: 'Pending', requestedOn: 'May 15, 2026' },
-      { id: 'MR-2026-00017', material: 'Sand Fine', project: 'Grand Park', priority: 'Low', status: 'Approved', requestedOn: 'May 15, 2026' },
-      { id: 'MR-2026-00016', material: 'Steel Beams W8', project: 'Skyline Tower', priority: 'High', status: 'Pending', requestedOn: 'May 14, 2026' },
-      { id: 'MR-2026-00015', material: 'Concrete 3000 PSI', project: 'Grand Park', priority: 'Medium', status: 'Approved', requestedOn: 'May 14, 2026' },
-      { id: 'MR-2026-00014', material: 'Cement Type I', project: 'Skyline Tower', priority: 'High', status: 'Pending', requestedOn: 'May 13, 2026' },
-      { id: 'MR-2026-00013', material: 'PVC Pipes 4"', project: 'Coastal Bridge', priority: 'Low', status: 'Approved', requestedOn: 'May 13, 2026' },
-      { id: 'MR-2026-00012', material: 'Copper Wire 12 AWG', project: 'Skyline Tower', priority: 'Medium', status: 'Pending', requestedOn: 'May 12, 2026' },
-      { id: 'MR-2026-00011', material: 'Plywood Sheets', project: 'Grand Park', priority: 'High', status: 'Pending', requestedOn: 'May 12, 2026' },
-      { id: 'MR-2026-00010', material: 'Gravel 3/4"', project: 'Coastal Bridge', priority: 'Low', status: 'Approved', requestedOn: 'May 11, 2026' },
-    ];
-  }
+  await Promise.all([
+    requisitionStore.fetchRequests(),
+    referenceStore.fetchAll()
+  ]);
 };
 
 onMounted(fetchRequests);

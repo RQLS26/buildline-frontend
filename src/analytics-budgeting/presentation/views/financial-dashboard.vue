@@ -23,7 +23,7 @@
               <div class="target-item">
                 <i class="pi pi-wallet" style="color: #525256; font-size: 16px;"></i>
                 <div>
-                  <p class="label">Remaining</p>
+                  <p class="label">{{ $t('budget.remaining') }}</p>
                   <p class="value">${{ remaining.toLocaleString() }}</p>
                 </div>
               </div>
@@ -75,7 +75,7 @@
                 <span>{{ item.label }}</span>
               </div>
             </div>
-            <p class="m-0 font-bold" style="color: #191919; font-size: 15px;">${{ totalSpent.toLocaleString() }} <span class="font-semibold" style="color: #666666; font-size: 13px;">Total Spent</span></p>
+            <p class="m-0 font-bold" style="color: #191919; font-size: 15px;">${{ totalSpent.toLocaleString() }} <span class="font-semibold" style="color: #666666; font-size: 13px;">{{ $t('budget.total_spent') }}</span></p>
           </div>
           <div class="donut-chart">
             <pv-chart type="doughnut" :data="pieData" :options="pieOptions" style="width: 100%; height: 100%;" />
@@ -98,11 +98,11 @@
             <div class="indicator">
               <div class="legend-item">
                 <span class="color-box" style="background: #3d63a1;"></span>
-                <span>Budget</span>
+                <span>{{ $t('budget.budget') }}</span>
               </div>
               <div class="legend-item">
                 <span class="color-box" style="background: #3D9F7D;"></span>
-                <span>Actual</span>
+                <span>{{ $t('budget.actual') }}</span>
               </div>
             </div>
           </div>
@@ -130,8 +130,8 @@
                 <div class="progress-bar-fill" :style="{ width: (project.total ? (project.spent / project.total * 100) : 0) + '%', background: project.color }"></div>
               </div>
               <div class="progress-footer">
-                <span :class="['budget-tag', project.status === 'On Track' ? 'on-track' : project.status === 'At Risk' ? 'at-risk' : 'over-budget']">
-                  {{ project.status }}
+                <span :class="['budget-tag', project.statusKey === 'on_track' ? 'on-track' : project.statusKey === 'at_risk' ? 'at-risk' : 'over-budget']">
+                  {{ project.statusLabel }}
                 </span>
                 <span class="progress-percent">{{ project.total ? Math.round(project.spent / project.total * 100) : 0 }}%</span>
               </div>
@@ -143,20 +143,20 @@
 
     <div class="section-header mt-3">
       <h2 class="m-0">{{ $t('budget.recent_transactions') }}</h2>
-      <p class="compare-note m-0">*Last 7 days</p>
+      <p class="compare-note m-0">{{ $t('budget.last_7_days') }}</p>
     </div>
     <div class="content-card p-0 overflow-hidden">
       <pv-data-table :value="transactions" class="buildline-datatable" :rows="8">
-        <pv-column field="date" header="Date"></pv-column>
-        <pv-column field="description" header="Description"></pv-column>
-        <pv-column field="project" header="Project"></pv-column>
-        <pv-column field="category" header="Category"></pv-column>
-        <pv-column field="amount" header="Amount">
+        <pv-column field="date" :header="$t('common.date')"></pv-column>
+        <pv-column field="description" :header="$t('budget.description')"></pv-column>
+        <pv-column field="project" :header="$t('common.project')"></pv-column>
+        <pv-column field="category" :header="$t('suppliers.category')"></pv-column>
+        <pv-column field="amount" :header="$t('common.amount')">
           <template #body="slotProps">
             <span class="font-bold" style="color: #191919;">${{ (slotProps.data.amount || 0).toLocaleString() }}</span>
           </template>
         </pv-column>
-        <pv-column field="status" header="Status">
+        <pv-column field="status" :header="$t('common.status')">
           <template #body="slotProps">
             <span :class="['status-badge', 'status-' + (slotProps.data.status || '').toLowerCase()]">
               {{ slotProps.data.status }}
@@ -169,17 +169,22 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useAnalyticsStore } from '../../application/analytics.store.js';
 import { useProcurementStore } from '../../../procurement/application/procurement.store.js';
+import { useReferenceDataStore } from '../../../shared/application/reference-data.store.js';
+import { useI18n } from 'vue-i18n';
 
 const analyticsStore = useAnalyticsStore();
 const procurementStore = useProcurementStore();
+const referenceStore = useReferenceDataStore();
+const { t } = useI18n();
 
 onMounted(async () => {
   await Promise.all([
     analyticsStore.fetchBudgets(),
-    procurementStore.fetchOrders()
+    procurementStore.fetchOrders(),
+    referenceStore.fetchAll()
   ]);
 });
 
@@ -199,11 +204,11 @@ const budgetAlerts = computed(() => {
       const isOver = b.spent > b.totalBudget;
       return {
         project: b.project,
-        message: isOver ? `Budget exceeded by $${(b.spent - b.totalBudget).toLocaleString()}` : `${pct}% of budget consumed`,
+        message: isOver ? t('budget.exceeded_by', { amount: (b.spent - b.totalBudget).toLocaleString() }) : t('budget.consumed_percent', { percent: pct }),
         icon: isOver ? 'pi-exclamation-circle' : 'pi-exclamation-triangle',
         iconBg: isOver ? '#FEECEB' : '#FEF6E5',
         iconColor: isOver ? '#E02424' : '#D97706',
-        status: isOver ? 'Over Budget' : 'At Risk',
+        status: isOver ? t('budget.over_budget') : t('budget.at_risk'),
         badgeBg: isOver ? '#FEECEB' : '#FEF6E5',
         badgeColor: isOver ? '#E02424' : '#D97706'
       };
@@ -213,21 +218,39 @@ const budgetAlerts = computed(() => {
 const projectBudgets = computed(() => {
   return (analyticsStore.budgets || []).map(b => {
     const pct = b.totalBudget > 0 ? (b.spent / b.totalBudget) * 100 : 0;
-    let status = 'On Track';
+    let statusKey = 'on_track';
     let color = '#3d63a1';
-    if (pct > 100) { status = 'Over Budget'; color = '#E02424'; }
-    else if (pct > 75) { status = 'At Risk'; color = '#D97706'; }
-    return { name: b.project, total: b.totalBudget, spent: b.spent, color, status };
+    if (pct > 100) { statusKey = 'over_budget'; color = '#E02424'; }
+    else if (pct > 75) { statusKey = 'at_risk'; color = '#D97706'; }
+    return { name: b.project, total: b.totalBudget, spent: b.spent, color, statusKey, statusLabel: t(`budget.${statusKey}`) };
   });
 });
 
-const costCategories = computed(() => [
-  { label: 'Materials', color: '#3d63a1', pct: 50 },
-  { label: 'Labor', color: '#2563EB', pct: 22 },
-  { label: 'Equipment', color: '#3D9F7D', pct: 13 },
-  { label: 'Transport', color: '#D97706', pct: 9 },
-  { label: 'Other', color: '#94A3B8', pct: 6 },
-]);
+const categoryColors = ['#3d63a1', '#2563EB', '#3D9F7D', '#D97706', '#94A3B8', '#7C3AED', '#0891B2'];
+const categoryForMaterial = (materialName) => {
+  return referenceStore.materials.find(material => material.name === materialName)?.category || 'Other';
+};
+const costCategories = computed(() => {
+  const approvedOrders = procurementStore.purchaseOrders.filter(order => order.status === 'Approved');
+  const totalsByCategory = approvedOrders.reduce((totals, order) => {
+    const category = categoryForMaterial(order.material);
+    totals[category] = (totals[category] || 0) + Number(order.totalAmount || 0);
+    return totals;
+  }, {});
+  const categorizedSpent = Object.values(totalsByCategory).reduce((sum, amount) => sum + Number(amount || 0), 0);
+  const uncategorized = Math.max(totalSpent.value - categorizedSpent, 0);
+  if (uncategorized > 0) {
+    totalsByCategory.Other = (totalsByCategory.Other || 0) + uncategorized;
+  }
+
+  return Object.entries(totalsByCategory)
+    .filter(([, amount]) => Number(amount || 0) > 0)
+    .map(([label, amount], index) => ({
+      label,
+      amount,
+      color: categoryColors[index % categoryColors.length]
+    }));
+});
 
 // Build transactions from recent purchase orders
 const transactions = computed(() => {
@@ -235,14 +258,14 @@ const transactions = computed(() => {
     date: po.date,
     description: po.material,
     project: po.project,
-    category: 'Materials',
+    category: categoryForMaterial(po.material),
     amount: po.totalAmount || 0,
     status: po.status || 'Pending'
   }));
 });
 
 const gaugeData = computed(() => ({
-  labels: ['Spent', 'Remaining'],
+  labels: [t('budget.spent'), t('budget.remaining')],
   datasets: [{
     data: [spentPercent.value, 100 - spentPercent.value],
     backgroundColor: ['#3d63a1', '#e8e8e8'],
@@ -254,20 +277,47 @@ const gaugeOptions = {
   plugins: { legend: { display: false }, tooltip: { enabled: false } }
 };
 
-// Spending trend computed from budget data — distribute across months based on project spent
+const parseDisplayDate = (value) => {
+  const parsed = value ? new Date(value) : null;
+  return parsed && !Number.isNaN(parsed.getTime()) ? parsed : null;
+};
+const buildMonthWindow = () => {
+  const orderDates = procurementStore.purchaseOrders.map(order => parseDisplayDate(order.date)).filter(Boolean);
+  const end = orderDates.length ? new Date(Math.max(...orderDates.map(date => date.getTime()))) : new Date();
+  end.setDate(1);
+  return Array.from({ length: 6 }, (_, index) => {
+    const date = new Date(end.getFullYear(), end.getMonth() - (5 - index), 1);
+    return {
+      key: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
+      label: date.toLocaleDateString('en-US', { month: 'short' })
+    };
+  });
+};
+const keyForDate = (date) => date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}` : null;
+
 const spendingTrendData = computed(() => {
-  const budgets = analyticsStore.budgets;
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-  // Distribute budget/spent across months proportionally
-  const totalB = budgets.reduce((s, b) => s + (b.totalBudget || 0), 0);
-  const totalS = budgets.reduce((s, b) => s + (b.spent || 0), 0);
-  const budgetLine = months.map((_, i) => Math.round((totalB / 6) * (0.8 + (i * 0.08))));
-  const actualLine = months.map((_, i) => Math.round((totalS / 6) * (0.7 + (i * 0.12))));
+  const months = buildMonthWindow();
+  const labels = months.map(month => month.label);
+  const actualByMonth = procurementStore.purchaseOrders
+    .filter(order => order.status === 'Approved')
+    .reduce((totals, order) => {
+      const key = keyForDate(parseDisplayDate(order.date));
+      if (key) totals[key] = (totals[key] || 0) + Number(order.totalAmount || 0);
+      return totals;
+    }, {});
+  let actualLine = months.map(month => Math.round(actualByMonth[month.key] || 0));
+  const activeMonths = actualLine.filter(value => value > 0).length;
+  if (activeMonths < 3 && totalSpent.value > 0) {
+    const distribution = [0.10, 0.12, 0.15, 0.18, 0.20, 0.25];
+    actualLine = distribution.map(weight => Math.round(totalSpent.value * weight));
+  }
+  const monthlyBudget = Math.round(totalBudget.value / 6);
+  const budgetLine = months.map(() => monthlyBudget);
   return {
-    labels: months,
+    labels,
     datasets: [
-      { label: 'Budget', data: budgetLine, borderColor: '#3d63a1', backgroundColor: 'rgba(61, 99, 161, 0.08)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#3d63a1' },
-      { label: 'Actual', data: actualLine, borderColor: '#3D9F7D', backgroundColor: 'rgba(61, 159, 125, 0.08)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#3D9F7D' }
+      { label: t('budget.budget'), data: budgetLine, borderColor: '#3d63a1', backgroundColor: 'rgba(61, 99, 161, 0.08)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#3d63a1' },
+      { label: t('budget.actual'), data: actualLine, borderColor: '#3D9F7D', backgroundColor: 'rgba(61, 159, 125, 0.08)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#3D9F7D' }
     ]
   };
 });
@@ -283,7 +333,7 @@ const lineOptions = {
 const pieData = computed(() => ({
   labels: costCategories.value.map(c => c.label),
   datasets: [{
-    data: costCategories.value.map(c => Math.round(totalSpent.value * c.pct / 100)),
+    data: costCategories.value.map(c => Math.round(c.amount)),
     backgroundColor: costCategories.value.map(c => c.color),
     borderWidth: 0, cutout: '65%'
   }]

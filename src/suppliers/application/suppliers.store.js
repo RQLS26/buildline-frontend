@@ -1,14 +1,17 @@
-/**
- * Suppliers Store
- * @description Pinia store for supplier directory, ratings, and SUNAT validation.
- * @author RQLS TEAM
- */
 import { defineStore } from 'pinia';
 import { SuppliersApi } from '../infrastructure/suppliers-api.js';
-import axios from 'axios';
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000' });
+const api = new SuppliersApi();
 
+/**
+ * Pinia store for supplier directory, incidents and RUC validation state.
+ *
+ * @description Coordinates supplier and incident workflows through `SuppliersApi`. The
+ * RUC validation result remains local because Sprint 3 does not include a backend SUNAT
+ * integration endpoint.
+ *
+ * @author RQLS TEAM
+ */
 export const useSuppliersStore = defineStore('suppliers', {
     state: () => ({
         suppliersList: [],
@@ -30,11 +33,15 @@ export const useSuppliersStore = defineStore('suppliers', {
         resolvedIncidents: (state) => state.incidentsList.filter(i => i.status === 'Resolved'),
     },
     actions: {
+        /**
+         * Loads suppliers ordered by rating.
+         *
+         * @returns {Promise<void>} Resolves after `suppliersList` is refreshed.
+         */
         async fetchSuppliers() {
             this.isLoading = true;
             try {
-                const suppliersApi = new SuppliersApi();
-                const response = await suppliersApi.getSuppliers();
+                const response = await api.getSuppliers();
                 this.suppliersList = response.data.sort((a, b) => b.rating - a.rating);
             } catch (error) {
                 console.error('Error loading suppliers:', error);
@@ -42,9 +49,15 @@ export const useSuppliersStore = defineStore('suppliers', {
                 this.isLoading = false;
             }
         },
+        /**
+         * Creates a supplier and refreshes the directory.
+         *
+         * @param {Object} supplierData - Supplier creation payload.
+         * @returns {Promise<boolean>} True when creation succeeds.
+         */
         async createSupplier(supplierData) {
             try {
-                await api.post('/api/v1/suppliers', supplierData);
+                await api.createSupplier(supplierData);
                 await this.fetchSuppliers();
                 return true;
             } catch (error) {
@@ -52,9 +65,16 @@ export const useSuppliersStore = defineStore('suppliers', {
                 return false;
             }
         },
+        /**
+         * Updates supplier metadata.
+         *
+         * @param {number|string} id - Supplier identifier.
+         * @param {Object} supplierData - Partial supplier update payload.
+         * @returns {Promise<boolean>} True when update succeeds.
+         */
         async updateSupplier(id, supplierData) {
             try {
-                await api.patch(`/api/v1/suppliers/${id}`, supplierData);
+                await api.updateSupplier(id, supplierData);
                 await this.fetchSuppliers();
                 return true;
             } catch (error) {
@@ -62,9 +82,15 @@ export const useSuppliersStore = defineStore('suppliers', {
                 return false;
             }
         },
+        /**
+         * Deletes a supplier and refreshes the directory.
+         *
+         * @param {number|string} id - Supplier identifier.
+         * @returns {Promise<boolean>} True when deletion succeeds.
+         */
         async deleteSupplier(id) {
             try {
-                await api.delete(`/api/v1/suppliers/${id}`);
+                await api.deleteSupplier(id);
                 await this.fetchSuppliers();
                 return true;
             } catch (error) {
@@ -72,10 +98,15 @@ export const useSuppliersStore = defineStore('suppliers', {
                 return false;
             }
         },
+        /**
+         * Loads supplier incidents ordered from newest to oldest.
+         *
+         * @returns {Promise<void>} Resolves after `incidentsList` is refreshed.
+         */
         async fetchIncidents() {
             this.isLoading = true;
             try {
-                const response = await api.get('/api/v1/incidents');
+                const response = await api.getIncidents();
                 this.incidentsList = response.data.sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error('Error loading incidents:', error);
@@ -83,9 +114,15 @@ export const useSuppliersStore = defineStore('suppliers', {
                 this.isLoading = false;
             }
         },
+        /**
+         * Creates a supplier incident.
+         *
+         * @param {Object} incidentData - Incident creation payload.
+         * @returns {Promise<boolean>} True when creation succeeds.
+         */
         async createIncident(incidentData) {
             try {
-                await api.post('/api/v1/incidents', incidentData);
+                await api.createIncident(incidentData);
                 await this.fetchIncidents();
                 return true;
             } catch (error) {
@@ -93,9 +130,16 @@ export const useSuppliersStore = defineStore('suppliers', {
                 return false;
             }
         },
+        /**
+         * Updates the status of a supplier incident.
+         *
+         * @param {number|string} id - Incident identifier.
+         * @param {string} newStatus - Target incident status.
+         * @returns {Promise<boolean>} True when update succeeds.
+         */
         async updateIncidentStatus(id, newStatus) {
             try {
-                await api.patch(`/api/v1/incidents/${id}`, { status: newStatus });
+                await api.updateIncidentStatus(id, { status: newStatus });
                 await this.fetchIncidents();
                 return true;
             } catch (error) {
@@ -103,11 +147,16 @@ export const useSuppliersStore = defineStore('suppliers', {
                 return false;
             }
         },
+        /**
+         * Runs local RUC validation simulation and stores the displayed result.
+         *
+         * @param {string} ruc - RUC value entered by the user.
+         * @returns {Promise<{isValid: boolean, message: string}>} Validation result.
+         */
         async verifyRuc(ruc) {
             this.isValidatingRuc = true;
             this.rucValidationResult = null;
-            const suppliersApi = new SuppliersApi();
-            const result = await suppliersApi.validateRuc(ruc);
+            const result = await api.validateRuc(ruc);
             this.rucValidationResult = result;
             this.isValidatingRuc = false;
             return result;

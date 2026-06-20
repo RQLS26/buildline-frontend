@@ -4,15 +4,15 @@
     <!-- Action Row -->
     <div class="action-row">
       <div class="filter-group">
-        <label class="filter-label">Role</label>
-        <pv-select v-model="filters.role" :options="roles" placeholder="All roles" class="filter-select" />
+        <label class="filter-label">{{ $t('users.role') }}</label>
+        <pv-select v-model="filters.role" :options="roleFilterOptions" :placeholder="$t('users.all_roles')" class="filter-select" />
       </div>
       <div class="filter-group">
-        <label class="filter-label">Status</label>
-        <pv-select v-model="filters.status" :options="['Active', 'Inactive']" placeholder="All" class="filter-select" />
+        <label class="filter-label">{{ $t('users.status') }}</label>
+        <pv-select v-model="filters.status" :options="statusFilterOptions" optionLabel="label" optionValue="value" :placeholder="$t('common.all')" class="filter-select" />
       </div>
       <div class="ml-auto">
-        <pv-button label="Add User" icon="pi pi-user-plus" class="add-user-btn" @click="showDialog = true" />
+        <pv-button :label="$t('users.add_user')" icon="pi pi-user-plus" class="add-user-btn" @click="showDialog = true" />
       </div>
     </div>
 
@@ -28,7 +28,7 @@
     <!-- Table Card -->
     <div class="table-card">
       <pv-data-table :value="filteredUsers" class="buildline-datatable" :rows="10">
-        <pv-column field="name" header="User">
+        <pv-column field="name" :header="$t('users.user')">
           <template #body="slotProps">
             <div class="flex align-items-center gap-3">
               <div class="user-avatar" :style="{ background: slotProps.data.avatarColor }">
@@ -41,30 +41,41 @@
             </div>
           </template>
         </pv-column>
-        <pv-column field="role" header="Role">
+        <pv-column field="role" :header="$t('users.role')">
           <template #body="slotProps">
             <span class="role-badge" :style="{ background: getRoleColor(slotProps.data.role).bg, color: getRoleColor(slotProps.data.role).text }">
               {{ slotProps.data.role }}
             </span>
           </template>
         </pv-column>
-        <pv-column field="department" header="Department"></pv-column>
-        <pv-column field="lastLogin" header="Last Login"></pv-column>
-        <pv-column header="Status">
+        <pv-column field="department" :header="$t('users.department')"></pv-column>
+        <pv-column field="lastLogin" :header="$t('users.last_login')"></pv-column>
+        <pv-column :header="$t('users.status')">
           <template #body="slotProps">
             <span :class="['status-badge', slotProps.data.isActive ? 'status-approved' : 'status-rejected']">
-              {{ slotProps.data.isActive ? 'Active' : 'Inactive' }}
+              {{ slotProps.data.isActive ? $t('common.active') : $t('common.inactive') }}
             </span>
           </template>
         </pv-column>
-        <pv-column header="Actions">
+        <pv-column :header="$t('users.actions')">
           <template #body="slotProps">
             <div class="flex gap-2 align-items-center">
-              <pv-select v-if="iamStore.isAdmin && slotProps.data.id !== iamStore.currentUser?.id"
-                :modelValue="slotProps.data.role"
+              <pv-select v-if="getAssignableRoles(slotProps.data).length > 0"
+                :modelValue="getAssignableRoles(slotProps.data).includes(slotProps.data.role) ? slotProps.data.role : null"
                 @update:modelValue="(val) => changeRole(slotProps.data, val)"
-                :options="roles" class="role-select-sm" />
-              <span v-else class="text-xs" style="color: #9CA3AF;">
+                :options="getAssignableRoles(slotProps.data)"
+                :placeholder="$t('users.change_role')"
+                class="role-select-sm" />
+              <button
+                v-if="canManageStatus(slotProps.data)"
+                type="button"
+                :class="['status-action-btn', slotProps.data.isActive ? 'deactivate' : 'activate']"
+                :title="slotProps.data.isActive ? $t('users.deactivate_user') : $t('users.activate_user')"
+                @click="toggleUserStatus(slotProps.data)"
+              >
+                <i :class="['pi', slotProps.data.isActive ? 'pi-user-minus' : 'pi-user-plus']"></i>
+              </button>
+              <span v-if="getAssignableRoles(slotProps.data).length === 0 && !canManageStatus(slotProps.data)" class="text-xs" style="color: #9CA3AF;">
                 <i class="pi pi-lock"></i>
               </span>
             </div>
@@ -75,7 +86,7 @@
       <!-- Pagination -->
       <div class="pagination-row">
         <div class="pagination-info">
-          Item per page:
+          {{ $t('users.items_per_page') }}:
           <span class="pagination-count">10 <i class="pi pi-caret-down"></i></span>
         </div>
         <div class="pagination-controls">
@@ -87,53 +98,66 @@
     </div>
 
     <!-- Add User Dialog -->
-    <pv-dialog v-model:visible="showDialog" modal header="Add New User" :style="{ width: '480px' }">
+    <pv-dialog v-model:visible="showDialog" modal :header="$t('users.add_new_user')" :style="{ width: '480px' }">
       <div class="flex flex-column gap-4 pt-2">
         <div class="flex flex-column gap-2">
-          <label class="filter-label">Full Name</label>
+          <label class="filter-label">{{ $t('iam.full_name') }}</label>
           <pv-input-text v-model="newUser.name" placeholder="Enter full name" class="w-full" />
         </div>
         <div class="flex flex-column gap-2">
-          <label class="filter-label">Email</label>
+          <label class="filter-label">{{ $t('users.email') }}</label>
           <pv-input-text v-model="newUser.email" placeholder="user@buildline.com" class="w-full" />
         </div>
         <div class="flex flex-column gap-2">
-          <label class="filter-label">Password</label>
+          <label class="filter-label">{{ $t('iam.password') }}</label>
           <pv-input-text v-model="newUser.password" type="password" placeholder="Set password" class="w-full" />
         </div>
         <div class="flex flex-column gap-2">
-          <label class="filter-label">Department</label>
-          <pv-select v-model="newUser.department" :options="departments" placeholder="Select department" class="w-full" />
+          <label class="filter-label">{{ $t('users.role') }}</label>
+          <pv-select v-model="newUser.role" :options="newUserRoleOptions" :placeholder="$t('users.select_role')" class="w-full" />
+        </div>
+        <div class="flex flex-column gap-2">
+          <label class="filter-label">{{ $t('users.department') }}</label>
+          <pv-select v-model="newUser.department" :options="departments" :placeholder="$t('users.select_department')" class="w-full" />
         </div>
       </div>
       <template #footer>
-        <pv-button label="Cancel" class="p-button-text" @click="showDialog = false" />
-        <pv-button label="Create User" icon="pi pi-check" class="add-user-btn" @click="createUser" />
+        <pv-button :label="$t('common.cancel')" class="p-button-text" @click="showDialog = false" />
+        <pv-button :label="$t('users.create_user')" icon="pi pi-check" class="add-user-btn" @click="createUser" />
       </template>
     </pv-dialog>
 
     <!-- Access Denied Message for Viewers -->
     <div v-if="!iamStore.isAdmin" class="viewer-notice">
       <i class="pi pi-info-circle"></i>
-      <span>You are logged in as a <strong>{{ iamStore.userRole }}</strong>. Only administrators can change user roles.</span>
+      <span>{{ $t('users.admin_only') }}</span>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useIamStore } from '../../application/iam.store.js';
+import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
+import { useIamStore } from '../../application/iam.store.js';
 
 const toast = useToast();
+const { t } = useI18n();
 const iamStore = useIamStore();
 const showDialog = ref(false);
 const activeTab = ref('All');
 const filters = ref({ role: null, status: null });
-const newUser = ref({ name: '', email: '', password: '', department: null });
+const newUser = ref({ name: '', email: '', password: '', role: null, department: null });
+const roleCatalog = ['owner', 'admin', 'viewer'];
+const mutableRoleCatalog = ['admin', 'viewer'];
 
-const roles = ['owner', 'admin', 'viewer'];
-const departments = ['Engineering', 'Procurement', 'Logistics', 'Finance', 'Management'];
+const roleFilterOptions = computed(() => roleCatalog);
+const newUserRoleOptions = computed(() => mutableRoleCatalog);
+const statusFilterOptions = computed(() => [
+  { label: t('common.active'), value: 'Active' },
+  { label: t('common.inactive'), value: 'Inactive' }
+]);
+const departments = computed(() => [...new Set((iamStore.allUsers || []).map(user => user.department).filter(Boolean))]);
 
 onMounted(() => {
   iamStore.fetchAllUsers();
@@ -145,10 +169,10 @@ const tabs = computed(() => {
   const admins = users.filter(u => u.role === 'admin').length;
   const viewers = users.filter(u => u.role === 'viewer').length;
   return [
-    { name: 'All', label: `All (${users.length})` },
-    { name: 'owner', label: `Owners (${owners})` },
-    { name: 'admin', label: `Admins (${admins})` },
-    { name: 'viewer', label: `Viewers (${viewers})` }
+    { name: 'All', label: `${t('common.all')} (${users.length})` },
+    { name: 'owner', label: `${t('users.owners')} (${owners})` },
+    { name: 'admin', label: `${t('users.admins')} (${admins})` },
+    { name: 'viewer', label: `${t('users.viewers')} (${viewers})` }
   ];
 });
 
@@ -164,48 +188,73 @@ const filteredUsers = computed(() => {
   });
 });
 
+const canManageStatus = (user) => {
+  return iamStore.currentUser?.role === 'owner' && user.id !== iamStore.currentUser?.id && user.role !== 'owner';
+};
+
+const getAssignableRoles = (user) => {
+  if (!canManageStatus(user)) return [];
+  return mutableRoleCatalog.filter(role => role !== user.role);
+};
+
+const toggleUserStatus = async (user) => {
+  const success = await iamStore.updateUserStatus(user.id, !user.isActive);
+  if (success) {
+    toast.add({
+      severity: 'success',
+      summary: t('common.success'),
+      detail: t(user.isActive ? 'users.user_deactivated' : 'users.user_activated', { name: user.name }),
+      life: 3000
+    });
+  }
+};
+
 const changeRole = async (user, newRole) => {
-  if (!iamStore.isAdmin) {
-    toast.add({ severity: 'warn', summary: 'Restricted', detail: 'Only administrators can change roles.', life: 3000 });
-    return;
-  }
-  if (user.id === iamStore.currentUser?.id) {
-    toast.add({ severity: 'warn', summary: 'Warning', detail: 'You cannot change your own role.', life: 3000 });
-    return;
-  }
-  // Only owner can change another admin's role
-  const currentUserRole = iamStore.currentUser?.role || 'admin';
-  if (user.role === 'admin' && currentUserRole !== 'owner') {
-    toast.add({ severity: 'warn', summary: 'Restricted', detail: 'Only an owner can change another admin\'s role.', life: 3000 });
+  if (!newRole || !getAssignableRoles(user).includes(newRole)) {
+    toast.add({ severity: 'warn', summary: t('common.warning'), detail: t('users.owner_not_assignable'), life: 3000 });
     return;
   }
   const success = await iamStore.updateUserRole(user.id, newRole);
   if (success) {
-    toast.add({ severity: 'success', summary: 'Updated', detail: `${user.name}'s role changed to ${newRole}.`, life: 3000 });
+    toast.add({ severity: 'success', summary: t('common.success'), detail: t('users.role_changed', { name: user.name, role: newRole }), life: 3000 });
   }
 };
 
 const createUser = async () => {
+  if (!newUser.value.name || !newUser.value.email || !newUser.value.password || !newUser.value.role || !newUser.value.department) {
+    toast.add({ severity: 'warn', summary: t('common.warning'), detail: t('users.required_fields'), life: 3000 });
+    return;
+  }
+  if (!mutableRoleCatalog.includes(newUser.value.role)) {
+    toast.add({ severity: 'warn', summary: t('common.warning'), detail: t('users.owner_not_assignable'), life: 3000 });
+    return;
+  }
   const userData = {
     name: newUser.value.name,
     email: newUser.value.email,
-    password: newUser.value.password || 'viewer123',
-    role: 'viewer',
-    department: newUser.value.department || 'General',
+    password: newUser.value.password,
+    role: newUser.value.role,
+    department: newUser.value.department,
     isActive: true,
-    avatarColor: '#' + Math.floor(Math.random() * 16777215).toString(16),
+    avatarColor: getAvatarColor(newUser.value.email),
     lastLogin: 'Never'
   };
   try {
-    const axios = (await import('axios')).default;
-    await axios.post(`${import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:3000'}/users`, userData);
-    await iamStore.fetchAllUsers();
-    showDialog.value = false;
-    newUser.value = { name: '', email: '', password: '', department: null };
-    toast.add({ severity: 'success', summary: 'Created', detail: `User ${userData.name} created as viewer.`, life: 3000 });
+    const success = await iamStore.createUser(userData);
+    if (success) {
+      showDialog.value = false;
+      newUser.value = { name: '', email: '', password: '', role: null, department: null };
+      toast.add({ severity: 'success', summary: t('common.success'), detail: t('users.user_created', { name: userData.name, role: userData.role }), life: 3000 });
+    }
   } catch (e) {
     console.error(e);
   }
+};
+
+const getAvatarColor = (seed) => {
+  const palette = ['#3d63a1', '#F96116', '#3D9F7D', '#64748B', '#E02424', '#7C3AED'];
+  const index = String(seed || '').split('').reduce((sum, char) => sum + char.charCodeAt(0), 0) % palette.length;
+  return palette[index];
 };
 
 const getRoleColor = (role) => {

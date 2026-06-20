@@ -1,13 +1,17 @@
+import { defineStore } from 'pinia';
+import { SuppliersApi } from '../infrastructure/suppliers-api.js';
+
+const api = new SuppliersApi();
+
 /**
- * Incidents Store
- * @description Pinia store for supplier incident tracking and resolution workflows.
+ * Focused Pinia store for supplier incident tracking screens.
+ *
+ * @description Keeps incident-only state for screens that do not need the full supplier
+ * directory store. It still uses `SuppliersApi` because incidents belong to the Suppliers
+ * bounded context in the backend contract.
+ *
  * @author RQLS TEAM
  */
-import { defineStore } from 'pinia';
-import axios from 'axios';
-
-const api = axios.create({ baseURL: (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000') });
-
 export const useIncidentsStore = defineStore('incidents', {
     state: () => ({
         incidentsList: [],
@@ -20,10 +24,15 @@ export const useIncidentsStore = defineStore('incidents', {
         highSeverity: (state) => state.incidentsList.filter(i => i.severity === 'High'),
     },
     actions: {
+        /**
+         * Loads supplier incidents from the backend.
+         *
+         * @returns {Promise<void>} Resolves after `incidentsList` is refreshed.
+         */
         async fetchIncidents() {
             this.isLoading = true;
             try {
-                const response = await api.get('/incidents');
+                const response = await api.getIncidents();
                 this.incidentsList = response.data.sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error("Error loading incidents:", error);
@@ -31,9 +40,15 @@ export const useIncidentsStore = defineStore('incidents', {
                 this.isLoading = false;
             }
         },
+        /**
+         * Creates a supplier incident and refreshes incident state.
+         *
+         * @param {Object} incident - Incident creation payload.
+         * @returns {Promise<boolean>} True when creation succeeds.
+         */
         async createIncident(incident) {
             try {
-                await api.post('/incidents', incident);
+                await api.createIncident(incident);
                 await this.fetchIncidents();
                 return true;
             } catch (error) {
@@ -41,9 +56,16 @@ export const useIncidentsStore = defineStore('incidents', {
                 return false;
             }
         },
+        /**
+         * Updates the status of one incident.
+         *
+         * @param {number|string} id - Incident identifier.
+         * @param {string} newStatus - Target incident status.
+         * @returns {Promise<void>} Resolves after the update attempt.
+         */
         async updateIncidentStatus(id, newStatus) {
             try {
-                await api.patch(`/incidents/${id}`, { status: newStatus });
+                await api.updateIncidentStatus(id, { status: newStatus });
                 await this.fetchIncidents();
             } catch (error) {
                 console.error("Error updating incident:", error);

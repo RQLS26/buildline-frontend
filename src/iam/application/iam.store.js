@@ -1,16 +1,22 @@
-/**
- * IAM Store
- * @description Pinia store for authentication, user session, and role management.
- *              Uses real JWT-based authentication against the backend API.
- * @author RQLS TEAM
- */
 import { defineStore } from 'pinia';
 import { IamApi } from '../infrastructure/iam-api.js';
+import { clearAuthSession, getAuthToken, getStoredAuthUser, hasAuthSession, persistAuthSession } from '../infrastructure/iam-session.js';
 
+/**
+ * Pinia store for IAM session state, authentication workflows and role-gated UI rules.
+ *
+ * @description
+ * Coordinates user-facing IAM use cases with `IamApi`, persists the authenticated browser
+ * session through `iam-session.js`, and exposes convenience getters used by the router,
+ * layout and user-management screens.
+ *
+ * @returns {import('pinia').StoreDefinition} IAM store definition.
+ * @author RQLS TEAM
+ */
 export const useIamStore = defineStore('iam', {
     state: () => ({
-        currentUser: JSON.parse(localStorage.getItem('auth_user') || 'null'),
-        isAuthenticated: !!localStorage.getItem('auth_token'),
+        currentUser: getStoredAuthUser(),
+        isAuthenticated: hasAuthSession(),
         allUsers: [],
         isLoading: false,
         error: null
@@ -26,6 +32,14 @@ export const useIamStore = defineStore('iam', {
         userAvatarColor: (state) => state.currentUser?.avatarColor || '#3d63a1',
     },
     actions: {
+        /**
+         * Authenticates a user and persists the returned JWT session.
+         *
+         * @param {string} email - Email entered in the sign-in form.
+         * @param {string} password - Password entered in the sign-in form.
+         * @returns {Promise<boolean>} True when authentication succeeds; false when credentials or connectivity fail.
+         * @sideeffect Updates `currentUser`, `isAuthenticated`, `error` and browser localStorage.
+         */
         async signIn(email, password) {
             this.isLoading = true;
             this.error = null;
@@ -42,11 +56,11 @@ export const useIamStore = defineStore('iam', {
                     phone: data.phone,
                     avatarColor: data.avatarColor,
                     isActive: data.isActive,
+                    twoFactorEnabled: data.twoFactorEnabled,
                     lastLogin: data.lastLogin,
                 };
                 this.isAuthenticated = true;
-                localStorage.setItem('auth_token', data.token);
-                localStorage.setItem('auth_user', JSON.stringify(this.currentUser));
+                persistAuthSession(this.currentUser, data.token);
                 return true;
             } catch (error) {
                 if (error.response?.status === 401) {
@@ -59,6 +73,13 @@ export const useIamStore = defineStore('iam', {
                 this.isLoading = false;
             }
         },
+        /**
+         * Registers a user and immediately establishes the browser session.
+         *
+         * @param {Object} userData - Raw sign-up form data.
+         * @returns {Promise<boolean>} True when the account is created and authenticated.
+         * @sideeffect Persists the JWT session and normalizes optional account fields.
+         */
         async signUp(userData) {
             this.isLoading = true;
             this.error = null;
@@ -84,11 +105,11 @@ export const useIamStore = defineStore('iam', {
                     phone: data.phone,
                     avatarColor: data.avatarColor,
                     isActive: data.isActive,
+                    twoFactorEnabled: data.twoFactorEnabled,
                     lastLogin: data.lastLogin,
                 };
                 this.isAuthenticated = true;
-                localStorage.setItem('auth_token', data.token);
-                localStorage.setItem('auth_user', JSON.stringify(this.currentUser));
+                persistAuthSession(this.currentUser, data.token);
                 return true;
             } catch (error) {
                 if (error.response?.status === 409) {
@@ -101,6 +122,12 @@ export const useIamStore = defineStore('iam', {
                 this.isLoading = false;
             }
         },
+        /**
+         * Loads all users for the administration screen.
+         *
+         * @returns {Promise<void>} Resolves after the users list has been refreshed.
+         * @sideeffect Replaces `allUsers` and toggles `isLoading`.
+         */
         async fetchAllUsers() {
             this.isLoading = true;
             try {
@@ -113,6 +140,31 @@ export const useIamStore = defineStore('iam', {
                 this.isLoading = false;
             }
         },
+        /**
+         * Creates a viewer user from the admin users module.
+         *
+         * @param {Object} userData - Create-user payload built by the users management view.
+         * @returns {Promise<boolean>} True when the backend creates the user and the list refreshes.
+         */
+        async createUser(userData) {
+            if (!this.isAdmin) return false;
+            try {
+                const api = new IamApi();
+                await api.createUser(userData);
+                await this.fetchAllUsers();
+                return true;
+            } catch (error) {
+                console.error("Error creating user:", error);
+                return false;
+            }
+        },
+        /**
+         * Changes a user's role when the active account has admin privileges.
+         *
+         * @param {number|string} userId - User identifier.
+         * @param {string} newRole - Target role value accepted by the backend.
+         * @returns {Promise<boolean>} True when the role update succeeds.
+         */
         async updateUserRole(userId, newRole) {
             if (!this.isAdmin) return false;
             try {
@@ -125,26 +177,82 @@ export const useIamStore = defineStore('iam', {
                 return false;
             }
         },
+        /**
+         * Updates whether a managed user can authenticate.
+         *
+         * @param {number|string} userId - User identifier.
+         * @param {boolean} isActive - Target activation flag.
+         * @returns {Promise<boolean>} True when the backend accepts the status change.
+         */
+        async updateUserStatus(userId, isActive) {
+            if (!this.isAdmin) return false;
+            try {
+                const api = new IamApi();
+                await api.updateUser(userId, { isActive });
+                await this.fetchAllUsers();
+                return true;
+            } catch (error) {
+                console.error("Error updating user status:", error);
+                return false;
+            }
+        },
+        /**
+         * Updates the authenticated user's profile projection.
+         *
+         * @param {Object} updatedData - Partial profile data edited by the user.
+         * @returns {Promise<boolean>} True when the backend accepts the update.
+         * @sideeffect Refreshes the local authenticated user projection while preserving the JWT.
+         */
         async updateUserProfile(updatedData) {
             if (!this.currentUser) return false;
             try {
                 const api = new IamApi();
-                await api.updateUser(this.currentUser.id, updatedData);
-                this.currentUser = { ...this.currentUser, ...updatedData };
-                localStorage.setItem('auth_user', JSON.stringify(this.currentUser));
+                const response = await api.updateUser(this.currentUser.id, updatedData);
+                this.currentUser = { ...this.currentUser, ...response.data };
+                const token = getAuthToken();
+                if (token) persistAuthSession(this.currentUser, token);
                 return true;
             } catch (error) {
                 console.error("Error updating profile:", error);
                 return false;
             }
         },
+        /**
+         * Changes the authenticated user's password through the backend IAM security endpoint.
+         *
+         * @param {Object} passwordData - Payload with currentPassword and newPassword.
+         * @returns {Promise<boolean>} True when the password was changed.
+         */
+        async changePassword(passwordData) {
+            if (!this.currentUser) return false;
+            try {
+                const api = new IamApi();
+                await api.changePassword(this.currentUser.id, passwordData);
+                return true;
+            } catch (error) {
+                console.error("Error changing password:", error);
+                this.error = error.response?.data?.detail || "Could not change password.";
+                return false;
+            }
+        },
+        /**
+         * Clears the active IAM session.
+         *
+         * @returns {void}
+         * @sideeffect Clears in-memory user state and browser localStorage session artifacts.
+         */
         logout() {
             this.currentUser = null;
             this.isAuthenticated = false;
             this.allUsers = [];
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('auth_user');
+            clearAuthSession();
         },
+        /**
+         * Checks whether the active role can execute a named UI capability.
+         *
+         * @param {string} feature - Feature flag used by presentation components.
+         * @returns {boolean} True when the active role can access the feature.
+         */
         canAccess(feature) {
             if (this.isAdmin) return true;
             const restrictedForViewer = [
@@ -156,6 +264,12 @@ export const useIamStore = defineStore('iam', {
             ];
             return !restrictedForViewer.includes(feature);
         },
+        /**
+         * Checks whether the active role can access a named route.
+         *
+         * @param {string} routeName - Vue Router route name.
+         * @returns {boolean} True when the route is allowed for the current role.
+         */
         canAccessRoute(routeName) {
             if (this.isAdmin) return true;
             const adminOnlyRoutes = ['users', 'settings'];

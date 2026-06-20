@@ -10,7 +10,7 @@
       </div>
       <div class="filter-group">
         <label class="filter-label">Status</label>
-        <pv-select v-model="filterStatus" :options="['All', 'Pending', 'Approved', 'Rejected']" placeholder="All" class="filter-select" />
+        <pv-select v-model="filterStatus" :options="statusOptions" placeholder="All" class="filter-select" />
       </div>
       <div class="ml-auto">
         <pv-button label="New Request" icon="pi pi-plus" class="new-request-btn" @click="showDialog = true" />
@@ -72,7 +72,7 @@
       </div>
     </div>
 
-    <!-- New Material Request Dialog (matching mockup) -->
+    <!-- New Material Request Dialog -->
     <pv-dialog v-model:visible="showDialog" modal :style="{ width: '560px' }" :showHeader="false">
       <div class="dialog-form">
         <div class="dialog-header-row">
@@ -98,8 +98,8 @@
               <pv-input-number v-model="formData.quantity" :min="1" class="w-full form-input" />
             </div>
             <div class="form-field" style="flex: 0 0 90px;">
-              <label class="form-label">Unit</label>
-              <pv-select v-model="formData.unit" :options="['PCS', 'Tons', 'Bags', 'm3']" class="w-full form-input" />
+            <label class="form-label">Unit</label>
+              <pv-select v-model="formData.unit" :options="unitOptions" class="w-full form-input" />
             </div>
           </div>
           <div class="form-field">
@@ -142,17 +142,24 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRequisitionStore } from '../../application/requisition.store.js';
+import { useReferenceDataStore } from '../../../shared/application/reference-data.store.js';
+import { buildNextBusinessCode } from '../../../shared/application/business-code.js';
+import { useIamStore } from '../../../iam/application/iam.store.js';
 import { useToast } from 'primevue/usetoast';
 
 const store = useRequisitionStore();
+const referenceStore = useReferenceDataStore();
+const iamStore = useIamStore();
 const toast = useToast();
 const showDialog = ref(false);
 const activeTab = ref('All');
 const filterPriority = ref('All');
 const filterStatus = ref('All');
 
-const projects = ['Skyline Tower', 'Coastal Bridge', 'Grand Park'];
-const materials = ['Steel Rebar 1/2"', 'Concrete 3000 PSI', 'Sand Fine', 'Cement Type I', 'Gravel 3/4"', 'PVC Pipes 4"'];
+const projects = computed(() => referenceStore.projectNames);
+const materials = computed(() => referenceStore.materialNames);
+const unitOptions = computed(() => referenceStore.materialUnits);
+const statusOptions = computed(() => ['All', ...new Set(store.requests.map(request => request.status).filter(Boolean))]);
 
 const tabs = computed(() => {
   const reqs = store.requests || [];
@@ -174,8 +181,11 @@ const formData = ref({
   description: ''
 });
 
-onMounted(() => {
-  store.fetchRequests();
+onMounted(async () => {
+  await Promise.all([
+    store.fetchRequests(),
+    referenceStore.fetchAll()
+  ]);
 });
 
 const filteredRequests = computed(() => {
@@ -188,15 +198,23 @@ const filteredRequests = computed(() => {
 });
 
 const submitRequest = async () => {
+  if (!formData.value.project || !formData.value.material || !formData.value.quantity || !formData.value.priority || !formData.value.deliveryDate) {
+    toast.add({ severity: 'warn', summary: 'Missing data', detail: 'Select project, material, quantity, priority and delivery date.', life: 3000 });
+    return;
+  }
+
+  const selectedMaterial = referenceStore.materials.find(material => material.name === formData.value.material);
   const newReq = {
-    reqId: `MR-2026-000${Math.floor(Math.random() * 90) + 10}`,
+    reqId: buildNextBusinessCode(store.requests, 'reqId', 'MR'),
     material: formData.value.material,
     project: formData.value.project,
     quantity: formData.value.quantity,
-    unit: formData.value.unit,
+    unit: formData.value.unit || selectedMaterial?.unit,
     priority: formData.value.priority,
     status: 'Pending',
-    requestedOn: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    requestedOn: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    deliveryDate: formData.value.deliveryDate,
+    requestedBy: iamStore.userName
   };
 
   const success = await store.createRequest(newReq);
@@ -284,7 +302,7 @@ const submitRequest = async () => {
 }
 .page-active { background: white; box-shadow: 0 1px 4px rgba(0,0,0,0.1); color: #1E293B; }
 
-/* Dialog form — matching mockup */
+/* Dialog form */
 .dialog-form { padding: 32px; }
 .dialog-header-row {
   display: flex;

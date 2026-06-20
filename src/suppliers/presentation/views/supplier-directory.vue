@@ -125,7 +125,7 @@
     </div>
 
     <!-- Dialog -->
-    <pv-dialog v-model:visible="showDialog" modal header="Add New Supplier" :style="{ width: '500px' }">
+    <pv-dialog v-model:visible="showDialog" modal header="Add New Supplier" :style="{ width: '500px' }" class="supplier-dialog">
       <div class="flex flex-column gap-4 pt-2">
         <div class="flex flex-column gap-2">
           <label class="filter-label">Company Name</label>
@@ -140,8 +140,26 @@
           <pv-select v-model="newSupplier.category" :options="categories" placeholder="Select category" class="w-full" />
         </div>
         <div class="flex flex-column gap-2">
+          <label class="filter-label">Contact Name</label>
+          <pv-input-text v-model="newSupplier.contactName" placeholder="Primary contact" class="w-full" />
+        </div>
+        <div class="flex flex-column gap-2">
           <label class="filter-label">Contact Email</label>
-          <pv-input-text v-model="newSupplier.contact" placeholder="contact@supplier.com" class="w-full" />
+          <pv-input-text v-model="newSupplier.email" placeholder="contact@supplier.com" class="w-full" />
+        </div>
+        <div class="flex flex-column gap-2">
+          <label class="filter-label">Phone</label>
+          <pv-input-text v-model="newSupplier.phone" placeholder="+51 999 999 999" class="w-full" />
+        </div>
+        <div class="supplier-metrics-grid">
+          <div class="flex flex-column gap-2 min-w-0">
+            <label class="filter-label">Rating</label>
+            <pv-input-number v-model="newSupplier.rating" :min="1" :max="5" class="w-full metric-input" />
+          </div>
+          <div class="flex flex-column gap-2 min-w-0">
+            <label class="filter-label">On-time %</label>
+            <pv-input-number v-model="newSupplier.deliveryRate" :min="0" :max="100" class="w-full metric-input" />
+          </div>
         </div>
       </div>
       <template #footer>
@@ -155,17 +173,25 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useSuppliersStore } from '../../application/suppliers.store.js';
+import { useProcurementStore } from '../../../procurement/application/procurement.store.js';
+import { useReferenceDataStore } from '../../../shared/application/reference-data.store.js';
 import { useToast } from 'primevue/usetoast';
 
 const suppliersStore = useSuppliersStore();
+const procurementStore = useProcurementStore();
+const referenceStore = useReferenceDataStore();
 const toast = useToast();
 const showDialog = ref(false);
 const filters = ref({ category: null, status: null });
-const newSupplier = ref({ name: '', ruc: '', category: null, contact: '' });
-const categories = ['Steel', 'Concrete', 'General', 'Plumbing', 'Electrical', 'Aggregate'];
+const newSupplier = ref({ name: '', ruc: '', category: null, contactName: '', email: '', phone: '', rating: null, deliveryRate: null });
+const categories = computed(() => referenceStore.categoryNames);
 
 onMounted(async () => {
-  await suppliersStore.fetchSuppliers();
+  await Promise.all([
+    suppliersStore.fetchSuppliers(),
+    procurementStore.fetchOrders(),
+    referenceStore.fetchAll()
+  ]);
 });
 
 const suppliers = computed(() => {
@@ -179,8 +205,8 @@ const suppliers = computed(() => {
       initials,
       color: avatarColors[idx % avatarColors.length],
       contact: s.email,
-      reviews: s.totalOrders || Math.round((s.deliveryRate || 80) * 0.35),
-      orders: s.totalOrders || Math.round((s.deliveryRate || 80) * 0.5),
+      reviews: procurementStore.purchaseOrders.filter(order => order.supplierName === s.companyName).length,
+      orders: procurementStore.purchaseOrders.filter(order => order.supplierName === s.companyName).length,
       onTime: s.deliveryRate || 0
     };
   }).filter(s => {
@@ -206,24 +232,24 @@ const topPerformer = computed(() => {
 });
 
 const handleAddSupplier = async () => {
-  if (!newSupplier.value.name || !newSupplier.value.ruc) {
-    toast.add({ severity: 'warn', summary: 'Warning', detail: 'Please fill required fields.', life: 3000 });
+  if (!newSupplier.value.name || !newSupplier.value.ruc || !newSupplier.value.category || !newSupplier.value.email) {
+    toast.add({ severity: 'warn', summary: 'Warning', detail: 'Please fill company, RUC, category and email.', life: 3000 });
     return;
   }
   const success = await suppliersStore.createSupplier({
     companyName: newSupplier.value.name,
     ruc: newSupplier.value.ruc,
-    category: newSupplier.value.category || 'General',
-    email: newSupplier.value.contact,
-    contactName: '',
-    phone: '',
-    rating: 3,
+    category: newSupplier.value.category,
+    email: newSupplier.value.email,
+    contactName: newSupplier.value.contactName,
+    phone: newSupplier.value.phone,
+    rating: newSupplier.value.rating,
     isActive: true,
-    deliveryRate: 80
+    deliveryRate: newSupplier.value.deliveryRate
   });
   if (success) {
     showDialog.value = false;
-    newSupplier.value = { name: '', ruc: '', category: null, contact: '' };
+    newSupplier.value = { name: '', ruc: '', category: null, contactName: '', email: '', phone: '', rating: null, deliveryRate: null };
     toast.add({ severity: 'success', summary: 'Success', detail: 'Supplier added.', life: 3000 });
   }
 };
@@ -416,4 +442,25 @@ const handleAddSupplier = async () => {
   border-radius: 12px !important;
   background: white !important;
 }
+
+.supplier-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.min-w-0 { min-width: 0; }
+
+:deep(.supplier-dialog .p-dialog-content) {
+  overflow-x: hidden;
+}
+
+:deep(.metric-input),
+:deep(.metric-input .p-inputnumber),
+:deep(.metric-input .p-inputnumber-input) {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
 </style>

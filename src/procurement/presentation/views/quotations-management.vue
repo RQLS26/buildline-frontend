@@ -27,7 +27,7 @@
       </div>
       <div class="filter-group filter-action">
         <pv-button label="Clear filters" icon="pi pi-times" iconPos="right"
-                   class="p-button-outlined clear-filters-btn" />
+                   class="p-button-outlined clear-filters-btn" @click="clearFilters" />
       </div>
       <pv-button label="New Request" icon="pi pi-plus" class="new-request-btn" @click="showRequestDialog = true" />
     </div>
@@ -121,6 +121,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useProcurementStore } from '../../application/procurement.store.js';
 import { useSuppliersStore } from '../../../suppliers/application/suppliers.store.js';
 import { useRequisitionStore } from '../../../requisition/application/requisition.store.js';
+import { buildNextBusinessCode } from '../../../shared/application/business-code.js';
 import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
@@ -132,7 +133,7 @@ const searchQuery = ref('');
 const activeTab = ref('All');
 const filters = ref({ supplier: null, status: null });
 
-const statuses = ['Pending', 'Accepted', 'Rejected'];
+const statuses = computed(() => [...new Set(store.quotations.map(quotation => quotation.status).filter(Boolean))]);
 
 onMounted(async () => {
   await Promise.all([
@@ -142,7 +143,6 @@ onMounted(async () => {
   ]);
 });
 
-const supplierNames = computed(() => suppliersStore.suppliersList.map(s => s.companyName));
 const suppliers = computed(() => suppliersStore.suppliersList.map(s => s.companyName));
 
 const tabs = computed(() => {
@@ -171,6 +171,10 @@ const filteredQuotations = computed(() => {
 const showRequestDialog = ref(false);
 const supplierOptions = computed(() => suppliersStore.suppliersList.map(s => s.companyName));
 const requestIdOptions = computed(() => requisitionStore.requests.map(r => `${r.reqId} - ${r.material}`));
+const selectedRequest = computed(() => {
+  const requestCode = reqForm.value.requestId?.split(' - ')[0];
+  return requisitionStore.requests.find(request => request.reqId === requestCode);
+});
 
 const reqForm = ref({
   requestId: null,
@@ -180,12 +184,21 @@ const reqForm = ref({
 });
 
 const sendQuotationRequest = async () => {
+  if (!selectedRequest.value || reqForm.value.suppliers.length === 0) {
+    toast.add({ severity: 'warn', summary: 'Missing data', detail: 'Select a material request and at least one supplier.', life: 3000 });
+    return;
+  }
+
+  const estimatedAmount = Math.max(
+    1,
+    Number(selectedRequest.value.quantity || 1) * Number(selectedRequest.value.unitPrice || 25)
+  );
   const newQt = {
-    quotationId: `QT-2026-00${Math.floor(Math.random() * 90) + 19}`,
-    supplier: reqForm.value.suppliers[0] || 'Unknown',
-    material: reqForm.value.requestId?.split(' - ')[1] || 'Material',
-    project: 'Skyline Tower',
-    amount: Math.floor(Math.random() * 20000) + 5000,
+    quotationId: buildNextBusinessCode(store.quotations, 'quotationId', 'QT', new Date().getFullYear(), 4),
+    supplier: reqForm.value.suppliers[0],
+    material: selectedRequest.value.material,
+    project: selectedRequest.value.project,
+    amount: estimatedAmount,
     status: 'Pending',
     date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
   };
@@ -195,6 +208,10 @@ const sendQuotationRequest = async () => {
     reqForm.value = { requestId: null, suppliers: [], message: '', attachSpecs: false };
     toast.add({ severity: 'success', summary: 'Sent', detail: 'Quotation request sent successfully.', life: 3000 });
   }
+};
+
+const clearFilters = () => {
+  filters.value = { supplier: null, status: null };
 };
 </script>
 

@@ -1,11 +1,14 @@
-/**
- * Analytics Store
- * @description Pinia store for budget analytics, project costs, and financial data.
- * @author RQLS TEAM
- */
 import { defineStore } from 'pinia';
 import { AnalyticsApi } from '../infrastructure/analytics-api.js';
 
+/**
+ * Pinia store for analytics and budgeting dashboard state.
+ *
+ * @description Loads budget data through `AnalyticsApi` and exposes aggregate financial
+ * indicators consumed by dashboard widgets.
+ *
+ * @author RQLS TEAM
+ */
 export const useAnalyticsStore = defineStore('analytics', {
     state: () => ({
         budgets: [],
@@ -18,6 +21,11 @@ export const useAnalyticsStore = defineStore('analytics', {
         spentPercentage() { return this.totalBudget > 0 ? Math.round((this.totalSpent / this.totalBudget) * 100) : 0; },
     },
     actions: {
+        /**
+         * Loads budget records from the backend.
+         *
+         * @returns {Promise<void>} Resolves after `budgets` is refreshed.
+         */
         async fetchBudgets() {
             this.isLoading = true;
             try {

@@ -1,13 +1,16 @@
+import { defineStore } from 'pinia';
+import { InventoryApi } from '../infrastructure/inventory-api.js';
+
+const api = new InventoryApi();
+
 /**
- * Inventory Store
- * @description Pinia store for warehouse inventory management and stock tracking.
+ * Pinia store for inventory listing, stock indicators and item update workflows.
+ *
+ * @description Uses `InventoryApi` for backend communication and keeps presentation-ready
+ * stock groupings derived from the loaded inventory list.
+ *
  * @author RQLS TEAM
  */
-import { defineStore } from 'pinia';
-import axios from 'axios';
-
-const api = axios.create({ baseURL: (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000') });
-
 export const useInventoryStore = defineStore('inventory', {
     state: () => ({
         inventoryList: [],
@@ -27,10 +30,15 @@ export const useInventoryStore = defineStore('inventory', {
         }
     },
     actions: {
+        /**
+         * Loads inventory items from the backend.
+         *
+         * @returns {Promise<void>} Resolves after `inventoryList` is refreshed.
+         */
         async fetchInventory() {
             this.isLoading = true;
             try {
-                const response = await api.get('/api/v1/inventory');
+                const response = await api.getInventoryItems();
                 this.inventoryList = response.data;
             } catch (error) {
                 console.error("Error loading inventory:", error);
@@ -38,9 +46,16 @@ export const useInventoryStore = defineStore('inventory', {
                 this.isLoading = false;
             }
         },
+        /**
+         * Updates only the current stock field for an item.
+         *
+         * @param {number|string} id - Inventory item identifier.
+         * @param {number} newStock - New current stock value.
+         * @returns {Promise<boolean>} True when the stock update succeeds.
+         */
         async updateStock(id, newStock) {
             try {
-                await api.patch(`/api/v1/inventory/${id}`, { currentStock: newStock, lastUpdated: new Date().toISOString().split('T')[0] });
+                await api.updateStock(id, { currentStock: newStock, lastUpdated: new Date().toISOString().split('T')[0] });
                 await this.fetchInventory();
                 return true;
             } catch (error) {
@@ -48,9 +63,15 @@ export const useInventoryStore = defineStore('inventory', {
                 return false;
             }
         },
+        /**
+         * Creates an inventory item and refreshes the list.
+         *
+         * @param {Object} itemData - Inventory creation payload built by the view dialog.
+         * @returns {Promise<boolean>} True when creation succeeds.
+         */
         async addItem(itemData) {
             try {
-                await api.post('/api/v1/inventory', itemData);
+                await api.createInventoryItem(itemData);
                 await this.fetchInventory();
                 return true;
             } catch (error) {
@@ -58,9 +79,16 @@ export const useInventoryStore = defineStore('inventory', {
                 return false;
             }
         },
+        /**
+         * Updates editable inventory item fields.
+         *
+         * @param {number|string} id - Inventory item identifier.
+         * @param {Object} itemData - Partial update payload.
+         * @returns {Promise<boolean>} True when the backend accepts the update.
+         */
         async updateItem(id, itemData) {
             try {
-                await api.patch(`/api/v1/inventory/${id}`, itemData);
+                await api.updateInventoryItem(id, itemData);
                 await this.fetchInventory();
                 return true;
             } catch (error) {

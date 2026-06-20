@@ -1,28 +1,33 @@
-# Buildline JSON Server
+# Buildline Legacy Mock Server
 
-This folder is configured to be deployed as a standalone Web Service (e.g. on Render) to act as the mock backend for the production frontend.
+This folder keeps the original `json-server` data used during the early frontend sprint. It is retained as reference material for UI demos and isolated frontend experiments, but it is no longer the active Sprint 3 integration target.
 
-## Local Development
+The active API contract is the ASP.NET Core backend deployed at:
 
-```bash
-npm install
-npm run dev
+```txt
+https://buildline-platform.up.railway.app/
 ```
 
-Local frontend development expects this server at:
+## Optional Mock Mode
+
+Install dependencies from the frontend root and run:
+
+```sh
+npm run dev:mock
+```
+
+This starts Vite and the local JSON Server together. Use it only when intentionally testing screens without the real backend.
+
+The mock server runs at:
+
 ```txt
 http://localhost:3000
 ```
 
-## Hosted Service (Render)
+## Production Mode
 
-Deploy this `server/` folder as a Node Web Service.
+Do not deploy this folder as the production API. Production frontend builds should use:
 
-- **Root Directory**: `server`
-- **Build Command**: `npm install`
-- **Start Command**: `npm start`
-- **Suggested Name**: `buildline-json-server`
-
-If deployed on Render, it will inject its own `$PORT` automatically thanks to the start script in `package.json`.
-
-Make sure to update your frontend's `base-api.js` (or environment variables) to point to your new production URL (e.g., `https://buildline-json-server.onrender.com`) instead of localhost.
+```env
+VITE_API_BASE_URL=https://buildline-platform.up.railway.app/
+```

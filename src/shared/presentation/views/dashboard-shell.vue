@@ -235,7 +235,8 @@ onMounted(async () => {
     requisitionStore.fetchRequests(),
     inventoryStore.fetchInventory(),
     analyticsStore.fetchBudgets(),
-    suppliersStore.fetchSuppliers()
+    suppliersStore.fetchSuppliers(),
+    suppliersStore.fetchIncidents()
   ]);
 });
 
@@ -252,9 +253,17 @@ const statusItems = computed(() => {
   const pendingReqs = requisitionStore.pendingRequests?.length || 0;
   const highPrio = requisitionStore.highPriorityPending?.length || 0;
   const pendingPOs = procurementStore.pendingOrders?.length || 0;
+  const latestRequest = requisitionStore.requests[0];
+  const latestOrder = procurementStore.purchaseOrders[0];
+  const splitDisplayDate = (displayDate) => {
+    const [month = '', day = ''] = String(displayDate || '').replace(',', '').split(' ');
+    return { month: month.substring(0, 3) || 'N/A', day: day || '--' };
+  };
+  const requestDate = splitDisplayDate(latestRequest?.requestedOn);
+  const orderDate = splitDisplayDate(latestOrder?.date);
   return [
-    { month: 'May', day: '19', count: String(pendingReqs), title: 'Open Requests', subtitle: `${highPrio} high priority`, time: 'Now' },
-    { month: 'May', day: '16', count: String(pendingPOs), title: 'Pending Orders', subtitle: `${procurementStore.purchaseOrders.length} total`, time: '3d' }
+    { month: requestDate.month, day: requestDate.day, count: String(pendingReqs), title: 'Open Requests', subtitle: `${highPrio} high priority`, time: latestRequest?.reqId || 'Live' },
+    { month: orderDate.month, day: orderDate.day, count: String(pendingPOs), title: 'Pending Orders', subtitle: `${procurementStore.purchaseOrders.length} total`, time: latestOrder?.orderId || 'Live' }
   ];
 });
 
@@ -288,7 +297,10 @@ const barData = computed(() => {
   const suppliers = suppliersStore.suppliersList || [];
   const labels = suppliers.slice(0, 5).map(s => s.companyName?.split(' ')[0] || 'Sup');
   const rates = suppliers.slice(0, 5).map(s => s.deliveryRate || 0);
-  const lastWeek = rates.map(r => Math.max(r - Math.floor(Math.random() * 15 + 5), 40));
+  const relatedIncidents = suppliers.slice(0, 5).map(supplier =>
+    suppliersStore.incidentsList?.filter(incident => incident.supplier === supplier.companyName).length || 0
+  );
+  const lastWeek = rates.map((rate, index) => Math.max(rate - relatedIncidents[index] * 5, 0));
   return {
     labels,
     datasets: [
@@ -343,7 +355,7 @@ const pieData = computed(() => {
   const s = inventoryStore.inventorySummary;
   return {
     datasets: [{
-      data: [s.inStock || 1, s.lowStock || 1, s.outOfStock || 1],
+      data: [s.inStock, s.lowStock, s.outOfStock],
       backgroundColor: ['#3D9F7D', '#FFCB33', '#EA5434'],
       borderWidth: 2,
       borderColor: '#ffffff',
@@ -434,8 +446,9 @@ section {
 
 .section-header {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
+  min-height: 48px;
   margin-bottom: var(--spacing-sm);
 }
 
@@ -443,8 +456,9 @@ section {
   font-size: 22px;
   font-weight: 400;
   color: var(--color-text-muted);
-  line-height: 32px;
+  line-height: 24px;
   margin: 0;
+  max-width: 100%;
 }
 
 .view-all {

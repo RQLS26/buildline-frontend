@@ -16,12 +16,12 @@
             <div class="stat-divider"></div>
             <div class="stat-block">
               <p class="stat-number warning">{{ deliveryStore.delayed.length }}</p>
-              <p class="stat-label">Delayed</p>
+              <p class="stat-label">{{ $t('delivery.delayed') }}</p>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-block">
               <p class="stat-number success">{{ deliveryStore.delivered.length }}</p>
-              <p class="stat-label">Delivered</p>
+              <p class="stat-label">{{ $t('delivery.delivered') }}</p>
             </div>
           </div>
         </div>
@@ -35,7 +35,7 @@
           <div class="perf-row">
             <div class="perf-metric">
               <p class="perf-value">{{ deliveryStore.onTimeRate }}%</p>
-              <p class="perf-label">On-time rate</p>
+              <p class="perf-label">{{ $t('delivery.on_time_rate') }}</p>
             </div>
             <div class="perf-bar-container">
               <div class="perf-bar">
@@ -76,21 +76,21 @@
     <!-- Shipment List -->
     <div class="section-header mt-4">
       <h2 class="m-0">{{ $t('delivery.shipment_tracking') }}</h2>
-      <pv-button label="Register Delivery" icon="pi pi-plus" class="add-btn" @click="openRegisterDialog" />
+      <pv-button :label="$t('delivery.register_delivery')" icon="pi pi-plus" class="add-btn" @click="openRegisterDialog" />
     </div>
     <div class="content-card shipment-list-card">
       <!-- Table header -->
       <div class="shipment-table-header">
         <span class="col-tracking">{{ $t('delivery.tracking_id') }}</span>
-        <span class="col-po">PO Number</span>
-        <span class="col-supplier">Supplier</span>
-        <span class="col-origin">Origin</span>
-        <span class="col-dest">Destination</span>
-        <span class="col-eta">ETA</span>
-        <span class="col-status">Status</span>
+        <span class="col-po">{{ $t('delivery.po_number') }}</span>
+        <span class="col-supplier">{{ $t('delivery.supplier') }}</span>
+        <span class="col-origin">{{ $t('delivery.origin') }}</span>
+        <span class="col-dest">{{ $t('delivery.destination') }}</span>
+        <span class="col-eta">{{ $t('delivery.eta') }}</span>
+        <span class="col-status">{{ $t('delivery.status') }}</span>
       </div>
 
-      <!-- Shipment rows from db.json -->
+      <!-- Shipment rows loaded from the delivery store -->
       <div v-for="ship in deliveryStore.deliveries" :key="ship.id" class="shipment-block">
         <div class="shipment-row">
           <span class="col-tracking font-bold">{{ ship.trackingId }}</span>
@@ -107,10 +107,10 @@
         <!-- Expandable tracking bar -->
         <div class="tracking-toggle" @click="toggleTracking(ship.id)">
           <i :class="['pi', expandedId === ship.id ? 'pi-chevron-up' : 'pi-chevron-down']"></i>
-          <span>Tracking</span>
+          <span>{{ $t('delivery.tracking') }}</span>
           <div class="toggle-line"></div>
           <span class="toggle-map" @click.stop>
-            <i class="pi pi-map-marker"></i> View on Map
+            <i class="pi pi-map-marker"></i> {{ $t('delivery.view_map') }}
           </span>
         </div>
 
@@ -135,52 +135,77 @@
     </div>
 
     <!-- Register Delivery Dialog -->
-    <pv-dialog v-model:visible="showRegisterDialog" modal header="Register Delivery" :style="{ width: '550px' }">
-      <div class="flex flex-column gap-4 pt-2">
-        <div class="flex gap-3">
-          <div class="flex flex-column gap-2 flex-1">
-            <label class="filter-label">Tracking ID *</label>
-            <pv-input-text v-model="newDelivery.trackingId" placeholder="TRK-XXXX" class="w-full" />
-          </div>
-          <div class="flex flex-column gap-2 flex-1">
-            <label class="filter-label">PO Number</label>
-            <pv-input-text v-model="newDelivery.purchaseOrder" placeholder="PO-2026-XXXX" class="w-full" />
-          </div>
+    <pv-dialog v-model:visible="showRegisterDialog" modal :header="$t('delivery.register_delivery')" :style="{ width: '620px' }">
+      <div class="delivery-form-grid pt-2">
+        <div class="field-block">
+          <label class="filter-label">{{ $t('delivery.tracking_id') }} *</label>
+          <pv-input-text v-model="newDelivery.trackingId" class="w-full" readonly />
         </div>
-        <div class="flex gap-3">
-          <div class="flex flex-column gap-2 flex-1">
-            <label class="filter-label">Supplier *</label>
-            <pv-input-text v-model="newDelivery.supplier" placeholder="Supplier name" class="w-full" />
-          </div>
-          <div class="flex flex-column gap-2 flex-1">
-            <label class="filter-label">Material</label>
-            <pv-input-text v-model="newDelivery.material" placeholder="Material" class="w-full" />
-          </div>
+        <div class="field-block">
+          <label class="filter-label">{{ $t('delivery.po_number') }}</label>
+          <pv-select
+            v-model="newDelivery.purchaseOrder"
+            :options="purchaseOrderOptions"
+            optionLabel="label"
+            optionValue="value"
+            :placeholder="$t('delivery.select_po')"
+            class="w-full"
+            showClear
+            @update:modelValue="syncFromPurchaseOrder"
+          />
         </div>
-        <div class="flex gap-3">
-          <div class="flex flex-column gap-2 flex-1">
-            <label class="filter-label">Origin</label>
-            <pv-input-text v-model="newDelivery.origin" placeholder="Origin city" class="w-full" />
-          </div>
-          <div class="flex flex-column gap-2 flex-1">
-            <label class="filter-label">Destination</label>
-            <pv-input-text v-model="newDelivery.destination" placeholder="Project site" class="w-full" />
-          </div>
+        <div class="field-block">
+          <label class="filter-label">{{ $t('delivery.supplier') }} *</label>
+          <pv-select
+            v-model="newDelivery.supplier"
+            :options="supplierOptions"
+            :placeholder="$t('delivery.select_supplier')"
+            class="w-full"
+            editable
+          />
         </div>
-        <div class="flex gap-3">
-          <div class="flex flex-column gap-2 flex-1">
-            <label class="filter-label">ETA *</label>
-            <pv-date-picker v-model="newDelivery.eta" dateFormat="M dd, yy" class="w-full" placeholder="Select date" />
-          </div>
-          <div class="flex flex-column gap-2 flex-1">
-            <label class="filter-label">{{ $t('delivery.dispatch_date') }}</label>
-            <pv-date-picker v-model="newDelivery.dispatchDate" dateFormat="M dd, yy" class="w-full" placeholder="Select date" />
-          </div>
+        <div class="field-block">
+          <label class="filter-label">{{ $t('delivery.material') }} *</label>
+          <pv-select
+            v-model="newDelivery.material"
+            :options="materialOptions"
+            :placeholder="$t('delivery.select_material')"
+            class="w-full"
+            editable
+          />
+        </div>
+        <div class="field-block">
+          <label class="filter-label">{{ $t('delivery.origin') }}</label>
+          <pv-select
+            v-model="newDelivery.origin"
+            :options="originOptions"
+            :placeholder="$t('delivery.select_origin')"
+            class="w-full"
+            editable
+          />
+        </div>
+        <div class="field-block">
+          <label class="filter-label">{{ $t('delivery.destination') }}</label>
+          <pv-select
+            v-model="newDelivery.destination"
+            :options="destinationOptions"
+            :placeholder="$t('delivery.select_destination')"
+            class="w-full"
+            editable
+          />
+        </div>
+        <div class="field-block">
+          <label class="filter-label">{{ $t('delivery.eta') }} *</label>
+          <pv-date-picker v-model="newDelivery.eta" dateFormat="M dd, yy" class="w-full" :placeholder="$t('delivery.select_date')" />
+        </div>
+        <div class="field-block">
+          <label class="filter-label">{{ $t('delivery.dispatch_date') }}</label>
+          <pv-date-picker v-model="newDelivery.dispatchDate" dateFormat="M dd, yy" class="w-full" :placeholder="$t('delivery.select_date')" />
         </div>
       </div>
       <template #footer>
-        <pv-button label="Cancel" class="p-button-text" @click="showRegisterDialog = false" />
-        <pv-button label="Register" icon="pi pi-check" class="add-btn" @click="handleRegisterDelivery" />
+        <pv-button :label="$t('common.cancel')" class="p-button-text" @click="showRegisterDialog = false" />
+        <pv-button :label="$t('delivery.register')" icon="pi pi-check" class="add-btn" @click="handleRegisterDelivery" />
       </template>
     </pv-dialog>
 
@@ -189,12 +214,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useDeliveryStore } from '../../application/delivery.store.js';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
+import { useDeliveryStore } from '../../application/delivery.store.js';
+import { useProcurementStore } from '../../../procurement/application/procurement.store.js';
+import { useSuppliersStore } from '../../../suppliers/application/suppliers.store.js';
+import { useReferenceDataStore } from '../../../shared/application/reference-data.store.js';
+import { buildNextPlainCode } from '../../../shared/application/business-code.js';
 
 const toast = useToast();
+const { t } = useI18n();
 const deliveryStore = useDeliveryStore();
+const procurementStore = useProcurementStore();
+const suppliersStore = useSuppliersStore();
+const referenceStore = useReferenceDataStore();
 const expandedId = ref(null);
 const showRegisterDialog = ref(false);
 
@@ -203,13 +237,57 @@ const newDelivery = ref({
   origin: '', destination: '', eta: null, dispatchDate: null
 });
 
+const uniqueValues = (items) => [...new Set(items.filter(Boolean))];
+const purchaseOrderOptions = computed(() => procurementStore.purchaseOrders.map(order => ({
+  label: `${order.orderId} - ${order.supplierName || t('delivery.supplier')} - ${order.material || t('delivery.material')}`,
+  value: order.orderId
+})));
+const supplierOptions = computed(() => uniqueValues([
+  ...suppliersStore.suppliersList.map(supplier => supplier.companyName),
+  ...procurementStore.purchaseOrders.map(order => order.supplierName),
+  ...deliveryStore.deliveries.map(delivery => delivery.supplier)
+]));
+const materialOptions = computed(() => uniqueValues([
+  ...referenceStore.materialNames,
+  ...procurementStore.purchaseOrders.map(order => order.material),
+  ...deliveryStore.deliveries.map(delivery => delivery.material)
+]));
+const originOptions = computed(() => uniqueValues(deliveryStore.deliveries.map(delivery => delivery.origin)));
+const destinationOptions = computed(() => uniqueValues([
+  ...referenceStore.projectNames.map(project => `${project} Site`),
+  ...procurementStore.purchaseOrders.map(order => order.project ? `${order.project} Site` : null),
+  ...deliveryStore.deliveries.map(delivery => delivery.destination)
+]));
+
 onMounted(async () => {
-  await deliveryStore.fetchDeliveries();
+  await Promise.all([
+    deliveryStore.fetchDeliveries(),
+    procurementStore.fetchOrders(),
+    suppliersStore.fetchSuppliers(),
+    referenceStore.fetchAll()
+  ]);
+});
+
+watch(showRegisterDialog, (isOpen) => {
+  if (isOpen && !newDelivery.value.trackingId) {
+    newDelivery.value.trackingId = buildNextPlainCode(deliveryStore.deliveries, 'trackingId', 'TRK', 3);
+  }
 });
 
 const openRegisterDialog = () => {
-  newDelivery.value = { trackingId: '', purchaseOrder: '', supplier: '', material: '', origin: '', destination: '', eta: null, dispatchDate: null };
+  newDelivery.value = {
+    trackingId: buildNextPlainCode(deliveryStore.deliveries, 'trackingId', 'TRK', 3),
+    purchaseOrder: '', supplier: '', material: '', origin: '', destination: '', eta: null, dispatchDate: null
+  };
   showRegisterDialog.value = true;
+};
+
+const syncFromPurchaseOrder = (orderId) => {
+  const order = procurementStore.purchaseOrders.find(item => item.orderId === orderId);
+  if (!order) return;
+  newDelivery.value.supplier = order.supplierName || newDelivery.value.supplier;
+  newDelivery.value.material = order.material || newDelivery.value.material;
+  newDelivery.value.destination = order.project ? `${order.project} Site` : newDelivery.value.destination;
 };
 
 const formatDate = (d) => {
@@ -219,13 +297,14 @@ const formatDate = (d) => {
 };
 
 const handleRegisterDelivery = async () => {
-  if (!newDelivery.value.trackingId || !newDelivery.value.supplier) {
-    toast.add({ severity: 'warn', summary: 'Warning', detail: 'Fill required fields.', life: 3000 });
+  if (!newDelivery.value.trackingId || !newDelivery.value.supplier || !newDelivery.value.material || !newDelivery.value.eta) {
+    toast.add({ severity: 'warn', summary: t('common.warning'), detail: t('delivery.required_fields'), life: 3000 });
     return;
   }
+
   const data = {
     trackingId: newDelivery.value.trackingId,
-    purchaseOrder: newDelivery.value.purchaseOrder,
+    purchaseOrder: newDelivery.value.purchaseOrder || null,
     supplier: newDelivery.value.supplier,
     material: newDelivery.value.material,
     origin: newDelivery.value.origin || 'Lima, Peru',
@@ -233,12 +312,12 @@ const handleRegisterDelivery = async () => {
     eta: formatDate(newDelivery.value.eta),
     dispatchDate: formatDate(newDelivery.value.dispatchDate),
     status: 'Shipped',
-    quantity: '1 lot'
+    items: newDelivery.value.material
   };
   const success = await deliveryStore.createDelivery(data);
   if (success) {
     showRegisterDialog.value = false;
-    toast.add({ severity: 'success', summary: 'Registered', detail: `Delivery ${data.trackingId} registered.`, life: 3000 });
+    toast.add({ severity: 'success', summary: t('common.success'), detail: t('delivery.registered_message', { id: data.trackingId }), life: 3000 });
   }
 };
 
@@ -256,10 +335,31 @@ const getDay = (dateStr) => {
   return dateStr.split(' ')[1]?.replace(',', '') || '';
 };
 
-// Generate tracking steps based on delivery status
+const addDaysToDisplayDate = (value, days) => {
+  const parsed = value ? new Date(value) : null;
+  if (!parsed || Number.isNaN(parsed.getTime())) return '';
+  parsed.setDate(parsed.getDate() + days);
+  return parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
+// Generate tracking steps based on delivery status and calendar progression.
 const getSteps = (delivery) => {
-  const statusOrder = ['Order Placed', 'Confirmed', 'Shipped', 'In Transit', 'Delivered'];
+  const statusOrder = [
+    t('delivery.step_order_placed'),
+    t('delivery.step_confirmed'),
+    t('delivery.shipped'),
+    t('delivery.in_transit'),
+    t('delivery.delivered')
+  ];
+  const stepDates = [
+    addDaysToDisplayDate(delivery.dispatchDate, -2) || delivery.dispatchDate,
+    addDaysToDisplayDate(delivery.dispatchDate, -1) || delivery.dispatchDate,
+    delivery.dispatchDate,
+    addDaysToDisplayDate(delivery.dispatchDate, 1),
+    delivery.eta
+  ];
   const statusIndex = {
+    'Confirmed': 1,
     'Shipped': 2,
     'In Transit': 3,
     'Delivered': 4,
@@ -269,14 +369,14 @@ const getSteps = (delivery) => {
 
   return statusOrder.map((title, idx) => ({
     title,
-    date: idx <= currentIdx ? delivery.dispatchDate || delivery.eta : 'Pending',
+    date: idx <= currentIdx ? stepDates[idx] || delivery.dispatchDate || delivery.eta : t('common.pending'),
     completed: idx < currentIdx,
     active: idx === currentIdx && delivery.status !== 'Delivered'
   }));
 };
 
 const getStatusClass = (status) => {
-  const map = { 'In Transit': 'status-intransit', 'Shipped': 'status-shipped', 'Delivered': 'status-approved', 'Pending': 'status-pending', 'Delayed': 'status-rejected' };
+  const map = { 'Confirmed': 'status-pending', 'In Transit': 'status-intransit', 'Shipped': 'status-shipped', 'Delivered': 'status-approved', 'Pending': 'status-pending', 'Delayed': 'status-rejected' };
   return map[status] || 'status-pending';
 };
 </script>
@@ -576,4 +676,25 @@ const getStatusClass = (status) => {
 
 .add-btn { background: #F96116 !important; border-color: #F96116 !important; border-radius: 12px !important; font-weight: 700 !important; font-size: 13px !important; padding: 10px 24px !important; }
 .filter-label { font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.03em; }
+
+.delivery-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 16px;
+}
+
+.field-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+:deep(.delivery-form-grid .p-select),
+:deep(.delivery-form-grid .p-inputtext),
+:deep(.delivery-form-grid .p-datepicker) {
+  width: 100%;
+  min-width: 0;
+}
+
 </style>

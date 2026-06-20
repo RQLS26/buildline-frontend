@@ -1,13 +1,16 @@
+import { defineStore } from 'pinia';
+import { DeliveryApi } from '../infrastructure/delivery-api.js';
+
+const api = new DeliveryApi();
+
 /**
- * Delivery Store
- * @description Pinia store for the Delivery & Tracking bounded context.
+ * Pinia store for delivery tracking and status updates.
+ *
+ * @description Loads delivery resources through `DeliveryApi` and exposes derived
+ * collections used by the tracking dashboard.
+ *
  * @author RQLS TEAM
  */
-import { defineStore } from 'pinia';
-import axios from 'axios';
-
-const api = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000' });
-
 export const useDeliveryStore = defineStore('delivery', {
     state: () => ({
         deliveries: [],
@@ -36,11 +39,15 @@ export const useDeliveryStore = defineStore('delivery', {
         }
     },
     actions: {
-        /** @summary Fetches all deliveries from the API. */
+        /**
+         * Fetches all deliveries from the backend.
+         *
+         * @returns {Promise<void>} Resolves after `deliveries` is refreshed.
+         */
         async fetchDeliveries() {
             this.isLoading = true;
             try {
-                const response = await api.get('/api/v1/deliveries');
+                const response = await api.getDeliveries();
                 this.deliveries = response.data;
             } catch (error) {
                 console.error('Error loading deliveries:', error);
@@ -49,14 +56,15 @@ export const useDeliveryStore = defineStore('delivery', {
             }
         },
         /**
-         * @summary Updates delivery status by ID.
+         * Updates delivery status by ID.
+         *
          * @param {number|string} id - Delivery ID.
          * @param {string} newStatus - New status value.
-         * @returns {Promise<boolean>}
+         * @returns {Promise<boolean>} True when the backend accepts the update.
          */
         async updateDeliveryStatus(id, newStatus) {
             try {
-                await api.patch(`/api/v1/deliveries/${id}`, { status: newStatus });
+                await api.updateDeliveryStatus(id, { status: newStatus });
                 await this.fetchDeliveries();
                 return true;
             } catch (error) {
@@ -65,13 +73,14 @@ export const useDeliveryStore = defineStore('delivery', {
             }
         },
         /**
-         * @summary Creates a new delivery record.
+         * Creates a new delivery record.
+         *
          * @param {Object} deliveryData - Delivery payload.
-         * @returns {Promise<boolean>}
+         * @returns {Promise<boolean>} True when creation succeeds.
          */
         async createDelivery(deliveryData) {
             try {
-                await api.post('/api/v1/deliveries', deliveryData);
+                await api.createDelivery(deliveryData);
                 await this.fetchDeliveries();
                 return true;
             } catch (error) {

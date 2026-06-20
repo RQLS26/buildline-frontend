@@ -122,3 +122,61 @@ body {
     background-color: #F3F4F6 !important;
     color: #64748B !important;
 }
+
+/* Application-wide theme tokens applied by Settings. */
+html[data-theme="dark"] {
+    color-scheme: dark;
+}
+
+html[data-theme="dark"] body {
+    background-color: #0f172a !important;
+    color: #e5e7eb !important;
+}
+
+html[data-theme="dark"] .content-card,
+html[data-theme="dark"] .table-card,
+html[data-theme="dark"] .p-dialog,
+html[data-theme="dark"] .p-datatable,
+html[data-theme="dark"] .p-datatable-wrapper {
+    background: #111827 !important;
+    color: #e5e7eb !important;
+    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.32) !important;
+}
+
+html[data-theme="dark"] .p-datatable-thead > tr > th,
+html[data-theme="dark"] .buildline-datatable .p-datatable-thead > tr > th {
+    background: #111827 !important;
+    color: #cbd5e1 !important;
+    border-bottom-color: #1f2937 !important;
+}
+
+html[data-theme="dark"] .p-datatable-tbody > tr > td,
+html[data-theme="dark"] .buildline-datatable .p-datatable-tbody > tr > td {
+    background: #111827 !important;
+    color: #e5e7eb !important;
+    border-bottom-color: #1f2937 !important;
+}
+
+html[data-theme="dark"] .p-inputtext,
+html[data-theme="dark"] .p-select,
+html[data-theme="dark"] .p-datepicker,
+html[data-theme="dark"] .settings-input {
+    background: #0b1220 !important;
+    color: #e5e7eb !important;
+    border-color: #334155 !important;
+}
+
+html[data-theme="dark"] .p-select-label,
+html[data-theme="dark"] .p-placeholder,
+html[data-theme="dark"] .section-header h2,
+html[data-theme="dark"] .filter-label,
+html[data-theme="dark"] .setting-label {
+    color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .p-dialog-header,
+html[data-theme="dark"] .p-dialog-content,
+html[data-theme="dark"] .p-dialog-footer {
+    background: #111827 !important;
+    color: #e5e7eb !important;
+}

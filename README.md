@@ -1,52 +1,166 @@
-# Buildline Digital Construction Logistics - Frontend
+# Buildline Frontend
 
-Welcome to the frontend repository for **Buildline v1.0.0**. This project is a comprehensive enterprise dashboard built to manage digital construction logistics, procurement, material requisitions, deliveries, and analytics.
+Buildline Frontend is the Vue 3 single-page application for the Buildline construction logistics platform. It provides the Sprint 2/Sprint 3 web experience for IAM, company profiles, requisitions, procurement, inventory, delivery tracking, suppliers, analytics and communication.
 
-It is built adhering to **Domain-Driven Design (DDD)** principles.
+The application follows the DDD-oriented structure used in the course reference project. Shared HTTP behavior is centralized in `BaseApi`, reusable CRUD operations are centralized in `BaseEndpoint`, and each bounded context exposes its own infrastructure API adapter so presentation views and Pinia stores do not duplicate backend routes.
 
-## 🚀 Tech Stack
-- **Framework:** Vue 3
-- **Build Tool:** Vite
-- **State Management:** Pinia
-- **HTTP Client:** Axios
-- **Mock Backend:** JSON Server (REST API)
+## Architecture
 
-## 📁 Project Structure (DDD)
-The project is strictly separated into Bounded Contexts to maintain scalability and clean architecture:
-- `/iam` - Identity and Access Management
-- `/procurement` - Purchase Orders and Procurement logic
-- `/requisition` - Material Requests and Inventory needs
-- `/inventory` - Stock Control
-- `/analytics-budgeting` - Project Budgets and Reports
-- `/suppliers` - Suppliers Directory and Incident Management
-- `/delivery` - Delivery and Tracking
-- `/communication` - Internal Messaging and Notifications
-- `/shared` - Core Infrastructure, Layouts, and Common UI Components
+- `iam`: sign-in, sign-up, browser session storage, route guard and users management.
+- `profiles`: company profile lookup and update workflow.
+- `requisition`: material requisition list, creation flow and material-reference consumption.
+- `procurement`: purchase orders, quotations and approval workflows.
+- `inventory`: stock listing, stock thresholds and item update workflows.
+- `delivery`: delivery tracking and delivery-status transitions.
+- `suppliers`: supplier directory, validation simulation and supplier incidents.
+- `analytics-budgeting`: budget dashboard data and report views.
+- `communication`: messages, read state and starred-message workflows.
+- `shared`: layout, reusable UI, route shell, HTTP client infrastructure and endpoint utilities.
 
-## ⚙️ Local Development Setup
+Layer responsibilities:
 
-1. **Install Dependencies**
-   ```sh
-   npm install
-   ```
+| Layer | Responsibility |
+| --- | --- |
+| `presentation` | Vue views, route modules and screen-level interaction handlers. |
+| `application` | Pinia stores that coordinate UI use cases and state transitions. |
+| `domain/model` | Frontend domain entities used to represent business concepts. |
+| `infrastructure` | API adapters, assemblers, route guards, session helpers and shared HTTP plumbing. |
+| `shared` | Cross-context infrastructure and shared presentation building blocks. |
 
-2. **Run the Development Server**
-   To run both the Vite frontend and the mock JSON server simultaneously:
-   ```sh
-   npm run dev
-   ```
+Vue Single File Components intentionally keep `template`, `script setup` and `style scoped` in one `.vue` file. That is the expected Vue convention. A view should be split into child components only when a table, dialog, form or repeated UI block has an independent responsibility or is reused by more than one screen.
 
-   *Note: By default, the application connects to the local JSON Server (`localhost:3000`). If you wish to connect your local environment to the production backend, create an `.env` file at the root with `VITE_API_BASE_URL=https://<your-render-url>/`.*
+## Production Deployment
 
-3. **Build for Production**
-   ```sh
-   npm run build
-   ```
+Production is deployed on Vercel as a static SPA:
 
-## ☁️ Deployment
+- Production URL: `https://buildline-delta.vercel.app/`
+- Repository: `https://github.com/RQLS26/buildline-frontend`
+- Production branch: `main`
+- Integration branch: `develop`
+- Build command: `npm run build`
+- Output directory: `dist`
+- SPA routing config: `vercel.json`
 
-- **Frontend:** Deployed as a Single Page Application (SPA) on **Vercel**.
-- **Backend (Mock):** The `server/db.json` is deployed separately as a Node.js web service on **Render**. See `server/README.md` for more details.
+Vercel must define:
 
-## 🏷️ Release v1.0.0
-This marks the first stable production release integrating all core operational modules, responsive dashboards, and cloud deployment ready for final presentation.
+```env
+VITE_API_BASE_URL=https://buildline-platform.up.railway.app/
+```
+
+Expected deployment behavior:
+
+- Vite builds static assets into `dist/`.
+- Vercel serves the SPA with history fallback through `vercel.json`.
+- The deployed frontend consumes the Railway backend at `https://buildline-platform.up.railway.app/`.
+- Protected API calls require a valid JWT created through the IAM flow.
+- Backend CORS must allow the Vercel production origin.
+
+## API Integration
+
+The frontend consumes the Buildline backend API deployed on Railway:
+
+- Base URL: `https://buildline-platform.up.railway.app/`
+- Swagger UI: `https://buildline-platform.up.railway.app/swagger/index.html`
+- Health check: `https://buildline-platform.up.railway.app/api/v1/health`
+
+For local backend development, replace the Vercel environment value with:
+
+```env
+VITE_API_BASE_URL=http://localhost:5163/
+```
+
+`VITE_API_BASE_URL` must point to the API host root. Backend route fragments such as `api/v1/inventory` or `api/v1/auth/sign-in` are owned by `src/shared/infrastructure/api-endpoints.js` and by each bounded-context API adapter.
+
+`BaseApi` is the generic shared Axios client. It centralizes backend base URL resolution, JSON headers, JWT Bearer attachment and protected-resource `401` session cleanup. Bounded-context adapters such as `InventoryApi`, `DeliveryApi`, `IamApi` and `SuppliersApi` extend `BaseApi` and expose feature-specific methods. Pinia stores should call those adapters instead of creating Axios clients or hard-coding `/api/v1/...` paths.
+
+## Frontend Session Handling
+
+The frontend keeps only the browser-side session state needed by the SPA:
+
+- `src/iam/infrastructure/iam-session.js` owns the `auth_token` and `auth_user` storage keys.
+- `src/iam/infrastructure/authentication.guard.js` protects private and admin-only routes.
+- `BaseApi` attaches the stored token to protected API requests.
+- A protected-resource `401` clears the browser session and redirects the user to sign-in.
+
+Authorization remains a backend responsibility. Frontend route guards exist to improve user experience and avoid showing screens the current role should not use.
+
+## Frontend Contract Coverage
+
+| Frontend capability | Backend endpoint | Context adapter |
+| --- | --- | --- |
+| Sign-in / sign-up | `/api/v1/auth/*` | `IamApi` |
+| Users | `/api/v1/users` | `IamApi` |
+| Company profile | `/api/v1/profiles` | `ProfilesApi` |
+| Requisitions | `/api/v1/requisitions` | `RequisitionApi` |
+| Materials | `/api/v1/materials` | `RequisitionApi` |
+| Purchase orders | `/api/v1/purchaseOrders` | `ProcurementApi` |
+| Quotations | `/api/v1/quotations` | `ProcurementApi` |
+| Inventory | `/api/v1/inventory` | `InventoryApi` |
+| Deliveries | `/api/v1/deliveries` | `DeliveryApi` |
+| Suppliers | `/api/v1/suppliers` | `SuppliersApi` |
+| Incidents | `/api/v1/incidents` | `SuppliersApi` |
+| Budgets | `/api/v1/budgets` | `AnalyticsApi` |
+| Messages | `/api/v1/messages` | `CommunicationApi` |
+
+## Development
+
+Install dependencies:
+
+```sh
+npm install
+```
+
+Run the Vue development server against the configured backend:
+
+```sh
+npm run dev
+```
+
+Run the legacy JSON Server mock together with Vite:
+
+```sh
+npm run dev:mock
+```
+
+Build the production bundle:
+
+```sh
+npm run build
+```
+
+Preview the production bundle locally:
+
+```sh
+npm run preview
+```
+
+## Mock Server
+
+The `server/` folder remains only as legacy mock-data evidence from the early frontend sprint. It is not the production API. Sprint 3 uses the ASP.NET Core backend deployed on Railway.
+
+Use `npm run dev:mock` only when intentionally testing the UI without the real backend.
+
+## Verification
+
+Local build verification:
+
+```sh
+npm run build
+```
+
+Production API smoke check:
+
+```powershell
+Invoke-WebRequest -Uri 'https://buildline-platform.up.railway.app/api/v1/health' -UseBasicParsing
+```
+
+Expected backend health response:
+
+```json
+{"status":"Healthy","service":"Buildline Platform API"}
+```
+
+Known Vite build warning:
+
+- Some generated chunks may exceed 500 kB because PrimeVue, PrimeIcons and dashboard dependencies are bundled into the SPA.
+- This is a bundle-size optimization warning, not a build failure.

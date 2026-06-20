@@ -1,13 +1,16 @@
+import { defineStore } from 'pinia';
+import { ProcurementApi } from '../infrastructure/procurement-api.js';
+
+const api = new ProcurementApi();
+
 /**
- * Procurement Store
- * @description Pinia store for purchase order management and approval workflows.
+ * Pinia store for procurement purchase orders and quotations.
+ *
+ * @description Coordinates order and quotation actions with `ProcurementApi` while
+ * exposing dashboard-friendly subsets such as pending, approved and rejected orders.
+ *
  * @author RQLS TEAM
  */
-import { defineStore } from 'pinia';
-import axios from 'axios';
-
-const api = axios.create({ baseURL: (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000') });
-
 export const useProcurementStore = defineStore('procurement', {
     state: () => ({
         purchaseOrders: [],
@@ -25,10 +28,15 @@ export const useProcurementStore = defineStore('procurement', {
         acceptedQuotations: (state) => state.quotations.filter(q => q.status === 'Accepted'),
     },
     actions: {
+        /**
+         * Loads purchase orders ordered from newest to oldest.
+         *
+         * @returns {Promise<void>} Resolves after `purchaseOrders` is refreshed.
+         */
         async fetchOrders() {
             this.isLoading = true;
             try {
-                const response = await api.get('/api/v1/purchaseOrders');
+                const response = await api.getPurchaseOrders();
                 this.purchaseOrders = response.data.sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error('Error loading purchase orders:', error);
@@ -36,9 +44,15 @@ export const useProcurementStore = defineStore('procurement', {
                 this.isLoading = false;
             }
         },
+        /**
+         * Creates a purchase order and refreshes order state.
+         *
+         * @param {Object} order - Purchase order creation payload.
+         * @returns {Promise<boolean>} True when creation succeeds.
+         */
         async createOrder(order) {
             try {
-                await api.post('/api/v1/purchaseOrders', order);
+                await api.createPurchaseOrder(order);
                 await this.fetchOrders();
                 return true;
             } catch (error) {
@@ -46,21 +60,33 @@ export const useProcurementStore = defineStore('procurement', {
                 return false;
             }
         },
+        /**
+         * Updates a purchase order status.
+         *
+         * @param {number|string} id - Purchase order identifier.
+         * @param {string} newStatus - Target status value.
+         * @returns {Promise<void>} Resolves after the optional refresh.
+         */
         async updateOrderStatus(id, newStatus) {
             try {
                 const order = this.purchaseOrders.find(o => o.id === id);
                 if (order) {
-                    await api.patch(`/api/v1/purchaseOrders/${id}`, { status: newStatus });
+                    await api.updateOrderStatus(id, { status: newStatus });
                     await this.fetchOrders();
                 }
             } catch (error) {
                 console.error('Error updating order status:', error);
             }
         },
+        /**
+         * Loads quotations ordered from newest to oldest.
+         *
+         * @returns {Promise<void>} Resolves after `quotations` is refreshed.
+         */
         async fetchQuotations() {
             this.isLoading = true;
             try {
-                const response = await api.get('/api/v1/quotations');
+                const response = await api.getQuotations();
                 this.quotations = response.data.sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error('Error loading quotations:', error);
@@ -68,9 +94,15 @@ export const useProcurementStore = defineStore('procurement', {
                 this.isLoading = false;
             }
         },
+        /**
+         * Creates a quotation and refreshes quotation state.
+         *
+         * @param {Object} quotation - Quotation creation payload.
+         * @returns {Promise<boolean>} True when creation succeeds.
+         */
         async createQuotation(quotation) {
             try {
-                await api.post('/api/v1/quotations', quotation);
+                await api.createQuotation(quotation);
                 await this.fetchQuotations();
                 return true;
             } catch (error) {
