@@ -1060,12 +1060,11 @@ section {
 }
 
 .card-material-requests .content-card {
-  min-height: 384px;
+  max-height: 300px;
 }
 
 .card-purchase-orders .content-card {
-  box-shadow: var(--shadow-card);
-  min-height: 730px;
+  max-height: 604px;
 }
 
 .card-inventory .content-card {

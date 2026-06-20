@@ -305,7 +305,10 @@
     "send": "Enviar",
     "star": "Destacar",
     "unstar": "Quitar destacado",
-    "archive": "Archivar"
+    "archive": "Archivar",
+    "membership_request_subject": "Solicitud de acceso a compañía",
+    "membership_request_preview": "{email} espera aprobación del propietario.",
+    "pending_review": "Pendiente de revisión"
   },
   "users": {
     "title": "Usuarios y Roles",
