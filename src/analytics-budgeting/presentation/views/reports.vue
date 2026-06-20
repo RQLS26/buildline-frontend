@@ -180,7 +180,7 @@ const periods = computed(() => {
 const selectedPeriodLabel = computed(() => periods.value.find(item => item.value === selectedPeriod.value)?.label || t('reports.current_data'));
 
 onMounted(async () => {
-  await Promise.all([
+  await Promise.allSettled([
     inventoryStore.fetchInventory(),
     analyticsStore.fetchBudgets(),
     procurementStore.fetchOrders(),

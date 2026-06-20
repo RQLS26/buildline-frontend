@@ -531,6 +531,7 @@
     "info": "Información",
     "search_placeholder": "Buscar aquí",
     "live": "En vivo",
-    "select": "Seleccione"
+    "select": "Seleccione",
+    "company_empty_data": "Los datos de su empresa aparecerán aquí cuando registre nuevos elementos."
   }
 }

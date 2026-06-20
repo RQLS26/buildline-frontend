@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ReferenceDataApi } from '../infrastructure/reference-data-api.js';
+import { scopedResources } from './company-scope.js';
 
 const api = new ReferenceDataApi();
 
@@ -39,9 +40,9 @@ export const useReferenceDataStore = defineStore('referenceData', {
                     api.getCategories(),
                     api.getMaterials()
                 ]);
-                this.projects = projectsResponse.data || [];
+                this.projects = scopedResources(projectsResponse.data || []);
                 this.categories = categoriesResponse.data || [];
-                this.materials = materialsResponse.data || [];
+                this.materials = scopedResources(materialsResponse.data || []);
             } catch (error) {
                 console.error('Error loading reference data:', error);
             } finally {

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { InventoryApi } from '../infrastructure/inventory-api.js';
+import { scopedResources, withCompanyScope } from '../../shared/application/company-scope.js';
 
 const api = new InventoryApi();
 
@@ -39,7 +40,7 @@ export const useInventoryStore = defineStore('inventory', {
             this.isLoading = true;
             try {
                 const response = await api.getInventoryItems();
-                this.inventoryList = response.data;
+                this.inventoryList = scopedResources(response.data);
             } catch (error) {
                 console.error("Error loading inventory:", error);
             } finally {
@@ -71,7 +72,7 @@ export const useInventoryStore = defineStore('inventory', {
          */
         async addItem(itemData) {
             try {
-                await api.createInventoryItem(itemData);
+                await api.createInventoryItem(withCompanyScope(itemData));
                 await this.fetchInventory();
                 return true;
             } catch (error) {

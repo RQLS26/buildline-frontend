@@ -531,6 +531,7 @@
     "info": "Info",
     "search_placeholder": "Search here",
     "live": "Live",
-    "select": "Select"
+    "select": "Select",
+    "company_empty_data": "Your company data will appear here after you register new records."
   }
 }

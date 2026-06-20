@@ -402,14 +402,18 @@ const pieOptions = {
   grid-template-columns: 1.4fr 1fr;
   gap: 20px;
   margin-bottom: 8px;
+  height: 360px;
+  align-items: stretch;
 }
 .main-row-2 > section {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  height: 100%;
 }
 .main-row-2 > section > .content-card {
   flex: 1;
+  min-height: 0;
 }
 
 /* Total Budget (mimics Total Spend from Overview) */
@@ -613,14 +617,15 @@ const pieOptions = {
 }
 
 .main-row-2 > section > .content-card {
-  height: 360px;
-  min-height: 360px;
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
 }
 
 .progress-list {
   justify-content: flex-start;
   overflow-y: auto;
+  height: 100%;
   max-height: 100%;
   min-height: 0;
   padding-right: 6px;
