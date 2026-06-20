@@ -49,7 +49,11 @@
           </template>
         </pv-column>
         <pv-column field="department" :header="$t('users.department')"></pv-column>
-        <pv-column field="lastLogin" :header="$t('users.last_login')"></pv-column>
+        <pv-column field="lastLogin" :header="$t('users.last_login')">
+          <template #body="slotProps">
+            {{ formatLastLogin(slotProps.data.lastLogin) }}
+          </template>
+        </pv-column>
         <pv-column :header="$t('users.status')">
           <template #body="slotProps">
             <span :class="['status-badge', slotProps.data.isActive ? 'status-approved' : 'status-rejected']">
@@ -193,7 +197,7 @@ const displayedUsers = computed(() => {
     membershipStatus: currentUser.membershipStatus || 'active',
     avatarColor: currentUser.avatarColor || getAvatarColor(currentUser.email),
     department: currentUser.department || 'Management',
-    lastLogin: currentUser.lastLogin || 'Today'
+    lastLogin: currentUser.lastLogin
   }, ...users];
 });
 const departments = computed(() => [...new Set(displayedUsers.value.map(user => user.department).filter(Boolean))]);
@@ -246,6 +250,11 @@ const getMembershipLabel = (user) => {
   if (user.membershipStatus === 'pending') return t('users.pending_membership');
   if (user.membershipStatus === 'rejected') return t('users.rejected_membership');
   return user.isActive ? t('common.active') : t('common.inactive');
+};
+
+const formatLastLogin = (value) => {
+  if (!value || /^May\s+\d{1,2},\s+2026$/i.test(String(value))) return t('common.no_data');
+  return value;
 };
 
 const reviewMembership = async (user, membershipStatus) => {

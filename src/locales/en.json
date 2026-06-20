@@ -305,7 +305,10 @@
     "send": "Send",
     "star": "Star",
     "unstar": "Unstar",
-    "archive": "Archive"
+    "archive": "Archive",
+    "membership_request_subject": "Company access request",
+    "membership_request_preview": "{email} is waiting for company owner approval.",
+    "pending_review": "Pending review"
   },
   "users": {
     "title": "Users & Roles",

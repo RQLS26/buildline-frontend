@@ -44,7 +44,7 @@
         <!-- Time + actions -->
         <div class="notif-right">
           <span class="notif-time">{{ msg.time }}</span>
-          <div class="notif-actions">
+          <div v-if="!msg.synthetic" class="notif-actions">
             <button class="notif-action" @click.stop="handleStar(msg)" :title="msg.starred ? $t('notifications.unstar') : $t('notifications.star')">
               <i :class="msg.starred ? 'pi pi-star-fill' : 'pi pi-star'" :style="{ color: msg.starred ? '#D97706' : '#D1D5DB' }"></i>
             </button>
@@ -89,8 +89,10 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCommunicationStore } from '../../application/communication.store.js';
+import { useIamStore } from '../../../iam/application/iam.store.js';
 
 const store = useCommunicationStore();
+const iamStore = useIamStore();
 const { t } = useI18n();
 const showCompose = ref(false);
 const activeTab = ref('All');
@@ -98,19 +100,42 @@ const searchQuery = ref('');
 const newMsg = ref({ to: '', subject: '', body: '' });
 
 onMounted(async () => {
-  await store.fetchMessages();
+  await Promise.all([
+    store.fetchMessages(),
+    iamStore.fetchAllUsers()
+  ]);
 });
 
+const membershipMessages = computed(() => (iamStore.allUsers || [])
+  .filter(user => user.membershipStatus === 'pending')
+  .map(user => ({
+    id: `membership-${user.id}`,
+    synthetic: true,
+    sender: user.name || user.email,
+    subject: t('notifications.membership_request_subject'),
+    preview: t('notifications.membership_request_preview', { email: user.email }),
+    time: t('notifications.pending_review'),
+    category: 'alerts',
+    isRead: false,
+    starred: false,
+    icon: 'pi-user-plus',
+    iconClass: 'icon-blue',
+    label: t('users.pending_membership'),
+    labelClass: 'label-red'
+  })));
+
+const allMessages = computed(() => [...membershipMessages.value, ...store.messages]);
+
 const tabs = computed(() => [
-  { name: 'All', label: t('common.all'), count: store.messages.length },
-  { name: 'Unread', label: t('notifications.unread'), count: store.unreadMessages.length },
-  { name: 'Alerts', label: t('notifications.alerts'), count: store.alertMessages.length },
+  { name: 'All', label: t('common.all'), count: allMessages.value.length },
+  { name: 'Unread', label: t('notifications.unread'), count: allMessages.value.filter(message => !message.isRead).length },
+  { name: 'Alerts', label: t('notifications.alerts'), count: allMessages.value.filter(message => message.category === 'alerts').length },
   { name: 'Updates', label: t('notifications.updates'), count: store.updateMessages.length },
   { name: 'Starred', label: t('notifications.starred'), count: store.starredMessages.length },
 ]);
 
 const filteredMessages = computed(() => {
-  return store.messages.filter(m => {
+  return allMessages.value.filter(m => {
     if (activeTab.value === 'Unread') return !m.isRead;
     if (activeTab.value === 'Alerts') return m.category === 'alerts';
     if (activeTab.value === 'Updates') return m.category === 'updates';
@@ -124,14 +149,17 @@ const filteredMessages = computed(() => {
 });
 
 const handleRead = (msg) => {
+  if (msg.synthetic) return;
   if (!msg.isRead) store.markAsRead(msg.id);
 };
 
 const handleStar = (msg) => {
+  if (msg.synthetic) return;
   store.toggleStar(msg.id);
 };
 
 const handleArchive = (msg) => {
+  if (msg.synthetic) return;
   store.archiveMessage(msg.id);
 };
 </script>
