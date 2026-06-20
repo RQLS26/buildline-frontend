@@ -4,34 +4,34 @@
     <!-- Filters Row -->
     <div class="filters-row">
       <div class="filter-group">
-        <label class="filter-label">Project</label>
-        <pv-select v-model="filters.project" :options="projects" placeholder="All projects" class="filter-select" />
+        <label class="filter-label">{{ $t('material_request.project') }}</label>
+        <pv-select v-model="filters.project" :options="projects" :placeholder="$t('common.all')" class="filter-select" />
       </div>
       <div class="filter-group">
-        <label class="filter-label">Status</label>
-        <pv-select v-model="filters.status" :options="statuses" placeholder="All status" class="filter-select" />
+        <label class="filter-label">{{ $t('material_request.status') }}</label>
+        <pv-select v-model="filters.status" :options="statuses" :placeholder="$t('common.all')" class="filter-select" />
       </div>
       <div class="filter-group">
-        <label class="filter-label">Priority</label>
-        <pv-select v-model="filters.priority" :options="priorities" placeholder="All priority" class="filter-select" />
+        <label class="filter-label">{{ $t('material_request.priority') }}</label>
+        <pv-select v-model="filters.priority" :options="priorities" :placeholder="$t('common.all')" class="filter-select" />
       </div>
       <div class="filter-group">
-        <label class="filter-label">Date from</label>
+        <label class="filter-label">{{ $t('common.date') }}</label>
         <div class="date-input-wrapper">
-          <pv-input-text type="text" placeholder="Select date" class="date-input" />
+          <pv-input-text type="text" :placeholder="$t('reports.select_period')" class="date-input" />
           <i class="pi pi-calendar date-icon"></i>
         </div>
       </div>
       <div class="filter-group">
-        <label class="filter-label">Date to</label>
+        <label class="filter-label">{{ $t('common.date') }}</label>
         <div class="date-input-wrapper">
-          <pv-input-text type="text" placeholder="Select date" class="date-input" />
+          <pv-input-text type="text" :placeholder="$t('reports.select_period')" class="date-input" />
           <i class="pi pi-calendar date-icon"></i>
         </div>
       </div>
       <div class="filter-group filter-action">
-        <pv-button label="Clear filters" icon="pi pi-times" iconPos="right"
-                   class="p-button-outlined clear-filters-btn" />
+        <pv-button :label="$t('common.clear_filters')" icon="pi pi-times" iconPos="right"
+                   class="p-button-outlined clear-filters-btn" @click="clearFilters" />
       </div>
     </div>
 
@@ -47,34 +47,37 @@
     <!-- Table Card -->
     <div class="table-card">
       <pv-data-table :value="requests" class="buildline-datatable" :rows="15">
-        <pv-column field="id" header="Request ID"></pv-column>
-        <pv-column field="material" header="Material">
+        <pv-column field="id" :header="$t('material_request.request_id')"></pv-column>
+        <pv-column field="material" :header="$t('material_request.material')">
           <template #body="slotProps">
             <span class="font-semibold">{{ slotProps.data.material }}</span>
           </template>
         </pv-column>
-        <pv-column field="project" header="Project"></pv-column>
-        <pv-column field="priority" header="Priority">
+        <pv-column field="project" :header="$t('material_request.project')"></pv-column>
+        <pv-column field="priority" :header="$t('material_request.priority')">
           <template #body="slotProps">
             <span :class="['priority-badge', 'priority-' + slotProps.data.priority.toLowerCase()]">
-              {{ slotProps.data.priority }}
+              {{ translatePriority(slotProps.data.priority) }}
             </span>
           </template>
         </pv-column>
-        <pv-column field="status" header="Status">
+        <pv-column field="status" :header="$t('material_request.status')">
           <template #body="slotProps">
             <span :class="['status-badge', 'status-' + slotProps.data.status.toLowerCase()]">
-              {{ slotProps.data.status }}
+              {{ translateStatus(slotProps.data.status) }}
             </span>
           </template>
         </pv-column>
-        <pv-column field="requestedOn" header="Requested On"></pv-column>
+        <pv-column field="requestedOn" :header="$t('material_request.requested_on')"></pv-column>
+        <template #empty>
+          <div class="tenant-empty-state">{{ $t('common.company_empty_data') }}</div>
+        </template>
       </pv-data-table>
 
       <!-- Pagination -->
       <div class="pagination-row">
         <div class="pagination-info">
-          Item per page:
+          {{ $t('users.items_per_page') }}:
           <span class="pagination-count">15 <i class="pi pi-caret-down"></i></span>
         </div>
         <div class="pagination-controls">
@@ -91,9 +94,11 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRequisitionStore } from '../../application/requisition.store.js';
 import { useReferenceDataStore } from '../../../shared/application/reference-data.store.js';
+import { useI18n } from 'vue-i18n';
 
 const requisitionStore = useRequisitionStore();
 const referenceStore = useReferenceDataStore();
+const { t } = useI18n();
 const activeTab = ref('All');
 const searchQuery = ref('');
 const filters = ref({ project: null, status: null, priority: null });
@@ -112,13 +117,20 @@ const requests = computed(() => requisitionStore.requests.filter(request => {
 const tabs = computed(() => {
   const all = requisitionStore.requests;
   return [
-    { name: 'All', label: `All (${all.length})` },
+    { name: 'All', label: `${t('common.all')} (${all.length})` },
     ...statuses.value.map(status => ({
       name: status,
-      label: `${status} (${all.filter(request => request.status === status).length})`
+      label: `${translateStatus(status)} (${all.filter(request => request.status === status).length})`
     }))
   ];
 });
+
+const clearFilters = () => {
+  filters.value = { project: null, status: null, priority: null };
+};
+
+const translateStatus = (status) => t(`common.${String(status || '').toLowerCase()}`, status);
+const translatePriority = (priority) => t(`common.${String(priority || '').toLowerCase()}`, priority);
 
 const fetchRequests = async () => {
   await Promise.all([
@@ -272,6 +284,14 @@ onMounted(fetchRequests);
   background: white;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   color: #111827;
+}
+
+.tenant-empty-state {
+  padding: 40px 24px;
+  color: #94A3B8;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
 }
 
 :deep(.filter-select) {

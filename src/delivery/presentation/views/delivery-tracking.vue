@@ -132,6 +132,9 @@
           </div>
         </div>
       </div>
+      <div v-if="deliveryStore.deliveries.length === 0" class="tenant-empty-state">
+        {{ $t('common.company_empty_data') }}
+      </div>
     </div>
 
     <!-- Register Delivery Dialog -->
@@ -698,4 +701,11 @@ const getStatusClass = (status) => {
   min-width: 0;
 }
 
+.tenant-empty-state {
+  padding: 52px 24px;
+  color: #94A3B8;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
 </style>

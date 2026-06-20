@@ -7,7 +7,7 @@ import { apiEndpoints } from "../../shared/infrastructure/api-endpoints.js";
  *
  * @class InventoryApi
  * @extends BaseApi
- * @description Provides semantic methods for the `/api/v1/inventory` backend contract.
+ * @description Provides semantic methods for the company-scoped inventory backend contract.
  * @author RQLS TEAM
  */
 export class InventoryApi extends BaseApi {

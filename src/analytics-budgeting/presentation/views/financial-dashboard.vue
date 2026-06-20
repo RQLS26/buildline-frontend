@@ -136,6 +136,9 @@
                 <span class="progress-percent">{{ project.total ? Math.round(project.spent / project.total * 100) : 0 }}%</span>
               </div>
             </div>
+            <div v-if="projectBudgets.length === 0" class="tenant-empty-state">
+              {{ $t('common.company_empty_data') }}
+            </div>
           </div>
         </div>
       </section>
@@ -163,6 +166,9 @@
             </span>
           </template>
         </pv-column>
+        <template #empty>
+          <div class="tenant-empty-state">{{ $t('common.company_empty_data') }}</div>
+        </template>
       </pv-data-table>
     </div>
   </div>
@@ -563,8 +569,10 @@ const pieOptions = {
 .progress-list {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   gap: 16px;
+  max-height: 284px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 .progress-header {
   display: flex;
@@ -594,6 +602,14 @@ const pieOptions = {
   justify-content: space-between;
   align-items: center;
   margin-top: 6px;
+}
+
+.tenant-empty-state {
+  padding: 40px 24px;
+  color: #94A3B8;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
 }
 .progress-percent {
   font-size: 12px;

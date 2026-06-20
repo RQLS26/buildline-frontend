@@ -7,7 +7,7 @@ import { apiEndpoints } from "../../shared/infrastructure/api-endpoints.js";
  *
  * @class CommunicationApi
  * @extends BaseApi
- * @description Wraps the `/api/v1/messages` backend contract used by the inbox view.
+ * @description Wraps the company-scoped message backend contract used by the inbox view.
  * @author RQLS TEAM
  */
 export class CommunicationApi extends BaseApi {

@@ -70,6 +70,9 @@
             </span>
           </template>
         </pv-column>
+        <template #empty>
+          <div class="tenant-empty-state">{{ $t('common.company_empty_data') }}</div>
+        </template>
       </pv-data-table>
 
       <!-- Pagination -->
@@ -515,5 +518,13 @@ const rejectOrder = async (order) => {
   font-weight: 700 !important;
   font-size: 13px !important;
   padding: 10px 24px !important;
+}
+
+.tenant-empty-state {
+  padding: 44px 24px;
+  color: #94A3B8;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
 }
 </style>

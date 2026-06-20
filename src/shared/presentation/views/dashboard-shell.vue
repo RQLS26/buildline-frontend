@@ -184,7 +184,7 @@
           <button class="view-all" @click="$router.push('/requisition/material-request')">{{ $t('home.view_all') }} <i class="pi pi-chevron-right text-[10px]"></i></button>
         </div>
         <div class="content-card p-0 overflow-hidden h-full border-none">
-           <pv-data-table :value="requisitionStore.requests" class="requests-table" :rows="4">
+           <pv-data-table :value="dashboardRequests" class="requests-table" :rows="4">
               <pv-column field="reqId" :header="$t('material_request.request_id')" :style="{ width: '150px' }"></pv-column>
               <pv-column field="material" :header="$t('material_request.material')"></pv-column>
               <pv-column field="project" :header="$t('material_request.project')"></pv-column>
@@ -343,6 +343,7 @@ const filteredPOs = computed(() => {
   if (poTab.value === 'All') return orders;
   return orders.filter(o => o.status === poTab.value);
 });
+const dashboardRequests = computed(() => requisitionStore.requests.slice(0, 4));
 
 // Inventory legend — computed from real stock
 const inventoryLegend = computed(() => {
@@ -478,7 +479,7 @@ const pieOptions = {
 .dashboard-grid {
   display: grid;
   grid-template-columns: 3.2fr 3.5fr 0.66fr 3.04fr;
-  grid-template-rows: auto 280px 340px;
+  grid-template-rows: auto 280px 430px;
   gap: 24px;
   width: 100%;
   margin-bottom: 24px;
@@ -768,7 +769,7 @@ section {
   font-size: 12px !important;
   border: none !important;
   border-bottom: 1px solid #f3f3f3 !important;
-  padding: 16px 24px !important;
+  padding: 14px 24px !important;
 }
 
 :deep(.requests-table .p-datatable-tbody > tr > td) {
@@ -777,7 +778,7 @@ section {
   font-weight: 500 !important;
   border: none !important;
   border-bottom: 1px solid #f3f3f3 !important;
-  padding: 16px 24px !important;
+  padding: 15px 24px !important;
 }
 
 :deep(.requests-table .p-datatable-tbody > tr:last-child > td) {
@@ -1059,7 +1060,12 @@ section {
 }
 
 .card-material-requests .content-card {
-  min-height: 286px;
+  min-height: 384px;
+}
+
+.card-purchase-orders .content-card {
+  box-shadow: var(--shadow-card);
+  min-height: 730px;
 }
 
 .card-inventory .content-card {

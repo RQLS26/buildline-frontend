@@ -290,6 +290,7 @@
     "unread": "No Leídas",
     "alerts": "Alertas",
     "updates": "Actualizaciones",
+    "starred": "Destacadas",
     "compose": "Redactar",
     "mark_read": "Marcar como Leído",
     "search": "Buscar notificaciones...",
@@ -301,7 +302,10 @@
     "recipient": "Destinatario",
     "message_placeholder": "Escriba su mensaje...",
     "discard": "Descartar",
-    "send": "Enviar"
+    "send": "Enviar",
+    "star": "Destacar",
+    "unstar": "Quitar destacado",
+    "archive": "Archivar"
   },
   "users": {
     "title": "Usuarios y Roles",
