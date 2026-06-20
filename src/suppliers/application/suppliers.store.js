@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { SuppliersApi } from '../infrastructure/suppliers-api.js';
+import { scopedResources, withCompanyScope } from '../../shared/application/company-scope.js';
 
 const api = new SuppliersApi();
 
@@ -42,7 +43,7 @@ export const useSuppliersStore = defineStore('suppliers', {
             this.isLoading = true;
             try {
                 const response = await api.getSuppliers();
-                this.suppliersList = response.data.sort((a, b) => b.rating - a.rating);
+                this.suppliersList = scopedResources(response.data).sort((a, b) => b.rating - a.rating);
             } catch (error) {
                 console.error('Error loading suppliers:', error);
             } finally {
@@ -57,7 +58,7 @@ export const useSuppliersStore = defineStore('suppliers', {
          */
         async createSupplier(supplierData) {
             try {
-                await api.createSupplier(supplierData);
+                await api.createSupplier(withCompanyScope(supplierData));
                 await this.fetchSuppliers();
                 return true;
             } catch (error) {
@@ -107,7 +108,7 @@ export const useSuppliersStore = defineStore('suppliers', {
             this.isLoading = true;
             try {
                 const response = await api.getIncidents();
-                this.incidentsList = response.data.sort((a, b) => b.id - a.id);
+                this.incidentsList = scopedResources(response.data).sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error('Error loading incidents:', error);
             } finally {
@@ -122,7 +123,7 @@ export const useSuppliersStore = defineStore('suppliers', {
          */
         async createIncident(incidentData) {
             try {
-                await api.createIncident(incidentData);
+                await api.createIncident(withCompanyScope(incidentData));
                 await this.fetchIncidents();
                 return true;
             } catch (error) {

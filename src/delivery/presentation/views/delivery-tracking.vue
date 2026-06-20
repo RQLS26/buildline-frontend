@@ -366,12 +366,13 @@ const getSteps = (delivery) => {
     'Delayed': 3
   };
   const currentIdx = statusIndex[delivery.status] ?? 1;
+  const isDelivered = delivery.status === 'Delivered';
 
   return statusOrder.map((title, idx) => ({
     title,
     date: idx <= currentIdx ? stepDates[idx] || delivery.dispatchDate || delivery.eta : t('common.pending'),
-    completed: idx < currentIdx,
-    active: idx === currentIdx && delivery.status !== 'Delivered'
+    completed: isDelivered ? idx <= currentIdx : idx < currentIdx,
+    active: idx === currentIdx && !isDelivered
   }));
 };
 

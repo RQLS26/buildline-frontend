@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia';
 import { ProfilesApi } from '../infrastructure/profiles-api.js';
+import { useIamStore } from '../../iam/application/iam.store.js';
 
 /**
  * Pinia store for company profile management.
  *
  * @description Loads and updates the company profile used by the settings/profile view.
- * Loads the company profile collection from the backend and selects the first profile available to the current account.
+ * Loads the company profile assigned to the current authenticated user's company membership.
  *
  * @author RQLS TEAM
  */
@@ -24,7 +25,9 @@ export const useProfilesStore = defineStore('profiles', {
             this.isLoading = true;
             try {
                 const api = new ProfilesApi();
-                const response = await api.getProfiles();
+                const iamStore = useIamStore();
+                const companyId = iamStore.currentUser?.companyId;
+                const response = companyId ? await api.getProfileById(companyId) : await api.getProfiles();
                 this.companyProfile = Array.isArray(response.data) ? response.data[0] || null : response.data;
             } catch (error) {
                 console.error("Error cargando perfil:", error);

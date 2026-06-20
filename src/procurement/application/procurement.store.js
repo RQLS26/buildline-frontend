@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ProcurementApi } from '../infrastructure/procurement-api.js';
+import { scopedResources, withCompanyScope } from '../../shared/application/company-scope.js';
 
 const api = new ProcurementApi();
 
@@ -37,7 +38,7 @@ export const useProcurementStore = defineStore('procurement', {
             this.isLoading = true;
             try {
                 const response = await api.getPurchaseOrders();
-                this.purchaseOrders = response.data.sort((a, b) => b.id - a.id);
+                this.purchaseOrders = scopedResources(response.data).sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error('Error loading purchase orders:', error);
             } finally {
@@ -52,7 +53,7 @@ export const useProcurementStore = defineStore('procurement', {
          */
         async createOrder(order) {
             try {
-                await api.createPurchaseOrder(order);
+                await api.createPurchaseOrder(withCompanyScope(order));
                 await this.fetchOrders();
                 return true;
             } catch (error) {
@@ -87,7 +88,7 @@ export const useProcurementStore = defineStore('procurement', {
             this.isLoading = true;
             try {
                 const response = await api.getQuotations();
-                this.quotations = response.data.sort((a, b) => b.id - a.id);
+                this.quotations = scopedResources(response.data).sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error('Error loading quotations:', error);
             } finally {
@@ -102,7 +103,7 @@ export const useProcurementStore = defineStore('procurement', {
          */
         async createQuotation(quotation) {
             try {
-                await api.createQuotation(quotation);
+                await api.createQuotation(withCompanyScope(quotation));
                 await this.fetchQuotations();
                 return true;
             } catch (error) {
