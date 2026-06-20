@@ -99,6 +99,9 @@
             </div>
           </template>
         </pv-column>
+        <template #empty>
+          <div class="tenant-empty-state">{{ $t('common.company_empty_data') }}</div>
+        </template>
       </pv-data-table>
 
       <!-- Pagination -->
@@ -178,14 +181,29 @@ const statusFilterOptions = computed(() => [
   { label: t('users.pending_membership'), value: 'Pending' },
   { label: t('users.rejected_membership'), value: 'Rejected' }
 ]);
-const departments = computed(() => [...new Set((iamStore.allUsers || []).map(user => user.department).filter(Boolean))]);
+const displayedUsers = computed(() => {
+  const users = [...(iamStore.allUsers || [])];
+  const currentUser = iamStore.currentUser;
+  if (!currentUser) return users;
+  const hasCurrentUser = users.some(user => String(user.id) === String(currentUser.id) || user.email === currentUser.email);
+  if (hasCurrentUser) return users;
+  return [{
+    ...currentUser,
+    isActive: currentUser.isActive ?? true,
+    membershipStatus: currentUser.membershipStatus || 'active',
+    avatarColor: currentUser.avatarColor || getAvatarColor(currentUser.email),
+    department: currentUser.department || 'Management',
+    lastLogin: currentUser.lastLogin || 'Today'
+  }, ...users];
+});
+const departments = computed(() => [...new Set(displayedUsers.value.map(user => user.department).filter(Boolean))]);
 
 onMounted(() => {
   iamStore.fetchAllUsers();
 });
 
 const tabs = computed(() => {
-  const users = iamStore.allUsers || [];
+  const users = displayedUsers.value;
   const owners = users.filter(u => u.role === 'owner').length;
   const admins = users.filter(u => u.role === 'admin').length;
   const viewers = users.filter(u => u.role === 'viewer').length;
@@ -198,7 +216,7 @@ const tabs = computed(() => {
 });
 
 const filteredUsers = computed(() => {
-  return (iamStore.allUsers || []).filter(u => {
+  return displayedUsers.value.filter(u => {
     if (activeTab.value !== 'All' && u.role !== activeTab.value) return false;
     if (filters.value.role && u.role !== filters.value.role) return false;
     if (filters.value.status) {
@@ -212,7 +230,7 @@ const filteredUsers = computed(() => {
 });
 
 const canManageStatus = (user) => {
-  return iamStore.currentUser?.role === 'owner' && user.id !== iamStore.currentUser?.id && user.role !== 'owner' && user.membershipStatus !== 'pending';
+  return iamStore.currentUser?.role === 'owner' && String(user.id) !== String(iamStore.currentUser?.id) && user.role !== 'owner' && user.membershipStatus !== 'pending';
 };
 
 const getAssignableRoles = (user) => {
@@ -221,7 +239,7 @@ const getAssignableRoles = (user) => {
 };
 
 const canReviewMembership = (user) => {
-  return iamStore.currentUser?.role === 'owner' && user.id !== iamStore.currentUser?.id && user.membershipStatus === 'pending';
+  return iamStore.currentUser?.role === 'owner' && String(user.id) !== String(iamStore.currentUser?.id) && user.membershipStatus === 'pending';
 };
 
 const getMembershipLabel = (user) => {
@@ -520,5 +538,13 @@ const getRoleColor = (role) => {
 :deep(.role-select-sm .p-select-label) {
   font-size: 12px !important;
   padding: 4px 8px !important;
+}
+
+.tenant-empty-state {
+  padding: 40px 24px;
+  color: #94A3B8;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
 }
 </style>

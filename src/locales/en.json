@@ -290,6 +290,7 @@
     "unread": "Unread",
     "alerts": "Alerts",
     "updates": "Updates",
+    "starred": "Starred",
     "compose": "Compose",
     "mark_read": "Mark as Read",
     "search": "Search notifications...",
@@ -301,7 +302,10 @@
     "recipient": "Recipient",
     "message_placeholder": "Write your message...",
     "discard": "Discard",
-    "send": "Send"
+    "send": "Send",
+    "star": "Star",
+    "unstar": "Unstar",
+    "archive": "Archive"
   },
   "users": {
     "title": "Users & Roles",

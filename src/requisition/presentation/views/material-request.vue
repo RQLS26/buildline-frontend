@@ -56,6 +56,9 @@
           </template>
         </pv-column>
         <pv-column field="requestedOn" :header="$t('material_request.requested_on')"></pv-column>
+        <template #empty>
+          <div class="tenant-empty-state">{{ $t('common.company_empty_data') }}</div>
+        </template>
       </pv-data-table>
 
       <!-- Pagination -->
@@ -184,12 +187,12 @@ const tabs = computed(() => {
 
 const translateStatus = (status) => {
   const key = String(status || '').toLowerCase().replace(/\\s+/g, '_');
-  return t(`common.`, status || '');
+  return t(`common.${key}`, status || '');
 };
 
 const translatePriority = (priority) => {
   const key = String(priority || '').toLowerCase();
-  return t(`common.`, priority || '');
+  return t(`common.${key}`, priority || '');
 };
 
 const formData = ref({
@@ -435,5 +438,12 @@ const submitRequest = async () => {
   border: 1px solid #E5E7EB !important;
   border-radius: 12px !important;
   background: white !important;
+}
+.tenant-empty-state {
+  padding: 40px 24px;
+  color: #94A3B8;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
 }
 </style>

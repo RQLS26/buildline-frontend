@@ -160,6 +160,17 @@ const profilesStore = useProfilesStore();
 
 const selectedReport = ref('inventory');
 const selectedPeriod = ref(null);
+
+const parseDisplayDate = (value) => {
+  const parsed = value ? new Date(value) : null;
+  return parsed && !Number.isNaN(parsed.getTime()) ? parsed : null;
+};
+const monthKey = (date) => date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}` : null;
+const formatPeriod = (key) => {
+  const [year, month] = key.split('-').map(Number);
+  return new Date(year, month - 1, 1).toLocaleDateString(locale.value === 'es' ? 'es-PE' : 'en-US', { month: 'long', year: 'numeric' });
+};
+
 const reportTypes = computed(() => [
   { label: t('reports.inventory_summary'), value: 'inventory' },
   { label: t('reports.purchase_history'), value: 'purchase' },
@@ -204,15 +215,6 @@ const reportItems = computed(() => {
 const projectCount = computed(() => new Set(inventoryStore.inventoryList.map(i => i.project)).size);
 const companyName = computed(() => profilesStore.companyProfile?.companyName || 'Buildline');
 
-const parseDisplayDate = (value) => {
-  const parsed = value ? new Date(value) : null;
-  return parsed && !Number.isNaN(parsed.getTime()) ? parsed : null;
-};
-const monthKey = (date) => date ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}` : null;
-const formatPeriod = (key) => {
-  const [year, month] = key.split('-').map(Number);
-  return new Date(year, month - 1, 1).toLocaleDateString(locale.value === 'es' ? 'es-PE' : 'en-US', { month: 'long', year: 'numeric' });
-};
 const getStatusLabel = (item) => {
   if (item.currentStock === 0) return t('inventory.out_of_stock');
   if (item.currentStock <= item.minStock) return t('inventory.low_stock');

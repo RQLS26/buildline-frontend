@@ -7,7 +7,7 @@ import { apiEndpoints } from "../../shared/infrastructure/api-endpoints.js";
  *
  * @class RequisitionApi
  * @extends BaseApi
- * @description Wraps `/api/v1/requisitions` and `/api/v1/materials` backend contracts.
+ * @description Wraps company-scoped requisition and material backend contracts.
  * @author RQLS TEAM
  */
 export class RequisitionApi extends BaseApi {

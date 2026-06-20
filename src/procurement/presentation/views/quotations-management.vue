@@ -4,32 +4,32 @@
     <!-- Filters -->
     <div class="filters-row">
       <div class="filter-group">
-        <label class="filter-label">Supplier</label>
-        <pv-select v-model="filters.supplier" :options="suppliers" placeholder="All suppliers" class="filter-select" />
+        <label class="filter-label">{{ $t('quotations.supplier') }}</label>
+        <pv-select v-model="filters.supplier" :options="suppliers" :placeholder="$t('purchase_orders.all_suppliers')" class="filter-select" />
       </div>
       <div class="filter-group">
-        <label class="filter-label">Status</label>
-        <pv-select v-model="filters.status" :options="statuses" placeholder="All status" class="filter-select" />
+        <label class="filter-label">{{ $t('quotations.status') }}</label>
+        <pv-select v-model="filters.status" :options="statuses" :placeholder="$t('purchase_orders.all_status')" class="filter-select" />
       </div>
       <div class="filter-group">
-        <label class="filter-label">Date from</label>
+        <label class="filter-label">{{ $t('common.date') }}</label>
         <div class="date-input-wrapper">
-          <pv-input-text type="text" placeholder="Select date" class="date-input" />
+          <pv-input-text type="text" :placeholder="$t('reports.select_period')" class="date-input" />
           <i class="pi pi-calendar date-icon"></i>
         </div>
       </div>
       <div class="filter-group">
-        <label class="filter-label">Date to</label>
+        <label class="filter-label">{{ $t('common.date') }}</label>
         <div class="date-input-wrapper">
-          <pv-input-text type="text" placeholder="Select date" class="date-input" />
+          <pv-input-text type="text" :placeholder="$t('reports.select_period')" class="date-input" />
           <i class="pi pi-calendar date-icon"></i>
         </div>
       </div>
       <div class="filter-group filter-action">
-        <pv-button label="Clear filters" icon="pi pi-times" iconPos="right"
+        <pv-button :label="$t('common.clear_filters')" icon="pi pi-times" iconPos="right"
                    class="p-button-outlined clear-filters-btn" @click="clearFilters" />
       </div>
-      <pv-button label="New Request" icon="pi pi-plus" class="new-request-btn" @click="showRequestDialog = true" />
+      <pv-button :label="$t('quotations.new_request')" icon="pi pi-plus" class="new-request-btn" @click="showRequestDialog = true" />
     </div>
 
     <!-- Tabs -->
@@ -44,29 +44,32 @@
     <!-- Table Card -->
     <div class="table-card">
       <pv-data-table :value="filteredQuotations" class="buildline-datatable" :rows="10">
-        <pv-column field="quotationId" header="Quotation ID"></pv-column>
-        <pv-column field="supplier" header="Supplier"></pv-column>
-        <pv-column field="material" header="Material"></pv-column>
-        <pv-column field="project" header="Project"></pv-column>
-        <pv-column field="amount" header="Amount">
+        <pv-column field="quotationId" :header="$t('quotations.request_id')"></pv-column>
+        <pv-column field="supplier" :header="$t('quotations.supplier')"></pv-column>
+        <pv-column field="material" :header="$t('quotations.material')"></pv-column>
+        <pv-column field="project" :header="$t('quotations.project')"></pv-column>
+        <pv-column field="amount" :header="$t('quotations.amount')">
           <template #body="slotProps">
             <span class="font-bold text-900">${{ Number(slotProps.data.amount).toLocaleString() }}</span>
           </template>
         </pv-column>
-        <pv-column field="status" header="Status">
+        <pv-column field="status" :header="$t('quotations.status')">
           <template #body="slotProps">
             <span :class="['status-badge', 'status-' + slotProps.data.status.toLowerCase()]">
-              {{ slotProps.data.status }}
+              {{ translateQuotationStatus(slotProps.data.status) }}
             </span>
           </template>
         </pv-column>
-        <pv-column field="date" header="Date"></pv-column>
+        <pv-column field="date" :header="$t('quotations.date')"></pv-column>
+        <template #empty>
+          <div class="tenant-empty-state">{{ $t('common.company_empty_data') }}</div>
+        </template>
       </pv-data-table>
 
       <!-- Pagination -->
       <div class="pagination-row">
         <div class="pagination-info">
-          Item per page:
+          {{ $t('users.items_per_page') }}:
           <span class="pagination-count">10 <i class="pi pi-caret-down"></i></span>
         </div>
         <div class="pagination-controls">
@@ -80,34 +83,34 @@
     <!-- Generate Quotation Request Dialog -->
     <pv-dialog v-model:visible="showRequestDialog" modal :style="{ width: '540px' }" :showHeader="false" class="p-0">
       <div class="dialog-form">
-        <h3 class="dialog-title">Generate Quotation Request</h3>
+        <h3 class="dialog-title">{{ $t('quotations.generate_request') }}</h3>
 
         <div class="form-field">
-          <label class="form-label">Request ID</label>
-          <pv-select v-model="reqForm.requestId" :options="requestIdOptions" placeholder="Select request..." class="w-full form-input" />
+          <label class="form-label">{{ $t('quotations.request_id') }}</label>
+          <pv-select v-model="reqForm.requestId" :options="requestIdOptions" :placeholder="$t('quotations.request_id')" class="w-full form-input" />
         </div>
 
         <div class="form-field">
-          <label class="form-label">Select Suppliers <span class="required">*</span></label>
-          <pv-multi-select v-model="reqForm.suppliers" :options="supplierOptions" placeholder="Choose suppliers..." display="chip" class="w-full form-input" />
+          <label class="form-label">{{ $t('quotations.select_suppliers') }} <span class="required">*</span></label>
+          <pv-multi-select v-model="reqForm.suppliers" :options="supplierOptions" :placeholder="$t('quotations.select_suppliers')" display="chip" class="w-full form-input" />
         </div>
 
         <div class="form-field">
-          <label class="form-label">Message</label>
+          <label class="form-label">{{ $t('quotations.message') }}</label>
           <pv-textarea v-model="reqForm.message" rows="3" placeholder="Please provide your best quotation for the following material. Delivery required by: May 25, 2026" class="w-full form-input" />
         </div>
 
         <div class="form-field">
-          <label class="form-label">Attach Request Details</label>
+          <label class="form-label">{{ $t('quotations.attach_details') }}</label>
           <div class="flex align-items-center gap-2 mt-1">
             <pv-checkbox v-model="reqForm.attachSpecs" :binary="true" />
-            <span class="checkbox-text">Include technical specifications</span>
+            <span class="checkbox-text">{{ $t('quotations.include_specs') }}</span>
           </div>
         </div>
 
         <div class="dialog-footer">
-          <pv-button label="Cancel" class="p-button-text cancel-btn" @click="showRequestDialog = false" />
-          <pv-button label="Send Request" icon="pi pi-send" class="send-request-btn" @click="sendQuotationRequest" />
+          <pv-button :label="$t('common.cancel')" class="p-button-text cancel-btn" @click="showRequestDialog = false" />
+          <pv-button :label="$t('quotations.send_request')" icon="pi pi-send" class="send-request-btn" @click="sendQuotationRequest" />
         </div>
       </div>
     </pv-dialog>
@@ -123,8 +126,10 @@ import { useSuppliersStore } from '../../../suppliers/application/suppliers.stor
 import { useRequisitionStore } from '../../../requisition/application/requisition.store.js';
 import { buildNextBusinessCode } from '../../../shared/application/business-code.js';
 import { useToast } from 'primevue/usetoast';
+import { useI18n } from 'vue-i18n';
 
 const toast = useToast();
+const { t } = useI18n();
 const store = useProcurementStore();
 const suppliersStore = useSuppliersStore();
 const requisitionStore = useRequisitionStore();
@@ -151,10 +156,10 @@ const tabs = computed(() => {
   const accepted = store.acceptedQuotations.length;
   const rejected = store.quotations.filter(q => q.status === 'Rejected').length;
   return [
-    { name: 'All', label: `All (${all})` },
-    { name: 'Pending', label: `Pending (${pending})` },
-    { name: 'Accepted', label: `Accepted (${accepted})` },
-    { name: 'Rejected', label: `Rejected (${rejected})` }
+    { name: 'All', label: `${t('common.all')} (${all})` },
+    { name: 'Pending', label: `${t('quotations.pending')} (${pending})` },
+    { name: 'Accepted', label: `${t('quotations.accepted')} (${accepted})` },
+    { name: 'Rejected', label: `${t('quotations.rejected')} (${rejected})` }
   ];
 });
 
@@ -213,6 +218,8 @@ const sendQuotationRequest = async () => {
 const clearFilters = () => {
   filters.value = { supplier: null, status: null };
 };
+
+const translateQuotationStatus = (status) => t(`quotations.${String(status || '').toLowerCase()}`, status);
 </script>
 
 <style scoped>
@@ -362,6 +369,14 @@ const clearFilters = () => {
   background: white;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   color: #111827;
+}
+
+.tenant-empty-state {
+  padding: 40px 24px;
+  color: #94A3B8;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
 }
 
 :deep(.filter-select) {

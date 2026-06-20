@@ -73,6 +73,9 @@
           </div>
         </div>
       </div>
+      <div v-if="filteredIncidents.length === 0" class="tenant-empty-state">
+        {{ $t('common.company_empty_data') }}
+      </div>
     </div>
 
     <!-- Report Incident Dialog -->
@@ -422,5 +425,16 @@ const handleReportIncident = async () => {
   border: 1px solid #E5E7EB !important;
   border-radius: 12px !important;
   background: white !important;
+}
+
+.tenant-empty-state {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+  padding: 52px 24px;
+  color: #94A3B8;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
 }
 </style>
