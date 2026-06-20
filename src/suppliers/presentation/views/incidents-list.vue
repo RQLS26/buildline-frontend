@@ -4,15 +4,15 @@
     <!-- Action Row -->
     <div class="action-row">
       <div class="filter-group">
-        <label class="filter-label">Severity</label>
-        <pv-select v-model="filters.severity" :options="severities" placeholder="All" class="filter-select" />
+        <label class="filter-label">{{ $t('incidents.severity') }}</label>
+        <pv-select v-model="filters.severity" :options="severities" :placeholder="$t('common.all')" class="filter-select" />
       </div>
       <div class="filter-group">
-        <label class="filter-label">Status</label>
-        <pv-select v-model="filters.status" :options="statuses" placeholder="All" class="filter-select" />
+        <label class="filter-label">{{ $t('incidents.status') }}</label>
+        <pv-select v-model="filters.status" :options="statuses" :placeholder="$t('common.all')" class="filter-select" />
       </div>
       <div class="ml-auto">
-        <pv-button label="Report Incident" icon="pi pi-plus" class="report-btn" @click="showReportDialog = true" />
+        <pv-button :label="$t('incidents.report_new')" icon="pi pi-plus" class="report-btn" @click="showReportDialog = true" />
       </div>
     </div>
 
@@ -30,7 +30,7 @@
       <div v-for="(group, gIdx) in groupedIncidents" :key="gIdx" class="log-group">
         <div class="log-date-header">
           <span class="log-date">{{ group.date }}</span>
-          <span class="log-count">{{ group.items.length }} incident{{ group.items.length > 1 ? 's' : '' }}</span>
+          <span class="log-count">{{ group.items.length }} {{ group.items.length === 1 ? $t('incidents.incident_singular') : $t('incidents.incident_plural') }}</span>
         </div>
 
         <div class="log-entries">
@@ -46,8 +46,8 @@
               <div class="log-card-header">
                 <div class="log-card-left">
                   <span class="log-id">{{ inc.incidentId }}</span>
-                  <span :class="['severity-tag', 'severity-' + inc.severity.toLowerCase()]">{{ inc.severity }}</span>
-                  <span :class="['status-tag', getStatusClass(inc.status)]">{{ inc.status }}</span>
+                  <span :class="['severity-tag', 'severity-' + inc.severity.toLowerCase()]">{{ translateSeverity(inc.severity) }}</span>
+                  <span :class="['status-tag', getStatusClass(inc.status)]">{{ translateStatus(inc.status) }}</span>
                 </div>
                 <span class="log-time">{{ inc.time }}</span>
               </div>
@@ -76,30 +76,30 @@
     </div>
 
     <!-- Report Incident Dialog -->
-    <pv-dialog v-model:visible="showReportDialog" modal header="Report Incident" :style="{ width: '550px' }">
+    <pv-dialog v-model:visible="showReportDialog" modal :header="$t('incidents.report_new')" :style="{ width: '550px' }">
       <div class="flex flex-column gap-4 pt-2">
         <div class="flex flex-column gap-2">
-          <label class="filter-label">Title *</label>
-          <pv-input-text v-model="newIncident.title" placeholder="Brief description of the incident" class="w-full" />
+          <label class="filter-label">{{ $t('incidents.form_title') }} *</label>
+          <pv-input-text v-model="newIncident.title" :placeholder="$t('incidents.title_placeholder')" class="w-full" />
         </div>
         <div class="flex flex-column gap-2">
-          <label class="filter-label">Description</label>
-          <pv-textarea v-model="newIncident.description" rows="3" placeholder="Detailed description..." class="w-full" />
+          <label class="filter-label">{{ $t('incidents.description') }}</label>
+          <pv-textarea v-model="newIncident.description" rows="3" :placeholder="$t('incidents.description_placeholder')" class="w-full" />
         </div>
         <div class="flex gap-3">
           <div class="flex flex-column gap-2 flex-1">
-            <label class="filter-label">Supplier *</label>
-            <pv-select v-model="newIncident.supplier" :options="supplierOptions" placeholder="Select supplier" class="w-full" />
+            <label class="filter-label">{{ $t('incidents.supplier') }} *</label>
+            <pv-select v-model="newIncident.supplier" :options="supplierOptions" :placeholder="$t('incidents.select_supplier')" class="w-full" />
           </div>
           <div class="flex flex-column gap-2 flex-1">
             <label class="filter-label">{{ $t('incidents.purchase_order') }}</label>
-            <pv-select v-model="newIncident.purchaseOrder" :options="purchaseOrderOptions" placeholder="Select purchase order" class="w-full" />
+            <pv-select v-model="newIncident.purchaseOrder" :options="purchaseOrderOptions" :placeholder="$t('incidents.select_purchase_order')" class="w-full" />
           </div>
         </div>
         <div class="flex gap-3">
           <div class="flex flex-column gap-2 flex-1">
-            <label class="filter-label">Severity *</label>
-            <pv-select v-model="newIncident.severity" :options="severities" placeholder="Select" class="w-full" />
+            <label class="filter-label">{{ $t('incidents.severity') }} *</label>
+            <pv-select v-model="newIncident.severity" :options="severities" :placeholder="$t('common.select')" class="w-full" />
           </div>
           <div class="flex flex-column gap-2 flex-1">
             <label class="filter-label">{{ $t('incidents.reported_by') }}</label>
@@ -108,8 +108,8 @@
         </div>
       </div>
       <template #footer>
-        <pv-button label="Cancel" class="p-button-text" @click="showReportDialog = false" />
-        <pv-button label="Submit Report" icon="pi pi-check" class="report-btn" @click="handleReportIncident" />
+        <pv-button :label="$t('common.cancel')" class="p-button-text" @click="showReportDialog = false" />
+        <pv-button :label="$t('material_request.submit_report')" icon="pi pi-check" class="report-btn" @click="handleReportIncident" />
       </template>
     </pv-dialog>
 
@@ -124,11 +124,13 @@ import { useProcurementStore } from '../../../procurement/application/procuremen
 import { useIamStore } from '../../../iam/application/iam.store.js';
 import { buildNextPlainCode } from '../../../shared/application/business-code.js';
 import { useToast } from 'primevue/usetoast';
+import { useI18n } from 'vue-i18n';
 
 const suppliersStore = useSuppliersStore();
 const procurementStore = useProcurementStore();
 const iamStore = useIamStore();
 const toast = useToast();
+const { t } = useI18n();
 const activeTab = ref('All');
 const filters = ref({ severity: null, status: null });
 const showReportDialog = ref(false);
@@ -177,6 +179,15 @@ const groupedIncidents = computed(() => {
   return Object.keys(groups).map(date => ({ date, items: groups[date] }));
 });
 
+const translateStatus = (status) => {
+  const key = String(status || '').toLowerCase().replace(/\s+/g, '_');
+  return t(`common.${key}`, status || '');
+};
+const translateSeverity = (severity) => {
+  const key = String(severity || '').toLowerCase();
+  return t(`common.${key}`, severity || '');
+};
+
 const getStatusClass = (status) => {
   if (status === 'Open') return 'tag-open';
   if (status === 'In Progress') return 'tag-progress';
@@ -187,7 +198,7 @@ const newIncident = ref({ title: '', description: '', supplier: null, purchaseOr
 
 const handleReportIncident = async () => {
   if (!newIncident.value.title || !newIncident.value.supplier || !newIncident.value.purchaseOrder || !newIncident.value.severity) {
-    toast.add({ severity: 'warn', summary: 'Warning', detail: 'Fill title, supplier, purchase order and severity.', life: 3000 });
+    toast.add({ severity: 'warn', summary: t('common.warning'), detail: t('incidents.required_fields'), life: 3000 });
     return;
   }
   const incidentData = {

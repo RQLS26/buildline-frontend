@@ -5,10 +5,10 @@
     <div class="action-row">
       <div class="search-box">
         <i class="pi pi-search"></i>
-        <input type="text" v-model="searchQuery" placeholder="Search notifications..." />
+        <input type="text" v-model="searchQuery" :placeholder="$t('notifications.search')" />
       </div>
       <div class="ml-auto">
-        <pv-button label="Compose" icon="pi pi-pencil" class="compose-btn" @click="showCompose = true" />
+        <pv-button :label="$t('notifications.compose')" icon="pi pi-pencil" class="compose-btn" @click="showCompose = true" />
       </div>
     </div>
 
@@ -62,24 +62,24 @@
     </div>
 
     <!-- Compose Dialog -->
-    <pv-dialog v-model:visible="showCompose" modal header="New Message" :style="{ width: '520px' }">
+    <pv-dialog v-model:visible="showCompose" modal :header="$t('notifications.new_message')" :style="{ width: '520px' }">
       <div class="flex flex-column gap-4 pt-2">
         <div class="flex flex-column gap-2">
-          <label class="compose-label">To</label>
-          <pv-input-text v-model="newMsg.to" placeholder="Recipient" class="w-full" />
+          <label class="compose-label">{{ $t('notifications.to') }}</label>
+          <pv-input-text v-model="newMsg.to" :placeholder="$t('notifications.recipient')" class="w-full" />
         </div>
         <div class="flex flex-column gap-2">
-          <label class="compose-label">Subject</label>
-          <pv-input-text v-model="newMsg.subject" placeholder="Subject" class="w-full" />
+          <label class="compose-label">{{ $t('notifications.subject') }}</label>
+          <pv-input-text v-model="newMsg.subject" :placeholder="$t('notifications.subject')" class="w-full" />
         </div>
         <div class="flex flex-column gap-2">
-          <label class="compose-label">Message</label>
-          <pv-textarea v-model="newMsg.body" rows="5" placeholder="Write your message..." class="w-full" />
+          <label class="compose-label">{{ $t('notifications.message') }}</label>
+          <pv-textarea v-model="newMsg.body" rows="5" :placeholder="$t('notifications.message_placeholder')" class="w-full" />
         </div>
       </div>
       <template #footer>
-        <pv-button label="Discard" class="p-button-text" @click="showCompose = false" />
-        <pv-button label="Send" icon="pi pi-send" class="send-btn" @click="showCompose = false" />
+        <pv-button :label="$t('notifications.discard')" class="p-button-text" @click="showCompose = false" />
+        <pv-button :label="$t('notifications.send')" icon="pi pi-send" class="send-btn" @click="showCompose = false" />
       </template>
     </pv-dialog>
   </div>

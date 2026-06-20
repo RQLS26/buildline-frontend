@@ -15,6 +15,10 @@
           <label for="email" class="font-bold text-sm text-gray-700">{{ $t('iam.email') }}</label>
           <pv-input-text id="email" v-model="email" placeholder="example@email.com" class="w-full" />
         </div>
+        <div class="flex flex-column gap-2">
+          <label for="company" class="font-bold text-sm text-gray-700">{{ $t('iam.company_name') }}</label>
+          <pv-input-text id="company" v-model="companyName" :placeholder="$t('iam.company_placeholder')" class="w-full" />
+        </div>
 
         <div class="flex flex-column gap-2">
           <label for="password" class="font-bold text-sm text-gray-700">{{ $t('iam.password') }}</label>
@@ -27,7 +31,12 @@
           <span class="auth-link cursor-pointer">{{ $t('iam.privacy') }}</span>.
         </div>
 
-        <pv-button :label="$t('iam.sign_up')" class="btn-login mt-2" @click="handleSignUp" />
+        <pv-button :label="$t('iam.sign_up')" class="btn-login mt-2" @click="handleSignUp" :loading="isLoading" />
+
+        <div v-if="errorMsg" class="error-box">
+          <i class="pi pi-exclamation-circle"></i>
+          <span>{{ errorMsg }}</span>
+        </div>
 
         <div class="flex align-items-center justify-content-center gap-3 my-2">
           <div class="border-top-1 border-200 flex-1"></div>
@@ -54,14 +63,47 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { useIamStore } from '../../application/iam.store.js';
 
 const router = useRouter();
+const store = useIamStore();
+const { t } = useI18n();
 const name = ref('');
 const email = ref('');
+const companyName = ref('');
 const password = ref('');
+const isLoading = ref(false);
+const errorMsg = ref('');
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const handleSignUp = () => {
-  router.push('/iam/sign-in');
+const handleSignUp = async () => {
+  errorMsg.value = '';
+  if (!name.value.trim() || !email.value.trim() || !companyName.value.trim() || !password.value) {
+    errorMsg.value = t('iam.required_fields');
+    return;
+  }
+  if (!emailPattern.test(email.value.trim())) {
+    errorMsg.value = t('iam.invalid_email');
+    return;
+  }
+  if (password.value.length < 6) {
+    errorMsg.value = t('iam.password_min_length');
+    return;
+  }
+
+  isLoading.value = true;
+  const success = await store.signUp({
+    name: name.value.trim(),
+    email: email.value.trim(),
+    password: password.value,
+    companyName: companyName.value.trim(),
+    role: 'admin'
+  });
+  isLoading.value = false;
+
+  if (success) router.push('/home');
+  else errorMsg.value = store.error || t('iam.create_account_error');
 };
 </script>
 
@@ -109,5 +151,22 @@ const handleSignUp = () => {
     text-decoration: none;
     font-weight: 600;
     transition: opacity 0.2s;
+}
+
+.error-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #FEECEB;
+    border: 1px solid #FECACA;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #DC2626;
+}
+
+.error-box i {
+    font-size: 14px;
 }
 </style>

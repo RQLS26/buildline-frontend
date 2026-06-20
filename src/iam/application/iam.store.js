@@ -3,6 +3,15 @@ import { IamApi } from '../infrastructure/iam-api.js';
 import { clearAuthSession, getAuthToken, getStoredAuthUser, hasAuthSession, persistAuthSession } from '../infrastructure/iam-session.js';
 
 /**
+ * Extracts a user-facing error message from backend Problem Details responses.
+ *
+ * @param {unknown} error - Axios error captured by an IAM action.
+ * @param {string} fallback - Message used when the backend did not provide details.
+ * @returns {string} Safe message for forms and toast notifications.
+ */
+const extractApiErrorMessage = (error, fallback) => error?.response?.data?.detail || error?.response?.data?.title || fallback;
+
+/**
  * Pinia store for IAM session state, authentication workflows and role-gated UI rules.
  *
  * @description
@@ -64,9 +73,9 @@ export const useIamStore = defineStore('iam', {
                 return true;
             } catch (error) {
                 if (error.response?.status === 401) {
-                    this.error = "Invalid email or password.";
+                    this.error = extractApiErrorMessage(error, "Invalid email or password.");
                 } else {
-                    this.error = "Error connecting to server.";
+                    this.error = extractApiErrorMessage(error, "Could not reach the authentication service.");
                 }
                 return false;
             } finally {
@@ -113,9 +122,9 @@ export const useIamStore = defineStore('iam', {
                 return true;
             } catch (error) {
                 if (error.response?.status === 409) {
-                    this.error = "This email is already registered.";
+                    this.error = extractApiErrorMessage(error, "This email is already registered.");
                 } else {
-                    this.error = "Error creating account.";
+                    this.error = extractApiErrorMessage(error, "Could not create the account.");
                 }
                 return false;
             } finally {
@@ -155,6 +164,7 @@ export const useIamStore = defineStore('iam', {
                 return true;
             } catch (error) {
                 console.error("Error creating user:", error);
+                this.error = extractApiErrorMessage(error, "Could not create the user.");
                 return false;
             }
         },

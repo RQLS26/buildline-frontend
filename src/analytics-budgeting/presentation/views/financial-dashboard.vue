@@ -606,4 +606,25 @@ const pieOptions = {
 .over-budget { background: #FEECEB; color: #E02424; }
 
 .mt-3 { margin-top: 16px; }
+
+.main-row-2 {
+  align-items: stretch;
+}
+
+.main-row-2 > section > .content-card {
+  height: 472px;
+  min-height: 472px;
+}
+
+.progress-list {
+  justify-content: flex-start;
+  overflow-y: auto;
+  max-height: 100%;
+  padding-right: 6px;
+  scrollbar-width: thin;
+}
+
+.progress-item {
+  flex-shrink: 0;
+}
 </style>

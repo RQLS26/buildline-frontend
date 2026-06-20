@@ -31,7 +31,7 @@
     "quick_actions": "Acciones Rápidas",
     "purchase_orders": "Órdenes de Compra",
     "procurement_performance": "Rend. de Compras",
-    "supplier_response": "Tasa de Respuesta de Proveedores",
+    "supplier_response": "Resp. de Proveedores",
     "this_week": "Esta semana",
     "last_week": "Semana pasada",
     "inventory_summary": "Resumen de Inventario",
@@ -46,6 +46,14 @@
     "new_material": "Nuevo Material",
     "new_purchase": "Nueva Compra",
     "report_incident": "Reportar Incidente",
+    "view_inventory": "Ver Inventario",
+    "supplier_directory": "Proveedores",
+    "request_quotes": "Solicitar Cotizaciones",
+    "budget_review": "Revisar Presupuesto",
+    "system_reports": "Reportes",
+    "messages": "Mensajes",
+    "manage_users": "Gestionar Usuarios",
+    "settings_action": "Configuración",
     "in_stock": "En stock",
     "low_stock": "Stock bajo",
     "out_of_stock": "Sin stock"
@@ -74,7 +82,16 @@
     "on_time": "a tiempo",
     "orders": "Órdenes",
     "company_name": "Nombre de Empresa",
-    "contact_email": "Correo de Contacto"
+    "contact_email": "Correo de Contacto",
+    "suppliers_label": "proveedores",
+    "all_categories": "Todas las categorías",
+    "on_time_percent": "On-Time %",
+    "enter_company_name": "Ingrese nombre de empresa",
+    "contact_name": "Nombre de contacto",
+    "primary_contact": "Contacto principal",
+    "select_category": "Seleccione categoría",
+    "required_fields": "Complete empresa, RUC, categoría y correo.",
+    "created_message": "Proveedor agregado correctamente."
   },
   "incidents": {
     "title": "Incidentes",
@@ -92,7 +109,17 @@
     "in_progress": "En Progreso",
     "open": "Abierto",
     "purchase_order": "Orden de Compra",
-    "reported_by": "Reportado Por"
+    "reported_by": "Reportado Por",
+    "incident_singular": "incidente",
+    "incident_plural": "incidentes",
+    "form_title": "Título",
+    "title_placeholder": "Descripción breve del incidente",
+    "description": "Descripción",
+    "description_placeholder": "Descripción detallada...",
+    "select_supplier": "Seleccione proveedor",
+    "select_purchase_order": "Seleccione orden de compra",
+    "required_fields": "Complete título, proveedor, orden de compra y severidad.",
+    "created_message": "Incidente {id} registrado."
   },
   "inventory": {
     "title": "Inventario",
@@ -162,7 +189,19 @@
     "create_order": "Crear Orden",
     "approved": "Aprobada",
     "pending": "Pendiente",
-    "rejected": "Rechazada"
+    "rejected": "Rechazada",
+    "amount_range": "Rango de monto",
+    "all_suppliers": "Todos los proveedores",
+    "all_status": "Todos los estados",
+    "any_amount": "Cualquier monto",
+    "processed": "Procesada",
+    "select_project": "Seleccione proyecto",
+    "select_material": "Seleccione material o servicio",
+    "notes_placeholder": "Instrucciones o condiciones adicionales...",
+    "required_fields": "Seleccione proveedor, proyecto, material, cantidad y precio unitario.",
+    "created_message": "Orden de compra {id} creada.",
+    "approved_message": "Orden {id} aprobada.",
+    "rejected_message": "Orden {id} rechazada."
   },
   "material_request": {
     "title": "Solicitudes de Material",
@@ -177,7 +216,13 @@
     "description": "Descripción",
     "attach_evidence": "Adjuntar Evidencia",
     "submit_report": "Enviar Solicitud",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "request_id": "ID de Solicitud",
+    "status": "Estado",
+    "requested_on": "Solicitado el",
+    "description_placeholder": "Varillas para columnas del nivel 5.",
+    "required_fields": "Seleccione proyecto, material, cantidad, prioridad y fecha de entrega.",
+    "created_message": "Solicitud de material enviada."
   },
   "delivery": {
     "title": "Entregas y Seguimiento",
@@ -248,7 +293,15 @@
     "compose": "Redactar",
     "mark_read": "Marcar como Leído",
     "search": "Buscar notificaciones...",
-    "no_notifications": "Sin notificaciones"
+    "no_notifications": "Sin notificaciones",
+    "new_message": "Nuevo Mensaje",
+    "to": "Para",
+    "subject": "Asunto",
+    "message": "Mensaje",
+    "recipient": "Destinatario",
+    "message_placeholder": "Escriba su mensaje...",
+    "discard": "Descartar",
+    "send": "Enviar"
   },
   "users": {
     "title": "Usuarios y Roles",
@@ -283,7 +336,8 @@
     "activate_user": "Activar usuario",
     "deactivate_user": "Desactivar usuario",
     "user_activated": "{name} fue activado.",
-    "user_deactivated": "{name} fue desactivado."
+    "user_deactivated": "{name} fue desactivado.",
+    "create_user_error": "No se pudo crear el usuario."
   },
   "settings": {
     "title": "Configuración",
@@ -383,7 +437,13 @@
     "privacy": "Política de Privacidad",
     "agree_terms": "Acepto los",
     "login": "Iniciar Sesión",
-    "invalid_credentials": "Correo o contraseña incorrectos."
+    "invalid_credentials": "Correo o contraseña incorrectos.",
+    "required_fields": "Complete nombre, correo, empresa y contraseña.",
+    "invalid_email": "Ingrese un correo válido.",
+    "password_min_length": "La contraseña debe tener al menos 6 caracteres.",
+    "company_name": "Empresa",
+    "company_placeholder": "Buildline S.A.C.",
+    "create_account_error": "No se pudo crear la cuenta."
   },
   "company-profile": {
     "title": "Perfil de la Empresa",
@@ -445,6 +505,9 @@
     "success": "Éxito",
     "error": "Error",
     "warning": "Advertencia",
-    "info": "Información"
+    "info": "Información",
+    "search_placeholder": "Buscar aquí",
+    "live": "En vivo",
+    "select": "Seleccione"
   }
 }

@@ -15,7 +15,7 @@
                 <i class="pi pi-pencil text-gray-500 text-sm"></i>
               </button>
             </div>
-            <p class="period">May, 2026</p>
+            <p class="period">{{ currentPeriod }}</p>
           </div>
 
           <div class="spend-details flex justify-content-between align-items-center flex-1">
@@ -84,9 +84,13 @@
             </button>
           </div>
           <div class="pagination mt-auto flex align-items-center justify-content-center gap-2">
-            <i class="pi pi-chevron-left text-primary text-xs cursor-pointer mr-1"></i>
-            <button v-for="page in 5" :key="page" :class="{ active: page === 1 }">{{ page }}</button>
-            <i class="pi pi-chevron-right text-primary text-xs cursor-pointer ml-1"></i>
+            <button class="pagination-arrow" type="button" :disabled="quickActionPage === 1" @click="goToQuickActionPage(quickActionPage - 1)">
+              <i class="pi pi-chevron-left text-primary text-xs"></i>
+            </button>
+            <button v-for="page in quickActionPages" :key="page" :class="{ active: page === quickActionPage }" @click="goToQuickActionPage(page)">{{ page }}</button>
+            <button class="pagination-arrow" type="button" :disabled="quickActionPage === quickActionPages" @click="goToQuickActionPage(quickActionPage + 1)">
+              <i class="pi pi-chevron-right text-primary text-xs"></i>
+            </button>
           </div>
         </div>
       </section>
@@ -99,9 +103,7 @@
         </div>
         <div class="content-card flex flex-column p-4" style="flex: 1; min-height: 0;">
           <div class="menu-tabs">
-            <button :class="['tab', poTab === 'All' ? 'active' : '']" @click="poTab = 'All'">All</button>
-            <button :class="['tab', poTab === 'Pending' ? 'active' : '']" @click="poTab = 'Pending'">Pending</button>
-            <button :class="['tab', poTab === 'Approved' ? 'active' : '']" @click="poTab = 'Approved'">Approved</button>
+            <button v-for="tab in purchaseOrderTabs" :key="tab.value" :class="['tab', poTab === tab.value ? 'active' : '']" @click="poTab = tab.value">{{ tab.label }}</button>
           </div>
           
           <div class="item-list flex-1" style="overflow-y: auto;">
@@ -164,7 +166,7 @@
               </div>
             </div>
             <div class="mt-4">
-              <p class="m-0 font-bold text-[#191919] text-xl">{{ inventoryStore.totalItems }} <span class="font-semibold text-[#666666] text-lg">{{ $t('home.total_items') }}</span></p>
+              <p class="inventory-total"><span>{{ inventoryStore.totalItems }}</span><span>{{ $t('home.total_items') }}</span></p>
             </div>
           </div>
           <div class="donut-chart">
@@ -180,24 +182,24 @@
         </div>
         <div class="content-card p-0 overflow-hidden h-full border-none">
            <pv-data-table :value="requisitionStore.requests" class="requests-table" :rows="4">
-              <pv-column field="reqId" header="Request ID"></pv-column>
-              <pv-column field="material" header="Material"></pv-column>
-              <pv-column field="project" header="Project"></pv-column>
-              <pv-column field="priority" header="Priority">
+              <pv-column field="reqId" :header="$t('material_request.request_id')" :style="{ width: '150px' }"></pv-column>
+              <pv-column field="material" :header="$t('material_request.material')"></pv-column>
+              <pv-column field="project" :header="$t('material_request.project')"></pv-column>
+              <pv-column field="priority" :header="$t('material_request.priority')">
                   <template #body="slotProps">
                       <span :class="['priority-badge', 'priority-' + slotProps.data.priority.toLowerCase()]">
-                        {{ slotProps.data.priority }}
+                        {{ translatePriority(slotProps.data.priority) }}
                       </span>
                   </template>
               </pv-column>
-              <pv-column field="status" header="Status">
+              <pv-column field="status" :header="$t('material_request.status')">
                   <template #body="slotProps">
                       <span :class="['status-badge', 'status-' + slotProps.data.status.toLowerCase()]">
-                        {{ slotProps.data.status }}
+                        {{ translateStatus(slotProps.data.status) }}
                       </span>
                   </template>
               </pv-column>
-              <pv-column field="requestedOn" header="Requested On"></pv-column>
+              <pv-column field="requestedOn" :header="$t('material_request.requested_on')"></pv-column>
            </pv-data-table>
         </div>
       </section>
@@ -207,7 +209,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useProcurementStore } from '../../../procurement/application/procurement.store.js';
@@ -218,7 +220,7 @@ import { useSuppliersStore } from '../../../suppliers/application/suppliers.stor
 import { useIamStore } from '../../../iam/application/iam.store.js';
 
 const router = useRouter();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const procurementStore = useProcurementStore();
 const requisitionStore = useRequisitionStore();
 const inventoryStore = useInventoryStore();
@@ -227,6 +229,19 @@ const suppliersStore = useSuppliersStore();
 const iamStore = useIamStore();
 
 const poTab = ref('All');
+const quickActionPage = ref(1);
+const quickActionsPerPage = 4;
+
+const purchaseOrderTabs = computed(() => [
+  { value: 'All', label: t('common.all') },
+  { value: 'Pending', label: t('common.pending') },
+  { value: 'Approved', label: t('common.approved') }
+]);
+
+const currentPeriod = computed(() => new Date().toLocaleDateString(locale.value === 'es' ? 'es-PE' : 'en-US', {
+  month: 'short',
+  year: 'numeric'
+}));
 
 onMounted(async () => {
   await Promise.all([
@@ -240,6 +255,16 @@ onMounted(async () => {
   ]);
 });
 
+const translateStatus = (status) => {
+  const key = String(status || '').toLowerCase().replace(/\\s+/g, '_');
+  return t(`common.${key}`, status || '');
+};
+
+const translatePriority = (priority) => {
+  const key = String(priority || '').toLowerCase();
+  return t(`common.${key}`, priority || '');
+};
+
 // --- Computed data from stores ---
 const totalSpent = computed(() => analyticsStore.totalSpent);
 const totalBudget = computed(() => analyticsStore.totalBudget);
@@ -248,7 +273,7 @@ const formatNumber = (n) => {
   return Number(n).toLocaleString();
 };
 
-// Status Overview — computed from real requisition + delivery data
+// Status Overview - computed from real requisition and delivery data.
 const statusItems = computed(() => {
   const pendingReqs = requisitionStore.pendingRequests?.length || 0;
   const highPrio = requisitionStore.highPriorityPending?.length || 0;
@@ -262,18 +287,49 @@ const statusItems = computed(() => {
   const requestDate = splitDisplayDate(latestRequest?.requestedOn);
   const orderDate = splitDisplayDate(latestOrder?.date);
   return [
-    { month: requestDate.month, day: requestDate.day, count: String(pendingReqs), title: 'Open Requests', subtitle: `${highPrio} high priority`, time: latestRequest?.reqId || 'Live' },
-    { month: orderDate.month, day: orderDate.day, count: String(pendingPOs), title: 'Pending Orders', subtitle: `${procurementStore.purchaseOrders.length} total`, time: latestOrder?.orderId || 'Live' }
+    {
+      month: requestDate.month,
+      day: requestDate.day,
+      count: String(pendingReqs),
+      title: t('home.open_requests'),
+      subtitle: `${highPrio} ${t('home.high_priority')}`,
+      time: latestRequest?.reqId || 'Live'
+    },
+    {
+      month: orderDate.month,
+      day: orderDate.day,
+      count: String(pendingPOs),
+      title: t('home.pending_orders'),
+      subtitle: `${procurementStore.purchaseOrders.length} ${t('home.total')}`,
+      time: latestOrder?.orderId || 'Live'
+    }
   ];
 });
 
-// Quick Actions — navigate to respective forms
-const quickActions = computed(() => [
+// Quick Actions - paginated navigation to real product workflows.
+const allQuickActions = computed(() => [
   { label: t('home.register_delivery'), icon: 'pi-truck', handler: () => router.push('/delivery') },
   { label: t('home.new_material'), icon: 'pi-box', handler: () => router.push('/requisition/material-request') },
   { label: t('home.new_purchase'), icon: 'pi-check-square', handler: () => router.push('/procurement/purchase-orders') },
-  { label: t('home.report_incident'), icon: 'pi-exclamation-triangle', handler: () => router.push('/suppliers/incidents') }
-]);
+  { label: t('home.report_incident'), icon: 'pi-exclamation-triangle', handler: () => router.push('/suppliers/incidents') },
+  { label: t('home.view_inventory'), icon: 'pi-warehouse', handler: () => router.push('/inventory') },
+  { label: t('home.supplier_directory'), icon: 'pi-users', handler: () => router.push('/suppliers') },
+  { label: t('home.request_quotes'), icon: 'pi-file-edit', handler: () => router.push('/procurement/quotations') },
+  { label: t('home.budget_review'), icon: 'pi-dollar', handler: () => router.push('/budget') },
+  { label: t('home.system_reports'), icon: 'pi-chart-bar', handler: () => router.push('/reports') },
+  { label: t('home.messages'), icon: 'pi-comments', handler: () => router.push('/notifications') },
+  { label: t('home.manage_users'), icon: 'pi-user-plus', adminOnly: true, handler: () => router.push('/users') },
+  { label: t('home.settings_action'), icon: 'pi-cog', handler: () => router.push('/settings') }
+].filter(action => !action.adminOnly || iamStore.isAdmin));
+
+const quickActionPages = computed(() => Math.max(1, Math.ceil(allQuickActions.value.length / quickActionsPerPage)));
+const quickActions = computed(() => {
+  const start = (quickActionPage.value - 1) * quickActionsPerPage;
+  return allQuickActions.value.slice(start, start + quickActionsPerPage);
+});
+const goToQuickActionPage = (page) => {
+  quickActionPage.value = Math.min(Math.max(page, 1), quickActionPages.value);
+};
 
 // Purchase Orders — filtered by tab
 const filteredPOs = computed(() => {
@@ -304,8 +360,8 @@ const barData = computed(() => {
   return {
     labels,
     datasets: [
-      { label: 'This week', backgroundColor: '#3D63A1', data: rates, borderRadius: 4, barThickness: 16 },
-      { label: 'Last week', backgroundColor: '#E8E8E8', data: lastWeek, borderRadius: 4, barThickness: 16 }
+      { label: t('home.this_week'), backgroundColor: '#3D63A1', data: rates, borderRadius: 4, barThickness: 16 },
+      { label: t('home.last_week'), backgroundColor: '#E8E8E8', data: lastWeek, borderRadius: 4, barThickness: 16 }
     ]
   };
 });
@@ -589,32 +645,45 @@ section {
 
 .chart-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: var(--spacing-lg);
+  min-width: 0;
 }
 
 .chart-title {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  font-size: 16px;
-  font-weight: 600;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  min-width: 0;
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 700;
   color: var(--color-text-primary);
+}
+
+.chart-title span {
+  display: block;
+  max-width: 210px;
+  line-height: 18px;
 }
 
 .indicator {
   display: flex;
-  gap: var(--spacing-2xl);
+  gap: 14px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: 6px;
   font-size: 12px;
   font-weight: 500;
   color: var(--color-text-secondary);
+  white-space: nowrap;
 }
 
 .color-box {
@@ -650,6 +719,24 @@ section {
   width: 12px;
   height: 12px;
   border-radius: 50%;
+}
+
+.inventory-total {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+  color: #191919;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.inventory-total span:last-child {
+  color: #666666;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .donut-chart {
@@ -957,5 +1044,62 @@ section {
 
 .text-primary {
   color: var(--color-primary);
+}
+
+.card-procurement .content-card,
+.card-inventory .content-card {
+  height: 248px;
+  min-height: 248px;
+}
+
+.card-inventory .content-card {
+  gap: 16px;
+}
+
+.card-inventory .legend-tags {
+  max-width: 160px;
+}
+
+.card-inventory .tag span:last-child,
+.legend-item span:last-child {
+  white-space: nowrap;
+}
+
+.chart-title span {
+  display: inline-block;
+  max-width: 168px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pagination .pagination-arrow {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  min-width: 24px;
+  padding: 6px;
+}
+
+.pagination .pagination-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+:deep(.requests-table .p-datatable-table) {
+  table-layout: fixed;
+  width: 100%;
+}
+
+:deep(.requests-table .p-datatable-thead > tr > th:first-child),
+:deep(.requests-table .p-datatable-tbody > tr > td:first-child) {
+  min-width: 150px;
+  width: 150px;
+  white-space: nowrap;
+}
+
+:deep(.requests-table .p-datatable-tbody > tr > td) {
+  line-height: 1.2;
+  vertical-align: middle;
 }
 </style>

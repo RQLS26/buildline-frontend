@@ -16,12 +16,12 @@
             <div class="stat-divider"></div>
             <div class="stat-block">
               <p class="stat-number active">{{ activeCount }}</p>
-              <p class="stat-label">Active</p>
+              <p class="stat-label">{{ $t('common.active') }}</p>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-block">
               <p class="stat-number inactive">{{ inactiveCount }}</p>
-              <p class="stat-label">Inactive</p>
+              <p class="stat-label">{{ $t('common.inactive') }}</p>
             </div>
           </div>
         </div>
@@ -37,7 +37,7 @@
             <div class="rating-stars">
               <i v-for="n in 5" :key="n" :class="['pi', n <= avgRatingRounded ? 'pi-star-fill' : 'pi-star']" :style="{ color: n <= avgRatingRounded ? '#D97706' : '#E2E8F0' }"></i>
             </div>
-            <p class="rating-note">Based on {{ totalSuppliers }} suppliers</p>
+            <p class="rating-note">{{ $t('suppliers.based_on') }} {{ totalSuppliers }} {{ $t('suppliers.suppliers_label') }}</p>
           </div>
         </div>
       </section>
@@ -51,7 +51,7 @@
             <div class="performer-avatar">{{ topPerformer.companyName?.split(' ').map(w => w[0]).join('').substring(0,2) }}</div>
             <div class="performer-info">
               <p class="performer-name">{{ topPerformer.companyName }}</p>
-              <p class="performer-meta">{{ topPerformer.deliveryRate }}% on-time · {{ topPerformer.rating }} ★</p>
+              <p class="performer-meta">{{ topPerformer.deliveryRate }}% {{ $t('suppliers.on_time') }} · {{ topPerformer.rating }} ★</p>
               <p class="performer-orders">{{ $t('suppliers.best_delivery') }}</p>
             </div>
           </div>
@@ -62,26 +62,26 @@
     <!-- Filter + Add -->
     <div class="action-row">
       <div class="filter-group">
-        <label class="filter-label">Category</label>
-        <pv-select v-model="filters.category" :options="categories" placeholder="All categories" class="filter-select" />
+        <label class="filter-label">{{ $t('suppliers.category') }}</label>
+        <pv-select v-model="filters.category" :options="categories" :placeholder="$t('suppliers.all_categories')" class="filter-select" />
       </div>
       <div class="filter-group">
-        <label class="filter-label">Status</label>
-        <pv-select v-model="filters.status" :options="['Active', 'Inactive']" placeholder="All" class="filter-select" />
+        <label class="filter-label">{{ $t('suppliers.status') }}</label>
+        <pv-select v-model="filters.status" :options="statusOptions" optionLabel="label" optionValue="value" :placeholder="$t('common.all')" class="filter-select" />
       </div>
       <div class="ml-auto">
-        <pv-button label="Add Supplier" icon="pi pi-plus" class="add-btn" @click="showDialog = true" />
+        <pv-button :label="$t('suppliers.add_new')" icon="pi pi-plus" class="add-btn" @click="showDialog = true" />
       </div>
     </div>
 
     <!-- Suppliers Table -->
     <div class="section-header">
       <h2 class="m-0">{{ $t('suppliers.title') }}</h2>
-      <p class="compare-note m-0">{{ suppliers.length }} suppliers</p>
+      <p class="compare-note m-0">{{ suppliers.length }} {{ $t('suppliers.suppliers_label') }}</p>
     </div>
     <div class="content-card p-0 overflow-hidden">
       <pv-data-table :value="suppliers" class="buildline-datatable" :rows="8">
-        <pv-column header="Supplier">
+        <pv-column :header="$t('common.supplier')">
           <template #body="slotProps">
             <div class="flex align-items-center gap-3">
               <div class="supplier-avatar" :style="{ background: slotProps.data.color }">
@@ -94,9 +94,9 @@
             </div>
           </template>
         </pv-column>
-        <pv-column field="category" header="Category"></pv-column>
-        <pv-column field="contact" header="Contact"></pv-column>
-        <pv-column header="Rating">
+        <pv-column field="category" :header="$t('suppliers.category')"></pv-column>
+        <pv-column field="contact" :header="$t('suppliers.contact')"></pv-column>
+        <pv-column :header="$t('suppliers.rating')">
           <template #body="slotProps">
             <div class="flex align-items-center gap-1">
               <i class="pi pi-star-fill" style="color: #D97706; font-size: 12px;"></i>
@@ -105,8 +105,8 @@
             </div>
           </template>
         </pv-column>
-        <pv-column field="orders" header="Orders"></pv-column>
-        <pv-column field="onTime" header="On-Time %">
+        <pv-column field="orders" :header="$t('suppliers.orders')"></pv-column>
+        <pv-column field="onTime" :header="$t('suppliers.on_time_percent')">
           <template #body="slotProps">
             <div class="ontime-bar">
               <div class="ontime-fill" :style="{ width: slotProps.data.onTime + '%', background: slotProps.data.onTime >= 90 ? '#3D9F7D' : slotProps.data.onTime >= 75 ? '#D97706' : '#E02424' }"></div>
@@ -114,10 +114,10 @@
             <span class="ontime-text">{{ slotProps.data.onTime }}%</span>
           </template>
         </pv-column>
-        <pv-column header="Status">
+        <pv-column :header="$t('suppliers.status')">
           <template #body="slotProps">
             <span :class="['status-badge', slotProps.data.isActive ? 'status-approved' : 'status-rejected']">
-              {{ slotProps.data.isActive ? 'Active' : 'Inactive' }}
+              {{ slotProps.data.isActive ? ('common.active') : ('common.inactive') }}
             </span>
           </template>
         </pv-column>
@@ -125,46 +125,46 @@
     </div>
 
     <!-- Dialog -->
-    <pv-dialog v-model:visible="showDialog" modal header="Add New Supplier" :style="{ width: '500px' }" class="supplier-dialog">
+    <pv-dialog v-model:visible="showDialog" modal :header="$t('suppliers.add_new')" :style="{ width: '500px' }" class="supplier-dialog">
       <div class="flex flex-column gap-4 pt-2">
         <div class="flex flex-column gap-2">
-          <label class="filter-label">Company Name</label>
-          <pv-input-text v-model="newSupplier.name" placeholder="Enter company name" class="w-full" />
+          <label class="filter-label">{{ $t('suppliers.company_name') }}</label>
+          <pv-input-text v-model="newSupplier.name" :placeholder="$t('suppliers.enter_company_name')" class="w-full" />
         </div>
         <div class="flex flex-column gap-2">
           <label class="filter-label">RUC</label>
           <pv-input-text v-model="newSupplier.ruc" placeholder="20XXXXXXXXX" class="w-full" />
         </div>
         <div class="flex flex-column gap-2">
-          <label class="filter-label">Category</label>
-          <pv-select v-model="newSupplier.category" :options="categories" placeholder="Select category" class="w-full" />
+          <label class="filter-label">{{ $t('suppliers.category') }}</label>
+          <pv-select v-model="newSupplier.category" :options="categories" :placeholder="$t('suppliers.select_category')" class="w-full" />
         </div>
         <div class="flex flex-column gap-2">
-          <label class="filter-label">Contact Name</label>
-          <pv-input-text v-model="newSupplier.contactName" placeholder="Primary contact" class="w-full" />
+          <label class="filter-label">{{ $t('suppliers.contact_name') }}</label>
+          <pv-input-text v-model="newSupplier.contactName" :placeholder="$t('suppliers.primary_contact')" class="w-full" />
         </div>
         <div class="flex flex-column gap-2">
-          <label class="filter-label">Contact Email</label>
+          <label class="filter-label">{{ $t('suppliers.contact_email') }}</label>
           <pv-input-text v-model="newSupplier.email" placeholder="contact@supplier.com" class="w-full" />
         </div>
         <div class="flex flex-column gap-2">
-          <label class="filter-label">Phone</label>
+          <label class="filter-label">{{ $t('company-profile.phone') }}</label>
           <pv-input-text v-model="newSupplier.phone" placeholder="+51 999 999 999" class="w-full" />
         </div>
         <div class="supplier-metrics-grid">
           <div class="flex flex-column gap-2 min-w-0">
-            <label class="filter-label">Rating</label>
+            <label class="filter-label">{{ $t('suppliers.rating') }}</label>
             <pv-input-number v-model="newSupplier.rating" :min="1" :max="5" class="w-full metric-input" />
           </div>
           <div class="flex flex-column gap-2 min-w-0">
-            <label class="filter-label">On-time %</label>
+            <label class="filter-label">{{ $t('suppliers.on_time_percent') }}</label>
             <pv-input-number v-model="newSupplier.deliveryRate" :min="0" :max="100" class="w-full metric-input" />
           </div>
         </div>
       </div>
       <template #footer>
-        <pv-button label="Cancel" class="p-button-text" @click="showDialog = false" />
-        <pv-button label="Add Supplier" icon="pi pi-check" class="add-btn" @click="handleAddSupplier" />
+        <pv-button :label="$t('common.cancel')" class="p-button-text" @click="showDialog = false" />
+        <pv-button :label="$t('suppliers.add_new')" icon="pi pi-check" class="add-btn" @click="handleAddSupplier" />
       </template>
     </pv-dialog>
   </div>
@@ -176,15 +176,21 @@ import { useSuppliersStore } from '../../application/suppliers.store.js';
 import { useProcurementStore } from '../../../procurement/application/procurement.store.js';
 import { useReferenceDataStore } from '../../../shared/application/reference-data.store.js';
 import { useToast } from 'primevue/usetoast';
+import { useI18n } from 'vue-i18n';
 
 const suppliersStore = useSuppliersStore();
 const procurementStore = useProcurementStore();
 const referenceStore = useReferenceDataStore();
 const toast = useToast();
+const { t } = useI18n();
 const showDialog = ref(false);
 const filters = ref({ category: null, status: null });
 const newSupplier = ref({ name: '', ruc: '', category: null, contactName: '', email: '', phone: '', rating: null, deliveryRate: null });
 const categories = computed(() => referenceStore.categoryNames);
+const statusOptions = computed(() => [
+  { label: t('common.active'), value: 'Active' },
+  { label: t('common.inactive'), value: 'Inactive' }
+]);
 
 onMounted(async () => {
   await Promise.all([
@@ -233,7 +239,7 @@ const topPerformer = computed(() => {
 
 const handleAddSupplier = async () => {
   if (!newSupplier.value.name || !newSupplier.value.ruc || !newSupplier.value.category || !newSupplier.value.email) {
-    toast.add({ severity: 'warn', summary: 'Warning', detail: 'Please fill company, RUC, category and email.', life: 3000 });
+    toast.add({ severity: 'warn', summary: t('common.warning'), detail: t('suppliers.required_fields'), life: 3000 });
     return;
   }
   const success = await suppliersStore.createSupplier({
@@ -250,7 +256,7 @@ const handleAddSupplier = async () => {
   if (success) {
     showDialog.value = false;
     newSupplier.value = { name: '', ruc: '', category: null, contactName: '', email: '', phone: '', rating: null, deliveryRate: null };
-    toast.add({ severity: 'success', summary: 'Success', detail: 'Supplier added.', life: 3000 });
+    toast.add({ severity: 'success', summary: t('common.success'), detail: t('suppliers.created_message'), life: 3000 });
   }
 };
 </script>

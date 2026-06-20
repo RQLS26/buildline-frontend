@@ -4,22 +4,22 @@
     <!-- Filters Row -->
     <div class="filters-row">
       <div class="filter-group">
-        <label class="filter-label">Supplier</label>
-        <pv-select v-model="filters.supplier" :options="suppliers" placeholder="All suppliers" class="filter-select" />
+        <label class="filter-label">{{ $t('purchase_orders.supplier') }}</label>
+        <pv-select v-model="filters.supplier" :options="suppliers" :placeholder="$t('purchase_orders.all_suppliers')" class="filter-select" />
       </div>
       <div class="filter-group">
-        <label class="filter-label">Status</label>
-        <pv-select v-model="filters.status" :options="statuses" placeholder="All status" class="filter-select" />
+        <label class="filter-label">{{ $t('purchase_orders.status') }}</label>
+        <pv-select v-model="filters.status" :options="statuses" :placeholder="$t('purchase_orders.all_status')" class="filter-select" />
       </div>
       <div class="filter-group">
-        <label class="filter-label">Amount Range</label>
-        <pv-select v-model="filters.amount" :options="amountRanges" placeholder="Any amount" class="filter-select" />
+        <label class="filter-label">{{ $t('purchase_orders.amount_range') }}</label>
+        <pv-select v-model="filters.amount" :options="amountRanges" :placeholder="$t('purchase_orders.any_amount')" class="filter-select" />
       </div>
       <div class="filter-group filter-action">
-        <pv-button label="Clear filters" icon="pi pi-times" iconPos="right"
+        <pv-button :label="$t('inventory.clear_filters')" icon="pi pi-times" iconPos="right"
                    class="p-button-outlined clear-filters-btn" @click="clearFilters" />
       </div>
-      <pv-button label="New PO" icon="pi pi-plus" class="new-po-btn" @click="showPODialog = true" />
+      <pv-button :label="$t('purchase_orders.new_po')" icon="pi pi-plus" class="new-po-btn" @click="showPODialog = true" />
     </div>
 
     <!-- Tabs -->
@@ -34,28 +34,28 @@
     <!-- Table Card -->
     <div class="table-card">
       <pv-data-table :value="filteredOrders" class="buildline-datatable" :rows="10">
-        <pv-column field="orderId" header="Order ID"></pv-column>
-        <pv-column field="date" header="Issue Date"></pv-column>
-        <pv-column field="supplierName" header="Supplier">
+        <pv-column field="orderId" :header="$t('purchase_orders.order_id')"></pv-column>
+        <pv-column field="date" :header="$t('purchase_orders.issue_date')"></pv-column>
+        <pv-column field="supplierName" :header="$t('purchase_orders.supplier')">
           <template #body="slotProps">
             <span class="font-semibold">{{ slotProps.data.supplierName }}</span>
           </template>
         </pv-column>
-        <pv-column field="material" header="Material"></pv-column>
-        <pv-column field="project" header="Project"></pv-column>
-        <pv-column field="totalAmount" header="Total Amount">
+        <pv-column field="material" :header="$t('purchase_orders.material')"></pv-column>
+        <pv-column field="project" :header="$t('purchase_orders.project')"></pv-column>
+        <pv-column field="totalAmount" :header="$t('purchase_orders.total_amount')">
           <template #body="slotProps">
             <span class="font-bold text-900">${{ slotProps.data.totalAmount.toLocaleString() }}</span>
           </template>
         </pv-column>
-        <pv-column field="status" header="Status">
+        <pv-column field="status" :header="$t('purchase_orders.status')">
           <template #body="slotProps">
             <span :class="['status-badge', 'status-' + slotProps.data.status.toLowerCase().replace(/ /g, '')]">
-              {{ slotProps.data.status }}
+              {{ translateStatus(slotProps.data.status) }}
             </span>
           </template>
         </pv-column>
-        <pv-column header="Actions">
+        <pv-column :header="$t('purchase_orders.actions')">
           <template #body="slotProps">
             <div class="flex gap-2" v-if="slotProps.data.status === 'Pending'">
               <button class="action-btn approve-btn" @click="approveOrder(slotProps.data)" title="Approve">
@@ -66,7 +66,7 @@
               </button>
             </div>
             <span v-else class="processed-label">
-              <i class="pi pi-lock"></i> Processed
+              <i class="pi pi-lock"></i> {{ $t('purchase_orders.processed') }}
             </span>
           </template>
         </pv-column>
@@ -75,7 +75,7 @@
       <!-- Pagination -->
       <div class="pagination-row">
         <div class="pagination-info">
-          Item per page:
+          {{ $t('users.items_per_page') }}:
           <span class="pagination-count">10 <i class="pi pi-caret-down"></i></span>
         </div>
         <div class="pagination-controls">
@@ -92,60 +92,60 @@
     <pv-dialog v-model:visible="showPODialog" modal :style="{ width: '600px' }" :showHeader="false">
       <div class="dialog-form">
         <div class="dialog-header-row">
-          <h3 class="dialog-title">New Purchase Order</h3>
+          <h3 class="dialog-title">{{ $t('purchase_orders.new_purchase_order') }}</h3>
           <button class="close-btn" @click="showPODialog = false"><i class="pi pi-times"></i></button>
         </div>
 
         <div class="form-row-2">
           <div class="form-field">
-            <label class="form-label">Supplier <span class="required">*</span></label>
-            <pv-select v-model="poForm.supplier" :options="suppliers" placeholder="Select supplier" class="w-full form-input" />
+            <label class="form-label">{{ $t('purchase_orders.supplier') }} <span class="required">*</span></label>
+            <pv-select v-model="poForm.supplier" :options="suppliers" :placeholder="$t('incidents.select_supplier')" class="w-full form-input" />
           </div>
           <div class="form-field">
-            <label class="form-label">Project <span class="required">*</span></label>
-            <pv-select v-model="poForm.project" :options="projectOptions" placeholder="Select project" class="w-full form-input" />
+            <label class="form-label">{{ $t('purchase_orders.project') }} <span class="required">*</span></label>
+            <pv-select v-model="poForm.project" :options="projectOptions" :placeholder="$t('purchase_orders.select_project')" class="w-full form-input" />
           </div>
         </div>
 
         <div class="form-field">
-          <label class="form-label">Material / Service <span class="required">*</span></label>
-          <pv-select v-model="poForm.material" :options="materialOptions" placeholder="Select material or service" class="w-full form-input" />
+          <label class="form-label">{{ $t('purchase_orders.material') }} <span class="required">*</span></label>
+          <pv-select v-model="poForm.material" :options="materialOptions" :placeholder="$t('purchase_orders.select_material')" class="w-full form-input" />
         </div>
 
         <div class="form-row-3">
           <div class="form-field">
-            <label class="form-label">Quantity <span class="required">*</span></label>
+            <label class="form-label">{{ $t('purchase_orders.quantity') }} <span class="required">*</span></label>
             <pv-input-number v-model="poForm.quantity" :min="1" class="w-full form-input" />
           </div>
           <div class="form-field">
-            <label class="form-label">Unit</label>
+            <label class="form-label">{{ $t('purchase_orders.unit') }}</label>
             <pv-select v-model="poForm.unit" :options="unitOptions" class="w-full form-input" />
           </div>
           <div class="form-field">
-            <label class="form-label">Unit Price ($) <span class="required">*</span></label>
+            <label class="form-label">{{ $t('purchase_orders.unit_price') }} <span class="required">*</span></label>
             <pv-input-number v-model="poForm.unitPrice" :min="0" mode="currency" currency="USD" locale="en-US" class="w-full form-input" :inputStyle="{ maxWidth: '140px' }" />
           </div>
         </div>
 
         <div class="form-row-2">
           <div class="form-field">
-            <label class="form-label">Delivery Date <span class="required">*</span></label>
-            <pv-date-picker v-model="poForm.deliveryDate" dateFormat="M dd, yy" class="w-full form-input" placeholder="Select date" />
+            <label class="form-label">{{ $t('purchase_orders.delivery_date') }} <span class="required">*</span></label>
+            <pv-date-picker v-model="poForm.deliveryDate" dateFormat="M dd, yy" class="w-full form-input" :placeholder="$t('delivery.select_date')" />
           </div>
           <div class="form-field">
-            <label class="form-label">Payment Terms</label>
+            <label class="form-label">{{ $t('purchase_orders.payment_terms') }}</label>
             <pv-select v-model="poForm.paymentTerms" :options="['Net 30', 'Net 60', 'Net 90', 'COD', '50% Advance']" class="w-full form-input" />
           </div>
         </div>
 
         <div class="form-field">
-          <label class="form-label">Notes</label>
-          <pv-textarea v-model="poForm.notes" rows="2" placeholder="Additional instructions or conditions..." class="w-full form-input" />
+          <label class="form-label">{{ $t('purchase_orders.notes') }}</label>
+          <pv-textarea v-model="poForm.notes" rows="2" :placeholder="$t('purchase_orders.notes_placeholder')" class="w-full form-input" />
         </div>
 
         <div class="dialog-footer">
-          <pv-button label="Cancel" class="p-button-outlined cancel-btn" @click="showPODialog = false" />
-          <pv-button label="Create Order" icon="pi pi-check" class="create-btn" @click="createPurchaseOrder" />
+          <pv-button :label="$t('common.cancel')" class="p-button-outlined cancel-btn" @click="showPODialog = false" />
+          <pv-button :label="$t('purchase_orders.create_order')" icon="pi pi-check" class="create-btn" @click="createPurchaseOrder" />
         </div>
       </div>
     </pv-dialog>
@@ -160,8 +160,10 @@ import { useIamStore } from '../../../iam/application/iam.store.js';
 import { useSuppliersStore } from '../../../suppliers/application/suppliers.store.js';
 import { useReferenceDataStore } from '../../../shared/application/reference-data.store.js';
 import { buildNextBusinessCode } from '../../../shared/application/business-code.js';
+import { useI18n } from 'vue-i18n';
 
 const toast = useToast();
+const { t } = useI18n();
 const store = useProcurementStore();
 const iamStore = useIamStore();
 const suppliersStore = useSuppliersStore();
@@ -188,6 +190,11 @@ const tabs = computed(() => [
   { name: 'Rejected', label: `Rejected (${store.rejectedOrders.length})` }
 ]);
 
+const translateStatus = (status) => {
+  const key = String(status || '').toLowerCase().replace(/\s+/g, '_');
+  return t(`common.${key}`, status || '');
+};
+
 // PO Dialog
 const showPODialog = ref(false);
 const projectOptions = computed(() => referenceStore.projectNames);
@@ -208,7 +215,7 @@ const poForm = ref({
 
 const createPurchaseOrder = async () => {
   if (!poForm.value.supplier || !poForm.value.project || !poForm.value.material || !poForm.value.quantity || !poForm.value.unitPrice) {
-    toast.add({ severity: 'warn', summary: 'Missing data', detail: 'Select supplier, project, material, quantity and unit price.', life: 3000 });
+    toast.add({ severity: 'warn', summary: t('common.warning'), detail: t('purchase_orders.required_fields'), life: 3000 });
     return;
   }
   const totalAmount = (poForm.value.quantity || 0) * (poForm.value.unitPrice || 0);

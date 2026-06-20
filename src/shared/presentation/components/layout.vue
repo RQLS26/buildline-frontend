@@ -47,7 +47,7 @@
       <!-- Top Bar -->
       <header v-if="!isIamRoute" class="layout-header flex align-items-center justify-content-between px-6 py-4 bg-transparent">
         <div class="flex align-items-center gap-3">
-          <h1 class="text-2xl font-black text-900 m-0" style="letter-spacing: -0.02em;">{{ route.meta.title || 'Overview' }}</h1>
+          <h1 class="text-2xl font-black text-900 m-0" style="letter-spacing: -0.02em;">{{ pageTitle }}</h1>
           <div class="flex align-items-center gap-2 text-gray-400 font-bold mt-1" style="font-size: 0.9rem;">
             <i class="pi pi-angle-double-right text-xs"></i>
             <span>{{ todayDate }}</span>
@@ -64,7 +64,7 @@
           <!-- Search -->
           <div class="hidden md:block">
             <div class="p-inputgroup border-round-xl overflow-hidden bg-white border-1 border-gray-100 shadow-sm" style="height: 48px;">
-                <pv-input-text placeholder="Search here" class="border-none bg-transparent px-4 w-24rem text-sm font-medium" />
+                <pv-input-text :placeholder="$t('common.search_placeholder')" class="border-none bg-transparent px-4 w-24rem text-sm font-medium" />
                 <span class="p-inputgroup-addon bg-transparent border-none px-3">
                     <i class="pi pi-search text-gray-400"></i>
                 </span>
@@ -88,6 +88,7 @@
 <script setup>
 import { computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useIamStore } from '../../../iam/application/iam.store.js';
 import { useCommunicationStore } from '../../../communication/application/communication.store.js';
 import LanguageSwitcher from './language-switcher.vue';
@@ -96,11 +97,34 @@ const route = useRoute();
 const router = useRouter();
 const iamStore = useIamStore();
 const communicationStore = useCommunicationStore();
+const { locale, t } = useI18n();
 
 const isIamRoute = computed(() => route.path.startsWith('/iam'));
 
+const routeTitleKeys = {
+  'home': 'option.home',
+  'quotations-management': 'option.quotations',
+  'approval-inbox': 'option.purchase_orders',
+  'purchase-orders': 'option.purchase_orders',
+  'delivery-tracking': 'option.delivery',
+  'inventory-list': 'option.inventory',
+  'supplier-directory': 'option.suppliers',
+  'incidents-list': 'option.incidents',
+  'financial-dashboard': 'option.budget',
+  'reports': 'option.reports',
+  'users-management': 'option.users',
+  'messages-inbox': 'option.notifications',
+  'settings': 'option.settings',
+  'company-profile': 'company-profile.title'
+};
+
+const pageTitle = computed(() => {
+  const key = routeTitleKeys[route.name];
+  return key ? t(key) : route.meta.title || t('option.home');
+});
+
 const todayDate = computed(() => {
-  return new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  return new Date().toLocaleDateString(locale.value === 'es' ? 'es-PE' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 });
 
 const unreadCount = computed(() => communicationStore.unreadCount);

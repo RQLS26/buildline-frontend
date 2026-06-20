@@ -87,37 +87,48 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="selectedReport === 'inventory'" v-for="item in reportItems" :key="item.id">
-              <td>{{ item.sku }}</td>
-              <td class="font-semibold">{{ item.name }}</td>
-              <td>{{ item.project }}</td>
-              <td>{{ item.category }}</td>
-              <td class="text-right font-bold">{{ item.currentStock }}</td>
-              <td class="text-right"><span :class="['report-status', getStatusClass(item)]">{{ getStatusLabel(item) }}</span></td>
-            </tr>
-            <tr v-else-if="selectedReport === 'purchase'" v-for="item in reportItems" :key="item.id">
-              <td>{{ item.orderId }}</td>
-              <td class="font-semibold">{{ item.supplierName }}</td>
-              <td>{{ item.material }}</td>
-              <td>{{ item.project }}</td>
-              <td class="text-right font-bold">${{ Number(item.totalAmount || 0).toLocaleString() }}</td>
-              <td class="text-right">{{ translateStatus(item.status) }}</td>
-            </tr>
-            <tr v-else-if="selectedReport === 'budget'" v-for="item in reportItems" :key="item.id">
-              <td class="font-semibold">{{ item.project }}</td>
-              <td>{{ translateBudgetStatus(item.status) }}</td>
-              <td class="text-right font-bold">${{ Number(item.totalBudget || 0).toLocaleString() }}</td>
-              <td class="text-right">${{ Number(item.spent || 0).toLocaleString() }}</td>
-              <td class="text-right">${{ Number(item.allocated || 0).toLocaleString() }}</td>
-              <td class="text-right">{{ item.totalBudget ? Math.round((item.spent / item.totalBudget) * 100) : 0 }}%</td>
-            </tr>
-            <tr v-else v-for="item in reportItems" :key="item.id">
-              <td class="font-semibold">{{ item.companyName }}</td>
-              <td>{{ item.category }}</td>
-              <td>{{ item.email }}</td>
-              <td class="text-right">{{ item.rating }}</td>
-              <td class="text-right">{{ item.deliveryRate }}%</td>
-              <td class="text-right">{{ item.isActive ? $t('common.active') : $t('common.inactive') }}</td>
+            <template v-if="selectedReport === 'inventory'">
+              <tr v-for="item in reportItems" :key="item.id">
+                <td>{{ item.sku }}</td>
+                <td class="font-semibold">{{ item.name }}</td>
+                <td>{{ item.project }}</td>
+                <td>{{ item.category }}</td>
+                <td class="text-right font-bold">{{ item.currentStock }}</td>
+                <td class="text-right"><span :class="['report-status', getStatusClass(item)]">{{ getStatusLabel(item) }}</span></td>
+              </tr>
+            </template>
+            <template v-else-if="selectedReport === 'purchase'">
+              <tr v-for="item in reportItems" :key="item.id">
+                <td>{{ item.orderId }}</td>
+                <td class="font-semibold">{{ item.supplierName }}</td>
+                <td>{{ item.material }}</td>
+                <td>{{ item.project }}</td>
+                <td class="text-right font-bold">${{ Number(item.totalAmount || 0).toLocaleString() }}</td>
+                <td class="text-right">{{ translateStatus(item.status) }}</td>
+              </tr>
+            </template>
+            <template v-else-if="selectedReport === 'budget'">
+              <tr v-for="item in reportItems" :key="item.id">
+                <td class="font-semibold">{{ item.project }}</td>
+                <td>{{ translateBudgetStatus(item.status) }}</td>
+                <td class="text-right font-bold">${{ Number(item.totalBudget || 0).toLocaleString() }}</td>
+                <td class="text-right">${{ Number(item.spent || 0).toLocaleString() }}</td>
+                <td class="text-right">${{ Number(item.allocated || 0).toLocaleString() }}</td>
+                <td class="text-right">{{ item.totalBudget ? Math.round((item.spent / item.totalBudget) * 100) : 0 }}%</td>
+              </tr>
+            </template>
+            <template v-else>
+              <tr v-for="item in reportItems" :key="item.id">
+                <td class="font-semibold">{{ item.companyName }}</td>
+                <td>{{ item.category }}</td>
+                <td>{{ item.email }}</td>
+                <td class="text-right">{{ item.rating }}</td>
+                <td class="text-right">{{ item.deliveryRate }}%</td>
+                <td class="text-right">{{ item.isActive ? $t('common.active') : $t('common.inactive') }}</td>
+              </tr>
+            </template>
+            <tr v-if="reportItems.length === 0">
+              <td colspan="6" class="report-empty">{{ $t('common.no_data') }}</td>
             </tr>
           </tbody>
         </table>
@@ -243,6 +254,7 @@ const exportPDF = () => window.print();
 .report-table th { text-align: center; font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.03em; padding: 12px 16px; border-bottom: 1px solid #E2E8F0; }
 .report-table td { padding: 14px 16px; font-size: 13px; color: #374151; border-bottom: 1px solid #F8FAFC; text-align: center; }
 .report-table tbody tr:hover { background: #FAFBFC; }
+.report-empty { padding: 36px 16px !important; color: #94A3B8 !important; font-weight: 700; text-align: center !important; }
 
 .report-status { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px; white-space: nowrap; }
 .report-status-ok { background: #EAF8F0; color: #3D9F7D; }

@@ -46,6 +46,14 @@
     "new_material": "New Material",
     "new_purchase": "New Purchase",
     "report_incident": "Report Incident",
+    "view_inventory": "View Inventory",
+    "supplier_directory": "Suppliers",
+    "request_quotes": "Request Quotes",
+    "budget_review": "Budget Review",
+    "system_reports": "Reports",
+    "messages": "Messages",
+    "manage_users": "Manage Users",
+    "settings_action": "Settings",
     "in_stock": "In stock",
     "low_stock": "Low stock",
     "out_of_stock": "Out of stock"
@@ -74,7 +82,16 @@
     "on_time": "on-time",
     "orders": "Orders",
     "company_name": "Company Name",
-    "contact_email": "Contact Email"
+    "contact_email": "Contact Email",
+    "suppliers_label": "suppliers",
+    "all_categories": "All categories",
+    "on_time_percent": "On-Time %",
+    "enter_company_name": "Enter company name",
+    "contact_name": "Contact Name",
+    "primary_contact": "Primary contact",
+    "select_category": "Select category",
+    "required_fields": "Fill company, RUC, category and email.",
+    "created_message": "Supplier added successfully."
   },
   "incidents": {
     "title": "Incidents",
@@ -92,7 +109,17 @@
     "in_progress": "In Progress",
     "open": "Open",
     "purchase_order": "Purchase Order",
-    "reported_by": "Reported By"
+    "reported_by": "Reported By",
+    "incident_singular": "incident",
+    "incident_plural": "incidents",
+    "form_title": "Title",
+    "title_placeholder": "Brief description of the incident",
+    "description": "Description",
+    "description_placeholder": "Detailed description...",
+    "select_supplier": "Select supplier",
+    "select_purchase_order": "Select purchase order",
+    "required_fields": "Fill title, supplier, purchase order and severity.",
+    "created_message": "Incident {id} registered."
   },
   "inventory": {
     "title": "Inventory",
@@ -162,7 +189,19 @@
     "create_order": "Create Order",
     "approved": "Approved",
     "pending": "Pending",
-    "rejected": "Rejected"
+    "rejected": "Rejected",
+    "amount_range": "Amount Range",
+    "all_suppliers": "All suppliers",
+    "all_status": "All status",
+    "any_amount": "Any amount",
+    "processed": "Processed",
+    "select_project": "Select project",
+    "select_material": "Select material or service",
+    "notes_placeholder": "Additional instructions or conditions...",
+    "required_fields": "Select supplier, project, material, quantity and unit price.",
+    "created_message": "Purchase order {id} created.",
+    "approved_message": "Order {id} has been approved.",
+    "rejected_message": "Order {id} has been rejected."
   },
   "material_request": {
     "title": "Material Requests",
@@ -177,7 +216,13 @@
     "description": "Description",
     "attach_evidence": "Attach Evidence",
     "submit_report": "Submit Report",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "request_id": "Request ID",
+    "status": "Status",
+    "requested_on": "Requested On",
+    "description_placeholder": "Steel rebar for columns on level 5.",
+    "required_fields": "Select project, material, quantity, priority and delivery date.",
+    "created_message": "Material request submitted."
   },
   "delivery": {
     "title": "Delivery & Tracking",
@@ -248,7 +293,15 @@
     "compose": "Compose",
     "mark_read": "Mark as Read",
     "search": "Search notifications...",
-    "no_notifications": "No notifications"
+    "no_notifications": "No notifications",
+    "new_message": "New Message",
+    "to": "To",
+    "subject": "Subject",
+    "message": "Message",
+    "recipient": "Recipient",
+    "message_placeholder": "Write your message...",
+    "discard": "Discard",
+    "send": "Send"
   },
   "users": {
     "title": "Users & Roles",
@@ -283,7 +336,8 @@
     "activate_user": "Activate user",
     "deactivate_user": "Deactivate user",
     "user_activated": "{name} was activated.",
-    "user_deactivated": "{name} was deactivated."
+    "user_deactivated": "{name} was deactivated.",
+    "create_user_error": "Could not create the user."
   },
   "settings": {
     "title": "Settings",
@@ -383,7 +437,13 @@
     "privacy": "Privacy Policy",
     "agree_terms": "I agree to the",
     "login": "Login",
-    "invalid_credentials": "Invalid email or password."
+    "invalid_credentials": "Invalid email or password.",
+    "required_fields": "Fill name, email, company and password.",
+    "invalid_email": "Enter a valid email address.",
+    "password_min_length": "Password must be at least 6 characters.",
+    "company_name": "Company",
+    "company_placeholder": "Buildline S.A.C.",
+    "create_account_error": "Could not create the account."
   },
   "company-profile": {
     "title": "Company Profile",
@@ -445,6 +505,9 @@
     "success": "Success",
     "error": "Error",
     "warning": "Warning",
-    "info": "Info"
+    "info": "Info",
+    "search_placeholder": "Search here",
+    "live": "Live",
+    "select": "Select"
   }
 }

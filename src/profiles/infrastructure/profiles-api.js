@@ -17,6 +17,15 @@ export class ProfilesApi extends BaseApi {
         super();
         this.#profilesEndpoint = new BaseEndpoint(this, apiEndpoints.profiles);
     }
+    /**
+     * Retrieves every company profile available to the authenticated account.
+     *
+     * @returns {Promise<import('axios').AxiosResponse<Array<Object>>>} Response containing company profile resources.
+     */
+    getProfiles() {
+        return this.#profilesEndpoint.getAll();
+    }
+
 
     /**
      * Retrieves a company profile by identifier.

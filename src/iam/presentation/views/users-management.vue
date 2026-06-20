@@ -150,6 +150,7 @@ const filters = ref({ role: null, status: null });
 const newUser = ref({ name: '', email: '', password: '', role: null, department: null });
 const roleCatalog = ['owner', 'admin', 'viewer'];
 const mutableRoleCatalog = ['admin', 'viewer'];
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const roleFilterOptions = computed(() => roleCatalog);
 const newUserRoleOptions = computed(() => mutableRoleCatalog);
@@ -236,8 +237,7 @@ const createUser = async () => {
     role: newUser.value.role,
     department: newUser.value.department,
     isActive: true,
-    avatarColor: getAvatarColor(newUser.value.email),
-    lastLogin: 'Never'
+    avatarColor: getAvatarColor(newUser.value.email)
   };
   try {
     const success = await iamStore.createUser(userData);

@@ -5,15 +5,15 @@
     <!-- Action Row -->
     <div class="action-row">
       <div class="filter-group">
-        <label class="filter-label">Priority</label>
-        <pv-select v-model="filterPriority" :options="['All', 'High', 'Medium', 'Low']" placeholder="All" class="filter-select" />
+        <label class="filter-label">{{ $t('material_request.priority') }}</label>
+        <pv-select v-model="filterPriority" :options="priorityOptions" optionLabel="label" optionValue="value" :placeholder="$t('common.all')" class="filter-select" />
       </div>
       <div class="filter-group">
-        <label class="filter-label">Status</label>
-        <pv-select v-model="filterStatus" :options="statusOptions" placeholder="All" class="filter-select" />
+        <label class="filter-label">{{ $t('material_request.status') }}</label>
+        <pv-select v-model="filterStatus" :options="statusOptions" optionLabel="label" optionValue="value" :placeholder="$t('common.all')" class="filter-select" />
       </div>
       <div class="ml-auto">
-        <pv-button label="New Request" icon="pi pi-plus" class="new-request-btn" @click="showDialog = true" />
+        <pv-button :label="$t('material_request.new_request')" icon="pi pi-plus" class="new-request-btn" @click="showDialog = true" />
       </div>
     </div>
 
@@ -29,39 +29,39 @@
     <!-- Table Card -->
     <div class="table-card">
       <pv-data-table :value="filteredRequests" class="buildline-datatable" :rows="10">
-        <pv-column field="reqId" header="Request ID"></pv-column>
-        <pv-column field="material" header="Material">
+        <pv-column field="reqId" :header="$t('material_request.request_id')"></pv-column>
+        <pv-column field="material" :header="$t('material_request.material')">
           <template #body="slotProps">
             <span class="font-semibold">{{ slotProps.data.material }}</span>
           </template>
         </pv-column>
-        <pv-column field="project" header="Project"></pv-column>
-        <pv-column field="quantity" header="Qty">
+        <pv-column field="project" :header="$t('material_request.project')"></pv-column>
+        <pv-column field="quantity" :header="$t('material_request.quantity')">
           <template #body="slotProps">
             <span class="font-bold">{{ slotProps.data.quantity || '—' }}</span> <span style="color: #94A3B8;">{{ slotProps.data.unit || '' }}</span>
           </template>
         </pv-column>
-        <pv-column field="priority" header="Priority">
+        <pv-column field="priority" :header="$t('material_request.priority')">
           <template #body="slotProps">
             <span :class="['priority-badge', 'priority-' + slotProps.data.priority.toLowerCase()]">
-              {{ slotProps.data.priority }}
+              {{ translatePriority(slotProps.data.priority) }}
             </span>
           </template>
         </pv-column>
-        <pv-column field="status" header="Status">
+        <pv-column field="status" :header="$t('material_request.status')">
           <template #body="slotProps">
             <span :class="['status-badge', 'status-' + slotProps.data.status.toLowerCase()]">
-              {{ slotProps.data.status }}
+              {{ translateStatus(slotProps.data.status) }}
             </span>
           </template>
         </pv-column>
-        <pv-column field="requestedOn" header="Requested On"></pv-column>
+        <pv-column field="requestedOn" :header="$t('material_request.requested_on')"></pv-column>
       </pv-data-table>
 
       <!-- Pagination -->
       <div class="pagination-row">
         <div class="pagination-info">
-          Item per page:
+          {{ $t('users.items_per_page') }}:
           <span class="pagination-count">10 <i class="pi pi-caret-down"></i></span>
         </div>
         <div class="pagination-controls">
@@ -76,50 +76,50 @@
     <pv-dialog v-model:visible="showDialog" modal :style="{ width: '560px' }" :showHeader="false">
       <div class="dialog-form">
         <div class="dialog-header-row">
-          <h3 class="dialog-title">New Material Request</h3>
+          <h3 class="dialog-title">{{ $t('material_request.new_material_request') }}</h3>
           <button class="close-btn" @click="showDialog = false"><i class="pi pi-times"></i></button>
         </div>
 
         <div class="form-row-2">
           <div class="form-field">
-            <label class="form-label">Project <span class="required">*</span></label>
-            <pv-select v-model="formData.project" :options="projects" placeholder="Select project" class="w-full form-input" />
+            <label class="form-label">{{ $t('material_request.project') }} <span class="required">*</span></label>
+            <pv-select v-model="formData.project" :options="projects" :placeholder="$t('purchase_orders.select_project')" class="w-full form-input" />
           </div>
           <div class="form-field">
-            <label class="form-label">Material <span class="required">*</span></label>
-            <pv-select v-model="formData.material" :options="materials" placeholder="Search materials..." class="w-full form-input" />
+            <label class="form-label">{{ $t('material_request.material') }} <span class="required">*</span></label>
+            <pv-select v-model="formData.material" :options="materials" :placeholder="$t('purchase_orders.select_material')" class="w-full form-input" />
           </div>
         </div>
 
         <div class="form-row-2">
           <div class="form-row-inner">
             <div class="form-field" style="flex: 0 0 80px;">
-              <label class="form-label">Quantity <span class="required">*</span></label>
+              <label class="form-label">{{ $t('material_request.quantity') }} <span class="required">*</span></label>
               <pv-input-number v-model="formData.quantity" :min="1" class="w-full form-input" />
             </div>
             <div class="form-field" style="flex: 0 0 90px;">
-            <label class="form-label">Unit</label>
+            <label class="form-label">{{ $t('material_request.unit') }}</label>
               <pv-select v-model="formData.unit" :options="unitOptions" class="w-full form-input" />
             </div>
           </div>
           <div class="form-field">
-            <label class="form-label">Priority <span class="required">*</span></label>
+            <label class="form-label">{{ $t('material_request.priority') }} <span class="required">*</span></label>
             <pv-select v-model="formData.priority" :options="['Low', 'Medium', 'High']" class="w-full form-input" />
           </div>
         </div>
 
         <div class="form-field">
-          <label class="form-label">Delivery Needed By <span class="required">*</span></label>
+          <label class="form-label">{{ $t('material_request.delivery_needed') }} <span class="required">*</span></label>
           <pv-input-text type="date" v-model="formData.deliveryDate" class="w-full form-input" />
         </div>
 
         <div class="form-field">
-          <label class="form-label">Description</label>
-          <pv-textarea v-model="formData.description" rows="2" placeholder="Steel rebar for columns on level 5." class="w-full form-input" />
+          <label class="form-label">{{ $t('material_request.description') }}</label>
+          <pv-textarea v-model="formData.description" rows="2" :placeholder="$t('material_request.description_placeholder')" class="w-full form-input" />
         </div>
 
         <div class="form-field">
-          <label class="form-label">Attach Evidence (JPG, PNG, PDF up to 10MB)</label>
+          <label class="form-label">{{ $t('material_request.attach_evidence') }}</label>
           <div class="evidence-row">
             <div v-for="n in 3" :key="n" class="evidence-thumb">
               <i class="pi pi-image"></i>
@@ -131,8 +131,8 @@
         </div>
 
         <div class="dialog-footer">
-          <pv-button label="Cancel" class="p-button-outlined cancel-btn" @click="showDialog = false" />
-          <pv-button label="Submit Report" icon="pi pi-check" class="submit-btn" @click="submitRequest" />
+          <pv-button :label="$t('common.cancel')" class="p-button-outlined cancel-btn" @click="showDialog = false" />
+          <pv-button :label="$t('material_request.submit_report')" icon="pi pi-check" class="submit-btn" @click="submitRequest" />
         </div>
       </div>
     </pv-dialog>
@@ -146,11 +146,13 @@ import { useReferenceDataStore } from '../../../shared/application/reference-dat
 import { buildNextBusinessCode } from '../../../shared/application/business-code.js';
 import { useIamStore } from '../../../iam/application/iam.store.js';
 import { useToast } from 'primevue/usetoast';
+import { useI18n } from 'vue-i18n';
 
 const store = useRequisitionStore();
 const referenceStore = useReferenceDataStore();
 const iamStore = useIamStore();
 const toast = useToast();
+const { t } = useI18n();
 const showDialog = ref(false);
 const activeTab = ref('All');
 const filterPriority = ref('All');
@@ -159,7 +161,16 @@ const filterStatus = ref('All');
 const projects = computed(() => referenceStore.projectNames);
 const materials = computed(() => referenceStore.materialNames);
 const unitOptions = computed(() => referenceStore.materialUnits);
-const statusOptions = computed(() => ['All', ...new Set(store.requests.map(request => request.status).filter(Boolean))]);
+const priorityOptions = computed(() => [
+  { label: t('common.all'), value: 'All' },
+  { label: t('common.high'), value: 'High' },
+  { label: t('common.medium'), value: 'Medium' },
+  { label: t('common.low'), value: 'Low' }
+]);
+const statusOptions = computed(() => [
+  { label: t('common.all'), value: 'All' },
+  ...[...new Set(store.requests.map(request => request.status).filter(Boolean))].map(status => ({ label: translateStatus(status), value: status }))
+]);
 
 const tabs = computed(() => {
   const reqs = store.requests || [];
@@ -170,6 +181,16 @@ const tabs = computed(() => {
     { name: 'Rejected', label: `Rejected (${store.rejectedRequests.length})` }
   ];
 });
+
+const translateStatus = (status) => {
+  const key = String(status || '').toLowerCase().replace(/\\s+/g, '_');
+  return t(`common.`, status || '');
+};
+
+const translatePriority = (priority) => {
+  const key = String(priority || '').toLowerCase();
+  return t(`common.`, priority || '');
+};
 
 const formData = ref({
   project: null,
@@ -199,7 +220,7 @@ const filteredRequests = computed(() => {
 
 const submitRequest = async () => {
   if (!formData.value.project || !formData.value.material || !formData.value.quantity || !formData.value.priority || !formData.value.deliveryDate) {
-    toast.add({ severity: 'warn', summary: 'Missing data', detail: 'Select project, material, quantity, priority and delivery date.', life: 3000 });
+    toast.add({ severity: 'warn', summary: t('common.warning'), detail: t('material_request.required_fields'), life: 3000 });
     return;
   }
 
@@ -219,7 +240,7 @@ const submitRequest = async () => {
 
   const success = await store.createRequest(newReq);
   if (success) {
-    toast.add({ severity: 'success', summary: 'Success', detail: 'Material request submitted.', life: 3000 });
+    toast.add({ severity: 'success', summary: t('common.success'), detail: t('material_request.created_message'), life: 3000 });
     showDialog.value = false;
     formData.value = { project: null, material: null, quantity: 150, unit: 'PCS', priority: 'High', deliveryDate: '', description: '' };
   }

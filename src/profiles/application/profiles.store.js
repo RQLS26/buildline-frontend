@@ -5,7 +5,7 @@ import { ProfilesApi } from '../infrastructure/profiles-api.js';
  * Pinia store for company profile management.
  *
  * @description Loads and updates the company profile used by the settings/profile view.
- * Sprint 3 currently works with the first seeded company profile.
+ * Loads the company profile collection from the backend and selects the first profile available to the current account.
  *
  * @author RQLS TEAM
  */
@@ -24,8 +24,8 @@ export const useProfilesStore = defineStore('profiles', {
             this.isLoading = true;
             try {
                 const api = new ProfilesApi();
-                const response = await api.getProfileById("1");
-                this.companyProfile = response.data;
+                const response = await api.getProfiles();
+                this.companyProfile = Array.isArray(response.data) ? response.data[0] || null : response.data;
             } catch (error) {
                 console.error("Error cargando perfil:", error);
             } finally {

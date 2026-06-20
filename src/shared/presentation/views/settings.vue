@@ -193,12 +193,6 @@ onMounted(() => {
 });
 
 watch(() => iamStore.currentUser, syncProfile, { immediate: true });
-watch(preferences, (value) => {
-  locale.value = value.language;
-  applyTheme(value.theme);
-  writeStorage(preferencesKey, value);
-}, { deep: true });
-watch(notifications, (value) => writeStorage(notificationsKey, value), { deep: true });
 watch(() => iamStore.currentUser?.twoFactorEnabled, (value) => {
   security.value.twoFactor = Boolean(value);
 });
@@ -221,6 +215,8 @@ const saveSettings = async () => {
 
   writeStorage(preferencesKey, preferences.value);
   writeStorage(notificationsKey, notifications.value);
+  locale.value = preferences.value.language;
+  applyTheme(preferences.value.theme);
 
   let profileSaved = true;
   if (iamStore.isAdmin) {
