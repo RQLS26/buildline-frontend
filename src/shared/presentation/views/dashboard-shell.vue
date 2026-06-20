@@ -122,6 +122,9 @@
                 <p class="date">{{ order.date }}</p>
               </div>
             </div>
+            <div v-if="filteredPOs.length === 0" class="tenant-empty-state">
+              {{ $t('common.company_empty_data') }}
+            </div>
           </div>
         </div>
       </section>
@@ -200,6 +203,9 @@
                   </template>
               </pv-column>
               <pv-column field="requestedOn" :header="$t('material_request.requested_on')"></pv-column>
+              <template #empty>
+                <div class="tenant-empty-state">{{ $t('common.company_empty_data') }}</div>
+              </template>
            </pv-data-table>
         </div>
       </section>
@@ -472,7 +478,7 @@ const pieOptions = {
 .dashboard-grid {
   display: grid;
   grid-template-columns: 3.2fr 3.5fr 0.66fr 3.04fr;
-  grid-template-rows: auto 280px 280px;
+  grid-template-rows: auto 280px 340px;
   gap: 24px;
   width: 100%;
   margin-bottom: 24px;
@@ -1052,6 +1058,10 @@ section {
   min-height: 248px;
 }
 
+.card-material-requests .content-card {
+  min-height: 286px;
+}
+
 .card-inventory .content-card {
   gap: 16px;
 }
@@ -1101,5 +1111,13 @@ section {
 :deep(.requests-table .p-datatable-tbody > tr > td) {
   line-height: 1.2;
   vertical-align: middle;
+}
+
+.tenant-empty-state {
+  padding: 28px 24px;
+  color: #94A3B8;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
 }
 </style>

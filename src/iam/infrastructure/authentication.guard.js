@@ -23,6 +23,14 @@ export const authenticationGuard = (to) => {
     }
 
     if (isPublicRoute && store.isAuthenticated) {
+        return store.hasActiveMembership ? { name: 'home' } : { name: 'invitation-status' };
+    }
+
+    if (store.isAuthenticated && !store.hasActiveMembership && to.name !== 'invitation-status') {
+        return { name: 'invitation-status' };
+    }
+
+    if (store.isAuthenticated && store.hasActiveMembership && to.name === 'invitation-status') {
         return { name: 'home' };
     }
 

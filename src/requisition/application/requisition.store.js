@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { RequisitionApi } from '../infrastructure/requisition-api.js';
+import { scopedResources, withCompanyScope } from '../../shared/application/company-scope.js';
 
 const api = new RequisitionApi();
 
@@ -32,7 +33,7 @@ export const useRequisitionStore = defineStore('requisition', {
             this.isLoading = true;
             try {
                 const response = await api.getRequisitions();
-                this.requests = response.data.sort((a, b) => b.id - a.id);
+                this.requests = scopedResources(response.data).sort((a, b) => b.id - a.id);
             } catch (error) {
                 console.error("Error loading requests:", error);
             } finally {
@@ -47,7 +48,7 @@ export const useRequisitionStore = defineStore('requisition', {
          */
         async createRequest(newReq) {
             try {
-                await api.createRequisition(newReq);
+                await api.createRequisition(withCompanyScope(newReq));
                 await this.fetchRequests();
                 return true;
             } catch (error) {

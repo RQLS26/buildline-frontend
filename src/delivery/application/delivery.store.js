@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { DeliveryApi } from '../infrastructure/delivery-api.js';
+import { scopedResources, withCompanyScope } from '../../shared/application/company-scope.js';
 
 const api = new DeliveryApi();
 
@@ -48,7 +49,7 @@ export const useDeliveryStore = defineStore('delivery', {
             this.isLoading = true;
             try {
                 const response = await api.getDeliveries();
-                this.deliveries = response.data;
+                this.deliveries = scopedResources(response.data);
             } catch (error) {
                 console.error('Error loading deliveries:', error);
             } finally {
@@ -80,7 +81,7 @@ export const useDeliveryStore = defineStore('delivery', {
          */
         async createDelivery(deliveryData) {
             try {
-                await api.createDelivery(deliveryData);
+                await api.createDelivery(withCompanyScope(deliveryData));
                 await this.fetchDeliveries();
                 return true;
             } catch (error) {

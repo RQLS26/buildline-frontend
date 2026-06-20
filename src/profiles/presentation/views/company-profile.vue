@@ -22,8 +22,17 @@
 
         <div class="field-block">
           <label class="field-label">{{ $t('company-profile.ruc') }}</label>
-          <pv-input-text v-model="formData.ruc" disabled class="profile-input" />
-          <small class="field-hint">{{ $t('company-profile.ruc_hint') }}</small>
+          <div class="ruc-row">
+            <pv-input-text v-model="formData.ruc" :disabled="hasConfirmedRuc" class="profile-input" />
+            <pv-button
+              v-if="!hasConfirmedRuc"
+              :label="$t('company-profile.confirm_ruc')"
+              class="confirm-ruc-btn"
+              type="button"
+              @click="requestRucConfirmation"
+            />
+          </div>
+          <small class="field-hint">{{ hasConfirmedRuc ? $t('company-profile.ruc_hint') : $t('company-profile.ruc_pending_hint') }}</small>
         </div>
 
         <div class="field-block wide">
@@ -46,11 +55,19 @@
         <pv-button :label="$t('company-profile.save')" icon="pi pi-save" type="submit" class="save-btn" :loading="store.isLoading" />
       </div>
     </form>
+
+    <pv-dialog v-model:visible="showRucDialog" modal :header="$t('company-profile.confirm_ruc_title')" :style="{ width: '440px' }">
+      <p class="confirm-copy">{{ $t('company-profile.confirm_ruc_message', { ruc: formData.ruc || '-' }) }}</p>
+      <template #footer>
+        <pv-button :label="$t('common.cancel')" class="p-button-text" @click="showRucDialog = false" />
+        <pv-button :label="$t('common.confirm')" class="save-btn" @click="confirmRucAndSave" />
+      </template>
+    </pv-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useProfilesStore } from '../../application/profiles.store.js';
 import { useToast } from 'primevue/usetoast';
@@ -66,21 +83,51 @@ const formData = ref({
   phone: '',
   email: ''
 });
+const originalRuc = ref('');
+const showRucDialog = ref(false);
+const hasConfirmedRuc = computed(() => Boolean(originalRuc.value));
 
 onMounted(async () => {
   await store.fetchProfile();
 });
 
 watch(() => store.companyProfile, (newProfile) => {
-  if (newProfile) formData.value = { ...newProfile };
+  if (newProfile) {
+    formData.value = { ...newProfile };
+    originalRuc.value = newProfile.ruc || '';
+  }
 }, { immediate: true });
 
 const saveProfile = async () => {
+  if (!hasConfirmedRuc.value && formData.value.ruc) {
+    showRucDialog.value = true;
+    return;
+  }
   const success = await store.updateProfile(formData.value);
   toast.add({
     severity: success ? 'success' : 'error',
     summary: success ? t('common.success') : t('common.error'),
     detail: success ? t('company-profile.saved_message') : t('company-profile.save_error'),
+    life: 3000
+  });
+};
+
+const requestRucConfirmation = () => {
+  if (!formData.value.ruc) {
+    toast.add({ severity: 'warn', summary: t('common.warning'), detail: t('company-profile.ruc_required'), life: 3000 });
+    return;
+  }
+  showRucDialog.value = true;
+};
+
+const confirmRucAndSave = async () => {
+  showRucDialog.value = false;
+  const success = await store.updateProfile(formData.value);
+  if (success) originalRuc.value = formData.value.ruc;
+  toast.add({
+    severity: success ? 'success' : 'error',
+    summary: success ? t('common.success') : t('common.error'),
+    detail: success ? t('company-profile.ruc_confirmed_message') : t('company-profile.save_error'),
     life: 3000
   });
 };
@@ -164,6 +211,26 @@ const saveProfile = async () => {
   border-radius: 10px !important;
   background: #FAFBFC !important;
   font-size: 13px !important;
+}
+
+.ruc-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.confirm-ruc-btn {
+  background: #3d63a1 !important;
+  border-color: #3d63a1 !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  white-space: nowrap;
+}
+
+.confirm-copy {
+  margin: 0;
+  color: #374151;
+  line-height: 1.6;
 }
 
 .form-footer {

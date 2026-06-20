@@ -33,6 +33,9 @@ export const useIamStore = defineStore('iam', {
     getters: {
         isAdmin: (state) => state.currentUser?.role === 'admin' || state.currentUser?.role === 'owner',
         isViewer: (state) => state.currentUser?.role === 'viewer',
+        isPendingMember: (state) => state.currentUser?.membershipStatus === 'pending',
+        isRejectedMember: (state) => state.currentUser?.membershipStatus === 'rejected',
+        hasActiveMembership: (state) => !state.currentUser || (state.currentUser.membershipStatus || 'active') === 'active',
         userRole: (state) => state.currentUser?.role || 'viewer',
         userName: (state) => state.currentUser?.name || 'User',
         userEmail: (state) => state.currentUser?.email || '',
@@ -66,6 +69,8 @@ export const useIamStore = defineStore('iam', {
                     avatarColor: data.avatarColor,
                     isActive: data.isActive,
                     twoFactorEnabled: data.twoFactorEnabled,
+                    companyId: data.companyId,
+                    membershipStatus: data.membershipStatus || 'active',
                     lastLogin: data.lastLogin,
                 };
                 this.isAuthenticated = true;
@@ -102,6 +107,8 @@ export const useIamStore = defineStore('iam', {
                     department: userData.department || 'General',
                     phone: userData.phone || '',
                     avatarColor: userData.avatarColor || '#3d63a1',
+                    companyId: userData.companyId || null,
+                    companyName: userData.companyName || null,
                 };
                 const response = await api.signUp(payload);
                 const data = response.data;
@@ -115,6 +122,8 @@ export const useIamStore = defineStore('iam', {
                     avatarColor: data.avatarColor,
                     isActive: data.isActive,
                     twoFactorEnabled: data.twoFactorEnabled,
+                    companyId: data.companyId,
+                    membershipStatus: data.membershipStatus || 'active',
                     lastLogin: data.lastLogin,
                 };
                 this.isAuthenticated = true;
@@ -203,6 +212,47 @@ export const useIamStore = defineStore('iam', {
                 return true;
             } catch (error) {
                 console.error("Error updating user status:", error);
+                return false;
+            }
+        },
+        /**
+         * Refreshes the authenticated user's own projection, including company membership state.
+         *
+         * @returns {Promise<boolean>} True when the current session projection was refreshed.
+         */
+        async refreshCurrentUser() {
+            if (!this.currentUser) return false;
+            try {
+                const api = new IamApi();
+                const response = await api.getCurrentUser();
+                this.currentUser = { ...this.currentUser, ...response.data };
+                const token = getAuthToken();
+                if (token) persistAuthSession(this.currentUser, token);
+                return true;
+            } catch (error) {
+                console.error("Error refreshing current user:", error);
+                return false;
+            }
+        },
+        /**
+         * Reviews a pending company membership created from the public sign-up workflow.
+         *
+         * @param {number|string} userId - User identifier whose membership belongs to the current company.
+         * @param {'active'|'rejected'} membershipStatus - Review decision selected by the owner.
+         * @returns {Promise<boolean>} True when the backend accepts the membership update.
+         */
+        async updateUserMembership(userId, membershipStatus) {
+            if (!this.isAdmin) return false;
+            try {
+                const api = new IamApi();
+                await api.updateUser(userId, {
+                    membershipStatus,
+                    isActive: membershipStatus === 'active'
+                });
+                await this.fetchAllUsers();
+                return true;
+            } catch (error) {
+                console.error("Error updating membership:", error);
                 return false;
             }
         },
