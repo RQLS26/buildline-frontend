@@ -117,7 +117,7 @@
         <pv-column :header="$t('suppliers.status')">
           <template #body="slotProps">
             <span :class="['status-badge', slotProps.data.isActive ? 'status-approved' : 'status-rejected']">
-              {{ slotProps.data.isActive ? ('common.active') : ('common.inactive') }}
+              {{ slotProps.data.isActive ? $t('common.active') : $t('common.inactive') }}
             </span>
           </template>
         </pv-column>
