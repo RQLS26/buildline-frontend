@@ -4,7 +4,7 @@
  * @author RQLS TEAM
  */
 export class User {
-    constructor({ id = null, name = '', email = '', password = '', role = 'viewer', department = '', isActive = true, avatarColor = '', lastLogin = '' } = {}) {
+    constructor({ id = null, name = '', email = '', password = '', role = 'viewer', department = '', isActive = true, avatarColor = '', lastLogin = '', companyId = null, membershipStatus = 'active' } = {}) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -14,5 +14,7 @@ export class User {
         this.isActive = isActive;
         this.avatarColor = avatarColor;
         this.lastLogin = lastLogin;
+        this.companyId = companyId;
+        this.membershipStatus = membershipStatus;
     }
 }

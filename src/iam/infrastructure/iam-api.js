@@ -53,6 +53,15 @@ export class IamApi extends BaseApi {
     }
 
     /**
+     * Retrieves the authenticated user's own account projection.
+     *
+     * @returns {Promise<import('axios').AxiosResponse<Object>>} Response containing the current user resource.
+     */
+    getCurrentUser() {
+        return this.http.get(`${apiEndpoints.users}/me`);
+    }
+
+    /**
      * Creates a user from the administration screen.
      *
      * @param {Object} userData - Create-user payload including role and account metadata.

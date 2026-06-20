@@ -406,6 +406,7 @@ const pieOptions = {
 .main-row-2 > section {
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 .main-row-2 > section > .content-card {
   flex: 1;
@@ -612,14 +613,16 @@ const pieOptions = {
 }
 
 .main-row-2 > section > .content-card {
-  height: 472px;
-  min-height: 472px;
+  height: 360px;
+  min-height: 360px;
+  overflow: hidden;
 }
 
 .progress-list {
   justify-content: flex-start;
   overflow-y: auto;
   max-height: 100%;
+  min-height: 0;
   padding-right: 6px;
   scrollbar-width: thin;
 }

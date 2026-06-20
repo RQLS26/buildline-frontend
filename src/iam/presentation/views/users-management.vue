@@ -53,7 +53,7 @@
         <pv-column :header="$t('users.status')">
           <template #body="slotProps">
             <span :class="['status-badge', slotProps.data.isActive ? 'status-approved' : 'status-rejected']">
-              {{ slotProps.data.isActive ? $t('common.active') : $t('common.inactive') }}
+              {{ getMembershipLabel(slotProps.data) }}
             </span>
           </template>
         </pv-column>
@@ -66,6 +66,24 @@
                 :options="getAssignableRoles(slotProps.data)"
                 :placeholder="$t('users.change_role')"
                 class="role-select-sm" />
+              <button
+                v-if="canReviewMembership(slotProps.data)"
+                type="button"
+                class="status-action-btn activate"
+                :title="$t('users.accept_invitation')"
+                @click="reviewMembership(slotProps.data, 'active')"
+              >
+                <i class="pi pi-check"></i>
+              </button>
+              <button
+                v-if="canReviewMembership(slotProps.data)"
+                type="button"
+                class="status-action-btn deactivate"
+                :title="$t('users.reject_invitation')"
+                @click="reviewMembership(slotProps.data, 'rejected')"
+              >
+                <i class="pi pi-times"></i>
+              </button>
               <button
                 v-if="canManageStatus(slotProps.data)"
                 type="button"
@@ -156,7 +174,9 @@ const roleFilterOptions = computed(() => roleCatalog);
 const newUserRoleOptions = computed(() => mutableRoleCatalog);
 const statusFilterOptions = computed(() => [
   { label: t('common.active'), value: 'Active' },
-  { label: t('common.inactive'), value: 'Inactive' }
+  { label: t('common.inactive'), value: 'Inactive' },
+  { label: t('users.pending_membership'), value: 'Pending' },
+  { label: t('users.rejected_membership'), value: 'Rejected' }
 ]);
 const departments = computed(() => [...new Set((iamStore.allUsers || []).map(user => user.department).filter(Boolean))]);
 
@@ -183,19 +203,43 @@ const filteredUsers = computed(() => {
     if (filters.value.role && u.role !== filters.value.role) return false;
     if (filters.value.status) {
       const isActive = filters.value.status === 'Active';
-      if (u.isActive !== isActive) return false;
+      if (filters.value.status === 'Pending' && u.membershipStatus !== 'pending') return false;
+      else if (filters.value.status === 'Rejected' && u.membershipStatus !== 'rejected') return false;
+      else if ((filters.value.status === 'Active' || filters.value.status === 'Inactive') && u.isActive !== isActive) return false;
     }
     return true;
   });
 });
 
 const canManageStatus = (user) => {
-  return iamStore.currentUser?.role === 'owner' && user.id !== iamStore.currentUser?.id && user.role !== 'owner';
+  return iamStore.currentUser?.role === 'owner' && user.id !== iamStore.currentUser?.id && user.role !== 'owner' && user.membershipStatus !== 'pending';
 };
 
 const getAssignableRoles = (user) => {
   if (!canManageStatus(user)) return [];
   return mutableRoleCatalog.filter(role => role !== user.role);
+};
+
+const canReviewMembership = (user) => {
+  return iamStore.currentUser?.role === 'owner' && user.id !== iamStore.currentUser?.id && user.membershipStatus === 'pending';
+};
+
+const getMembershipLabel = (user) => {
+  if (user.membershipStatus === 'pending') return t('users.pending_membership');
+  if (user.membershipStatus === 'rejected') return t('users.rejected_membership');
+  return user.isActive ? t('common.active') : t('common.inactive');
+};
+
+const reviewMembership = async (user, membershipStatus) => {
+  const success = await iamStore.updateUserMembership(user.id, membershipStatus);
+  if (success) {
+    toast.add({
+      severity: membershipStatus === 'active' ? 'success' : 'warn',
+      summary: t('common.success'),
+      detail: t(membershipStatus === 'active' ? 'users.invitation_accepted' : 'users.invitation_rejected', { name: user.name }),
+      life: 3000
+    });
+  }
 };
 
 const toggleUserStatus = async (user) => {
@@ -237,7 +281,9 @@ const createUser = async () => {
     role: newUser.value.role,
     department: newUser.value.department,
     isActive: true,
-    avatarColor: getAvatarColor(newUser.value.email)
+    avatarColor: getAvatarColor(newUser.value.email),
+    companyId: iamStore.currentUser?.companyId,
+    membershipStatus: 'active'
   };
   try {
     const success = await iamStore.createUser(userData);

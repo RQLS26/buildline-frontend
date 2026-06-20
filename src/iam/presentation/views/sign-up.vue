@@ -16,8 +16,27 @@
           <pv-input-text id="email" v-model="email" placeholder="example@email.com" class="w-full" />
         </div>
         <div class="flex flex-column gap-2">
-          <label for="company" class="font-bold text-sm text-gray-700">{{ $t('iam.company_name') }}</label>
-          <pv-input-text id="company" v-model="companyName" :placeholder="$t('iam.company_placeholder')" class="w-full" />
+          <label class="font-bold text-sm text-gray-700">{{ $t('iam.company_mode') }}</label>
+          <pv-select v-model="companyMode" :options="companyModeOptions" optionLabel="label" optionValue="value" class="w-full" />
+        </div>
+
+        <div v-if="companyMode === 'join'" class="flex flex-column gap-2">
+          <label for="company" class="font-bold text-sm text-gray-700">{{ $t('iam.existing_company') }}</label>
+          <pv-select
+            id="company"
+            v-model="selectedCompanyId"
+            :options="companyOptions"
+            optionLabel="label"
+            optionValue="value"
+            :placeholder="$t('iam.select_company')"
+            class="w-full"
+            filter
+          />
+        </div>
+
+        <div v-else class="flex flex-column gap-2">
+          <label for="newCompany" class="font-bold text-sm text-gray-700">{{ $t('iam.new_company') }}</label>
+          <pv-input-text id="newCompany" v-model="companyName" :placeholder="$t('iam.company_placeholder')" class="w-full" />
         </div>
 
         <div class="flex flex-column gap-2">
@@ -61,10 +80,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useIamStore } from '../../application/iam.store.js';
+import { ProfilesApi } from '../../../profiles/infrastructure/profiles-api.js';
 
 const router = useRouter();
 const store = useIamStore();
@@ -72,14 +92,32 @@ const { t } = useI18n();
 const name = ref('');
 const email = ref('');
 const companyName = ref('');
+const companyMode = ref('join');
+const selectedCompanyId = ref(null);
+const companies = ref([]);
 const password = ref('');
 const isLoading = ref(false);
 const errorMsg = ref('');
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const companyModeOptions = computed(() => [
+  { label: t('iam.request_join_company'), value: 'join' },
+  { label: t('iam.create_new_company'), value: 'create' }
+]);
+const companyOptions = computed(() => companies.value.map(company => ({ label: company.companyName, value: company.id })));
+
+onMounted(async () => {
+  try {
+    const response = await new ProfilesApi().getProfiles();
+    companies.value = Array.isArray(response.data) ? response.data : [];
+  } catch (error) {
+    companies.value = [];
+  }
+});
 
 const handleSignUp = async () => {
   errorMsg.value = '';
-  if (!name.value.trim() || !email.value.trim() || !companyName.value.trim() || !password.value) {
+  const missingCompany = companyMode.value === 'join' ? !selectedCompanyId.value : !companyName.value.trim();
+  if (!name.value.trim() || !email.value.trim() || missingCompany || !password.value) {
     errorMsg.value = t('iam.required_fields');
     return;
   }
@@ -97,12 +135,13 @@ const handleSignUp = async () => {
     name: name.value.trim(),
     email: email.value.trim(),
     password: password.value,
-    companyName: companyName.value.trim(),
-    role: 'admin'
+    companyId: companyMode.value === 'join' ? selectedCompanyId.value : null,
+    companyName: companyMode.value === 'create' ? companyName.value.trim() : null,
+    role: 'viewer'
   });
   isLoading.value = false;
 
-  if (success) router.push('/home');
+  if (success) router.push(store.currentUser?.membershipStatus === 'pending' ? '/invitation-status' : '/home');
   else errorMsg.value = store.error || t('iam.create_account_error');
 };
 </script>

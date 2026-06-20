@@ -19,7 +19,7 @@
         <div class="report-brand">
           <img src="/logo.png" alt="Buildline" class="report-logo" />
           <div>
-            <h2 class="report-company">Buildline</h2>
+            <h2 class="report-company">{{ companyName }}</h2>
             <span class="report-subtitle">{{ $t('reports.digital_construction') }}</span>
           </div>
         </div>
@@ -149,21 +149,23 @@ import { useInventoryStore } from '../../../inventory/application/inventory.stor
 import { useAnalyticsStore } from '../../application/analytics.store.js';
 import { useProcurementStore } from '../../../procurement/application/procurement.store.js';
 import { useSuppliersStore } from '../../../suppliers/application/suppliers.store.js';
+import { useProfilesStore } from '../../../profiles/application/profiles.store.js';
 
 const { t, locale } = useI18n();
 const inventoryStore = useInventoryStore();
 const analyticsStore = useAnalyticsStore();
 const procurementStore = useProcurementStore();
 const suppliersStore = useSuppliersStore();
+const profilesStore = useProfilesStore();
 
 const selectedReport = ref('inventory');
 const selectedPeriod = ref(null);
 const reportTypes = computed(() => [
-  inventoryStore.inventoryList.length ? { label: t('reports.inventory_summary'), value: 'inventory' } : null,
-  procurementStore.purchaseOrders.length ? { label: t('reports.purchase_history'), value: 'purchase' } : null,
-  analyticsStore.budgets.length ? { label: t('reports.budget_overview'), value: 'budget' } : null,
-  suppliersStore.suppliersList.length ? { label: t('reports.supplier_performance'), value: 'suppliers' } : null
-].filter(Boolean));
+  { label: t('reports.inventory_summary'), value: 'inventory' },
+  { label: t('reports.purchase_history'), value: 'purchase' },
+  { label: t('reports.budget_overview'), value: 'budget' },
+  { label: t('reports.supplier_performance'), value: 'suppliers' }
+]);
 const selectedReportLabel = computed(() => reportTypes.value.find(item => item.value === selectedReport.value)?.label || t('reports.inventory_summary'));
 const periods = computed(() => {
   const monthKeys = new Set([monthKey(new Date())]);
@@ -182,7 +184,8 @@ onMounted(async () => {
     inventoryStore.fetchInventory(),
     analyticsStore.fetchBudgets(),
     procurementStore.fetchOrders(),
-    suppliersStore.fetchSuppliers()
+    suppliersStore.fetchSuppliers(),
+    profilesStore.fetchProfile()
   ]);
   selectedPeriod.value = periods.value[0]?.value || monthKey(new Date());
 });
@@ -199,6 +202,7 @@ const reportItems = computed(() => {
   return inventoryStore.inventoryList;
 });
 const projectCount = computed(() => new Set(inventoryStore.inventoryList.map(i => i.project)).size);
+const companyName = computed(() => profilesStore.companyProfile?.companyName || 'Buildline');
 
 const parseDisplayDate = (value) => {
   const parsed = value ? new Date(value) : null;

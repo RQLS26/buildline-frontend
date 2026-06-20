@@ -18,6 +18,7 @@ import deliveryRoutes from './delivery/presentation/delivery-routes.js';
 import { authenticationGuard } from './iam/infrastructure/authentication.guard.js';
 
 const accessDenied = () => import('./shared/presentation/views/access-denied.vue');
+const invitationStatus = () => import('./iam/presentation/views/invitation-status.vue');
 
 const routes = [
     { path: '/home', name: 'home', component: DashboardShell, meta: { title: 'Overview' } },
@@ -26,6 +27,7 @@ const routes = [
     { path: '/iam', name: 'iam', children: iamRoutes },
     { path: '/', redirect: '/iam/sign-in' },
     { path: '/access-denied', name: 'access-denied', component: accessDenied, meta: { title: 'Access Denied' } },
+    { path: '/invitation-status', name: 'invitation-status', component: invitationStatus, meta: { title: 'Invitation Status' } },
     { path: '/requisition', name: 'requisition', children: requisitionRoutes },
     { path: '/suppliers', name: 'suppliers', children: suppliersRoutes },
     { path: '/procurement', name: 'procurement', children: procurementRoutes },
