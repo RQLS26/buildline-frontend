@@ -45,10 +45,10 @@
         <div class="notif-right">
           <span class="notif-time">{{ msg.time }}</span>
           <div class="notif-actions">
-            <button class="notif-action" @click.stop="handleStar(msg)" :title="msg.starred ? 'Unstar' : 'Star'">
+            <button class="notif-action" @click.stop="handleStar(msg)" :title="msg.starred ? $t('notifications.unstar') : $t('notifications.star')">
               <i :class="msg.starred ? 'pi pi-star-fill' : 'pi pi-star'" :style="{ color: msg.starred ? '#D97706' : '#D1D5DB' }"></i>
             </button>
-            <button class="notif-action" @click.stop title="Archive">
+            <button class="notif-action" @click.stop="handleArchive(msg)" :title="$t('notifications.archive')">
               <i class="pi pi-folder"></i>
             </button>
           </div>
@@ -87,9 +87,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useCommunicationStore } from '../../application/communication.store.js';
 
 const store = useCommunicationStore();
+const { t } = useI18n();
 const showCompose = ref(false);
 const activeTab = ref('All');
 const searchQuery = ref('');
@@ -100,11 +102,11 @@ onMounted(async () => {
 });
 
 const tabs = computed(() => [
-  { name: 'All', label: 'All', count: store.messages.length },
-  { name: 'Unread', label: 'Unread', count: store.unreadMessages.length },
-  { name: 'Alerts', label: 'Alerts', count: store.alertMessages.length },
-  { name: 'Updates', label: 'Updates', count: store.updateMessages.length },
-  { name: 'Starred', label: 'Starred', count: store.starredMessages.length },
+  { name: 'All', label: t('common.all'), count: store.messages.length },
+  { name: 'Unread', label: t('notifications.unread'), count: store.unreadMessages.length },
+  { name: 'Alerts', label: t('notifications.alerts'), count: store.alertMessages.length },
+  { name: 'Updates', label: t('notifications.updates'), count: store.updateMessages.length },
+  { name: 'Starred', label: t('notifications.starred'), count: store.starredMessages.length },
 ]);
 
 const filteredMessages = computed(() => {
@@ -127,6 +129,10 @@ const handleRead = (msg) => {
 
 const handleStar = (msg) => {
   store.toggleStar(msg.id);
+};
+
+const handleArchive = (msg) => {
+  store.archiveMessage(msg.id);
 };
 </script>
 

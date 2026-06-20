@@ -70,6 +70,22 @@ export const useCommunicationStore = defineStore('communication', {
             } catch (error) {
                 console.error('Error toggling star:', error);
             }
+        },
+        /**
+         * Archives a message by deleting it from the company inbox.
+         *
+         * @param {number|string} id - Message identifier.
+         * @returns {Promise<boolean>} True when the backend removes the message.
+         */
+        async archiveMessage(id) {
+            try {
+                await api.deleteMessage(id);
+                this.messages = this.messages.filter(message => message.id !== id);
+                return true;
+            } catch (error) {
+                console.error('Error archiving message:', error);
+                return false;
+            }
         }
     }
 });

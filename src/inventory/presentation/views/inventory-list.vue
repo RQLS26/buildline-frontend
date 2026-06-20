@@ -69,6 +69,9 @@
                 class="pi pi-pencil"></i></button>
           </template>
         </pv-column>
+        <template #empty>
+          <div class="tenant-empty-state">{{ $t('common.company_empty_data') }}</div>
+        </template>
       </pv-data-table>
     </div>
 
@@ -433,5 +436,13 @@ const getStockLabel = (current, min) => {
 
 :deep(.p-inputnumber-input) {
   width: 100% !important;
+}
+
+.tenant-empty-state {
+  padding: 44px 24px;
+  color: #94A3B8;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
 }
 </style>

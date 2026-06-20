@@ -7,7 +7,7 @@ import { apiEndpoints } from "../../shared/infrastructure/api-endpoints.js";
  *
  * @class DeliveryApi
  * @extends BaseApi
- * @description Wraps `/api/v1/deliveries` operations used by the delivery tracking view.
+ * @description Wraps company-scoped delivery operations used by the delivery tracking view.
  * @author RQLS TEAM
  */
 export class DeliveryApi extends BaseApi {
