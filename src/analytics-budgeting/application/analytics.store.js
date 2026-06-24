@@ -2,6 +2,8 @@ import { defineStore } from 'pinia';
 import { AnalyticsApi } from '../infrastructure/analytics-api.js';
 import { scopedResources } from '../../shared/application/company-scope.js';
 
+const analyticsApi = new AnalyticsApi();
+
 /**
  * Pinia store for analytics and budgeting dashboard state.
  *
@@ -30,8 +32,7 @@ export const useAnalyticsStore = defineStore('analytics', {
         async fetchBudgets() {
             this.isLoading = true;
             try {
-                const api = new AnalyticsApi();
-                const response = await api.getBudgets();
+                const response = await analyticsApi.getBudgets();
                 this.budgets = scopedResources(response.data);
             } catch (error) {
                 console.error("Error cargando presupuestos:", error);

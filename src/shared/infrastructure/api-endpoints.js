@@ -79,7 +79,6 @@ const companyEndpoint = (resource) => {
  */
 export const apiEndpoints = Object.freeze({
     analyticsBudgets: () => companyEndpoint('budgets'),
-    analyticsProjects: () => companyEndpoint('projects'),
     auth: 'api/v1/auth',
     categories: 'api/v1/categories',
     deliveries: () => companyEndpoint('deliveries'),
@@ -88,6 +87,7 @@ export const apiEndpoints = Object.freeze({
     materials: () => companyEndpoint('materials'),
     messages: () => companyEndpoint('messages'),
     profiles: 'api/v1/profiles',
+    projects: () => companyEndpoint('projects'),
     purchaseOrders: () => companyEndpoint('purchaseOrders'),
     quotations: () => companyEndpoint('quotations'),
     requisitions: () => companyEndpoint('requisitions'),
