@@ -479,10 +479,10 @@ const pieOptions = {
 .dashboard-grid {
   display: grid;
   grid-template-columns: 3.2fr 3.5fr 0.66fr 3.04fr;
-  grid-template-rows: auto 280px 430px;
+  grid-template-rows: auto 280px 356px;
   gap: 24px;
   width: 100%;
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
 .card-total-spend { grid-column: 1 / 2; grid-row: 1; }

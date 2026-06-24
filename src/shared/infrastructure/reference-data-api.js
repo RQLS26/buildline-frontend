@@ -21,7 +21,7 @@ export class ReferenceDataApi extends BaseApi {
 
     constructor() {
         super();
-        this.#projectsEndpoint = new BaseEndpoint(this, apiEndpoints.analyticsProjects);
+        this.#projectsEndpoint = new BaseEndpoint(this, apiEndpoints.projects);
         this.#categoriesEndpoint = new BaseEndpoint(this, apiEndpoints.categories);
         this.#materialsEndpoint = new BaseEndpoint(this, apiEndpoints.materials);
     }
