@@ -88,7 +88,7 @@ export const apiEndpoints = Object.freeze({
     messages: () => companyEndpoint('messages'),
     profiles: 'api/v1/profiles',
     projects: () => companyEndpoint('projects'),
-    purchaseOrders: () => companyEndpoint('purchaseOrders'),
+    purchaseOrders: () => companyEndpoint('purchase-orders'),
     quotations: () => companyEndpoint('quotations'),
     requisitions: () => companyEndpoint('requisitions'),
     suppliers: () => companyEndpoint('suppliers'),
