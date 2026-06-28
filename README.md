@@ -89,18 +89,18 @@ Authorization remains a backend responsibility. Frontend route guards exist to i
 | Frontend capability | Backend endpoint | Context adapter |
 | --- | --- | --- |
 | Sign-in / sign-up | `/api/v1/auth/*` | `IamApi` |
-| Users | `/api/v1/users` | `IamApi` |
+| Users | `/api/v1/companies/{companyId}/users` and `/api/v1/users/me` | `IamApi` |
 | Company profile | `/api/v1/profiles` | `ProfilesApi` |
-| Requisitions | `/api/v1/requisitions` | `RequisitionApi` |
-| Materials | `/api/v1/materials` | `RequisitionApi` |
-| Purchase orders | `/api/v1/purchaseOrders` | `ProcurementApi` |
-| Quotations | `/api/v1/quotations` | `ProcurementApi` |
-| Inventory | `/api/v1/inventory` | `InventoryApi` |
-| Deliveries | `/api/v1/deliveries` | `DeliveryApi` |
-| Suppliers | `/api/v1/suppliers` | `SuppliersApi` |
-| Incidents | `/api/v1/incidents` | `SuppliersApi` |
-| Budgets | `/api/v1/budgets` | `AnalyticsApi` |
-| Messages | `/api/v1/messages` | `CommunicationApi` |
+| Requisitions | `/api/v1/companies/{companyId}/requisitions` | `RequisitionApi` |
+| Materials | `/api/v1/companies/{companyId}/materials` | `RequisitionApi` |
+| Purchase orders | `/api/v1/companies/{companyId}/purchase-orders` | `ProcurementApi` |
+| Quotations | `/api/v1/companies/{companyId}/quotations` | `ProcurementApi` |
+| Inventory | `/api/v1/companies/{companyId}/inventory` | `InventoryApi` |
+| Deliveries | `/api/v1/companies/{companyId}/deliveries` | `DeliveryApi` |
+| Suppliers | `/api/v1/companies/{companyId}/suppliers` | `SuppliersApi` |
+| Incidents | `/api/v1/companies/{companyId}/incidents` | `SuppliersApi` |
+| Budgets | `/api/v1/companies/{companyId}/budgets` | `AnalyticsApi` |
+| Messages | `/api/v1/companies/{companyId}/messages` | `CommunicationApi` |
 
 ## Development
 
